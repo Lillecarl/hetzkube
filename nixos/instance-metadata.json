@@ -1,0 +1,93 @@
+{
+  "base64_encoded_keys": [],
+  "ds": {
+    "_doc": "EXPERIMENTAL: The structure and format of content scoped under the 'ds' key may change in subsequent releases of cloud-init.",
+    "meta_data": {
+      "instance-id": 111895184,
+      "local-hostname": "hetzner-test-workers-0-8fvtx-xb7qh",
+      "network-config": {
+        "config": [
+          {
+            "mac_address": "92:00:06:ab:62:90",
+            "name": "eth0",
+            "subnets": [
+              {
+                "ipv4": true,
+                "type": "dhcp"
+              },
+              {
+                "address": "2a01:4f9:c013:8c86::1/64",
+                "dns_nameservers": [
+                  "2a01:4ff:ff00::add:2",
+                  "2a01:4ff:ff00::add:1"
+                ],
+                "gateway": "fe80::1",
+                "ipv6": true,
+                "type": "static"
+              }
+            ],
+            "type": "physical"
+          }
+        ],
+        "version": 1
+      },
+      "public-keys": [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO4qV7XgcJKbaET6w5Li0Jp9T8oAH26h05UYaboqRn+g"
+      ]
+    }
+  },
+  "merged_cfg": "redacted for non-root user",
+  "merged_system_cfg": "redacted for non-root user",
+  "sensitive_keys": [
+    "merged_cfg",
+    "merged_system_cfg"
+  ],
+  "sys_info": {
+    "dist": [
+      "nixos",
+      "25.05",
+      "warbler"
+    ],
+    "platform": "Linux-6.17.0-aarch64-with-glibc2.40",
+    "python": "3.12.11",
+    "release": "6.17.0",
+    "system": "Linux",
+    "uname": [
+      "Linux",
+      "image",
+      "6.17.0",
+      "#1-NixOS SMP Sun Sep 28 21:39:22 UTC 2025",
+      "aarch64",
+      ""
+    ],
+    "variant": "linux"
+  },
+  "v1": {
+    "_beta_keys": [
+      "subplatform"
+    ],
+    "availability-zone": null,
+    "availability_zone": null,
+    "cloud-name": "hetzner",
+    "cloud_id": "hetzner",
+    "cloud_name": "hetzner",
+    "distro": "nixos",
+    "distro_release": "warbler",
+    "distro_version": "25.05",
+    "instance-id": "111895184",
+    "instance_id": "111895184",
+    "kernel_release": "6.17.0",
+    "local-hostname": "hetzner-test-workers-0-8fvtx-xb7qh",
+    "local_hostname": "hetzner-test-workers-0-8fvtx-xb7qh",
+    "machine": "aarch64",
+    "platform": "hetzner",
+    "public_ssh_keys": [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO4qV7XgcJKbaET6w5Li0Jp9T8oAH26h05UYaboqRn+g"
+    ],
+    "python_version": "3.12.11",
+    "region": null,
+    "subplatform": "metadata (http://169.254.169.254/hetzner/v1/metadata)",
+    "system_platform": "Linux-6.17.0-aarch64-with-glibc2.40",
+    "variant": "linux"
+  }
+}
