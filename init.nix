@@ -27,6 +27,10 @@ easykubenix {
         deployment.vars = [ { file = "secrets/all.yaml"; } ];
         files."secrets/all.yaml" = builtins.readFile ./secrets/all.yaml;
       };
+      cilium = {
+        enable = true;
+        k8sServiceHost = "kubernetes.lillecarl.com";
+      };
     }
     ./kubenix
   ];
