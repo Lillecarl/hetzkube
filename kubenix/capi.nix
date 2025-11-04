@@ -19,8 +19,8 @@ let
       git clone https://github.com/lillecarl/hetzkube.git /etc/hetzkube
       # Get node info
       nix run --file /etc/hetzkube pkgs.hetzInfo
-      # Rebuild with new config
-      nixos-rebuild switch --file /etc/hetzkube/ --attr nixosConfigurations.$(nix eval --raw --impure --expr builtins.currentSystem)
+      # Rebuild with new config, TODO: split image and prod configs
+      nixos-rebuild switch --file /etc/hetzkube/ --attr nixosConfigurations.image-$(nix eval --raw --impure --expr builtins.currentSystem)
     ''
   ];
 

@@ -20,27 +20,27 @@
     };
   };
   outputs = inputs: {
-    nixosConfigurations.aarch64-linux = inputs.nixpkgs.lib.nixosSystem {
+    nixosConfigurations.image-aarch64-linux = inputs.nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       modules = [
         ./nixos
         {
           lib.hetzkube = {
             ip = "37.27.47.29";
-            configName = "aarch64-linux";
+            configName = "image-aarch64-linux";
           };
         }
       ];
       specialArgs = { inherit inputs; };
     };
-    nixosConfigurations.x86_64-linux = inputs.nixpkgs.lib.nixosSystem {
+    nixosConfigurations.image-x86_64-linux = inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ./nixos
         {
           lib.hetzkube = {
             ip = "37.27.91.156";
-            configName = "x86_64-linux";
+            configName = "image-x86_64-linux";
           };
         }
       ];
