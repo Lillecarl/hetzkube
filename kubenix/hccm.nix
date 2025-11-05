@@ -19,7 +19,7 @@ in
     apiToken = lib.mkOption {
       type = lib.types.str;
     };
-    helmAttrs = lib.mkOption {
+    helmValues = lib.mkOption {
       type = lib.types.anything;
       default = { };
     };
@@ -39,18 +39,7 @@ in
         }
       }/chart";
 
-      values = {
-        # Disable HCCM LB
-        env.HCLOUD_INSTANCES_ADDRESS_FAMILY.value = "dualstack";
-        env.HCLOUD_LOAD_BALANCERS_LOCATION.value = "hel1"; # remove?
-        additionalTolerations = [
-          {
-            key = "node.cilium.io/agent-not-ready";
-            operator = "Exists";
-          }
-        ];
-      }
-      // cfg.helmAttrs;
+      values = { } // cfg.helmValues;
     };
   };
 }
