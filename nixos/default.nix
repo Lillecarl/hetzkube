@@ -60,12 +60,10 @@
       let
         memoryFile = /etc/hetzinfo/memoryMB;
       in
-      lib.optional (lib.pathExists memoryFile) [
-        {
-          device = "/swapfile";
-          size = lib.toInt (builtins.readFile memoryFile);
-        }
-      ];
+      lib.optional (lib.pathExists memoryFile) {
+        device = "/swapfile";
+        size = lib.toInt (builtins.readFile memoryFile);
+      };
 
     # Latest stable Kernel is nice when running containers
     boot.kernelPackages = pkgs.linuxPackages_latest;
