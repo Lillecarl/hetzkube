@@ -16,10 +16,21 @@ in
       type = lib.types.str;
       default = moduleName;
     };
+    chart = lib.mkOption {
+      type = lib.types.either lib.types.package lib.types.path;
+      default = "${
+        builtins.fetchTree {
+          type = "github";
+          owner = "hetznercloud";
+          repo = "hcloud-cloud-controller-manager";
+          ref = "v1.27.0";
+        }
+      }/chart";
+    };
     apiToken = lib.mkOption {
       type = lib.types.str;
     };
-    helmValues = lib.mkOption {
+    values = lib.mkOption {
       type = lib.types.anything;
       default = { };
     };
@@ -28,18 +39,7 @@ in
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
     kubernetes.resources.${cfg.namespace}.Secret.hcloud.stringData.token = cfg.apiToken;
     helm.releases.${moduleName} = {
-      namespace = cfg.namespace;
-
-      chart = "${
-        builtins.fetchTree {
-          type = "github";
-          owner = "hetznercloud";
-          repo = "hcloud-cloud-controller-manager";
-          ref = "v1.27.0";
-        }
-      }/chart";
-
-      values = { } // cfg.helmValues;
+      inherit (cfg) namespace chart values;
     };
   };
 }
