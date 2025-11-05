@@ -53,6 +53,9 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption "capi";
+    keyName = lib.mkOption {
+      type = lib.types.nullOr lib.types.nonEmptyStr;
+    };
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${clusterName} = { };
@@ -156,9 +159,9 @@ in
           name = "hetzner";
         };
         # We already have SSH keys provisioned with Nix, CAPI doesn't need them.
-        # sshKeys = {
-        #   hcloud = [ { name = "hetznerKeyName"; } ];
-        # };
+        sshKeys = lib.mkIf (cfg.keyName != null){
+          hcloud = [ { name = cfg.keyName; } ];
+        };
       };
       MachineHealthCheck."${clusterName}-control-plane-unhealthy-5m".spec = {
         inherit clusterName;
