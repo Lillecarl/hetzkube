@@ -53,10 +53,6 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption "capi";
-    controlPlaneHost = lib.mkOption {
-      type = lib.types.str;
-      description = "name of your cluster";
-    };
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${clusterName} = { };
@@ -145,7 +141,7 @@ in
       HetznerCluster.${clusterName}.spec = {
         controlPlaneRegions = [ dc ];
         # No LB for control-plane
-        controlPlaneEndpoint.host = cfg.controlPlaneHost;
+        controlPlaneEndpoint.host = config.clusterHost;
         controlPlaneLoadBalancer.enabled = false;
         controlPlaneEndpoint.port = 6443;
         # No private networking

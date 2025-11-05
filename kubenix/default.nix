@@ -20,6 +20,7 @@ let
     };
     init = {
       cilium.enable = true;
+      hccm.enable = true;
       cert-manager = {
         enable = true;
         bare = true;
@@ -62,9 +63,6 @@ easykubenix {
           clusterName = "hetzkube";
           clusterHost = "kubernetes.lillecarl.com";
 
-          capi = {
-            controlPlaneHost = config.clusterHost;
-          };
           cert-manager.email = "le@lillecarl.com";
           hccm = {
             apiToken = "{{ hctoken }}";
@@ -82,9 +80,6 @@ easykubenix {
                 }
               ];
             };
-          };
-          cilium = {
-            k8sServiceHost = config.clusterHost;
           };
           kubernetes.resources.kube-public.ConfigMap.initialized = { };
         };

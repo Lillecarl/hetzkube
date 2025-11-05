@@ -21,8 +21,8 @@ in
       type = lib.types.nonEmptyStr;
     };
   };
-  config = lib.mkIf cfg.enable (
-    {
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
       importyaml.${moduleName} = {
         src = cfg.url;
       };
@@ -42,8 +42,8 @@ in
         Issuer = true;
         Order = true;
       };
-    }
-    // lib.optionalAttrs (!cfg.bare) {
+    })
+    (lib.mkIf (cfg.enable && !cfg.bare) {
       kubernetes.resources.cert-manager.Secret.cloudflare.stringData.api-token = "{{ cftoken }}";
       kubernetes.resources.none.ClusterIssuer.le-staging.spec = {
         acme = {
@@ -77,6 +77,6 @@ in
           };
         };
       };
-    }
-  );
+    })
+  ];
 }

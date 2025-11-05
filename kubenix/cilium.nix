@@ -11,9 +11,6 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
-    k8sServiceHost = lib.mkOption {
-      type = lib.types.str;
-    };
     helmAttrs = lib.mkOption {
       type = lib.types.anything;
       default = { };
@@ -80,7 +77,7 @@ in
         # ServiceIP Cilium should use to talk to kube-apiserver. This is required
         # since Cilium is the CNI, uses hostNetwork and there's no cluster comms
         # before Cilium can talk to apiserver.
-        k8sServiceHost = cfg.k8sServiceHost;
+        k8sServiceHost = config.clusterHost;
         k8sServicePort = 6443;
         # Cilium replaces kube-proxy, so instead of iptables based service forwarding
         # Cilium uses it's own eBPF rules which scale better and can do more voodoo
