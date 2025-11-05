@@ -15,4 +15,7 @@
       type = lib.types.nonEmptyStr;
     };
   };
+  config = {
+    kubernetes.resources.kube-public.ConfigMap.initialized = { };
+  };
 }

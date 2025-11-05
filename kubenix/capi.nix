@@ -100,9 +100,9 @@ in
               # This only exists on the image
               export SOPS_AGE_KEY_FILE=/etc/nodekey
               # Check if cluster has been previously initialized, if not run init deployment script
-              kubectl --namespace kube-public get configmaps initialized || nix run --file /etc/hetzkube/init.nix deploymentScript -- --yes --no-wait
+              kubectl --namespace kube-public get configmaps initialized || nix run --file /etc/hetzkube init.deploymentScript -- --yes --no-wait
               # Install admin config to node
-              install -D --mode=0600 --owner=evolvit /etc/kubernetes/admin.conf /home/hetzkube/.kube/config
+              install -D --mode=0600 --owner=hetzkube /etc/kubernetes/admin.conf /home/hetzkube/.kube/config
             ''
           ];
         };

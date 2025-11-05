@@ -33,6 +33,8 @@ flake.impure
 // rec {
   inherit pkgs;
   inherit (pkgs) lib;
+
+  # PATH for direnv
   repoenv = pkgs.buildEnv {
     name = "repoenv";
     paths = with pkgs; [
@@ -45,5 +47,9 @@ flake.impure
       doggo
     ];
   };
-  capi = import ./capi.nix { inherit pkgs easykubenix; };
+
+  # CAPI configuration (targeting your local cluster)
+  capi = import ./kubenix/stages/capi.nix { inherit pkgs easykubenix; };
+  init = import ./kubenix/stages/init.nix { inherit pkgs easykubenix; };
+  full = import ./kubenix/stages/full.nix { inherit pkgs easykubenix; };
 }
