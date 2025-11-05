@@ -14,6 +14,10 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix2conatiner = {
+      url = "github:nlewo/nix2container";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     terranix = {
       url = "github:terranix/terranix";
       flake = false; # I don't wanna pull in their dependencies.

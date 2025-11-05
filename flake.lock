@@ -56,6 +56,26 @@
         "type": "github"
       }
     },
+    "nix2conatiner": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1761716996,
+        "narHash": "sha256-vdOuy2pid2/DasUgb08lDOswdPJkN5qjXfBYItVy/R4=",
+        "owner": "nlewo",
+        "repo": "nix2container",
+        "rev": "e5496ab66e9de9e3f67dc06f692dfbc471b6316e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nlewo",
+        "repo": "nix2container",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1761999846,
@@ -77,6 +97,7 @@
         "disko": "disko",
         "flake-compatish": "flake-compatish",
         "home-manager": "home-manager",
+        "nix2conatiner": "nix2conatiner",
         "nixpkgs": "nixpkgs",
         "srvos": "srvos",
         "terranix": "terranix"
