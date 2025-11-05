@@ -16,3 +16,7 @@ Since we don't deploy any loadbalancers you must set a hostname on the cluster
 address. When you deploy your first controlplane node you must create the DNS
 record when the node is being created so everything resolves. This will later
 be taken over by external-dns.
+
+# SOPS
+
+Put a decryption key in the image at /etc/nodekey
