@@ -60,7 +60,7 @@ in
       description = "name of your cluster";
     };
   };
-  config = lib.mkEnable cfg.enable {
+  config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.clusterName} = { };
     kubernetes.resources.${cfg.clusterName} = {
       # hcloud token, templated from SOPS with kluctl
