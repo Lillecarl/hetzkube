@@ -45,6 +45,7 @@ easykubenix {
     ./clusteroptions.nix
     ./hccm.nix
     stageMod
+    ./nginx.nix
     {
       config = {
         kluctl = {
