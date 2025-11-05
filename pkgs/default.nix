@@ -9,4 +9,7 @@ self: pkgs: {
         # Fetch hostname
         curl http://169.254.169.254/hetzner/v1/metadata/hostname -o /etc/hetzinfo/hostName
       '';
+
+  python-jsonpath = pkgs.python3Packages.callPackage ./python-jsonpath.nix { };
+  kr8s = pkgs.python3Packages.callPackage ./kr8s.nix { inherit (self) python-jsonpath; };
 }
