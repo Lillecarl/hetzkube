@@ -45,6 +45,7 @@ easykubenix {
     ./clusteroptions.nix
     ./hccm.nix
     stageMod
+    ./metallb.nix
     ./nginx.nix
     {
       config = {
