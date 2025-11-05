@@ -22,6 +22,10 @@
       url = "github:terranix/terranix";
       flake = false; # I don't wanna pull in their dependencies.
     };
+    easykubenix = {
+      url = "github:lillecarl/easykubenix";
+      flake = false;
+    };
   };
   outputs = inputs: {
     nixosConfigurations.image-aarch64-linux = inputs.nixpkgs.lib.nixosSystem {
