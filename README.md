@@ -2,6 +2,8 @@
 
 NixOS, Hetzner, ClusterAPI
 
+Need help? Hit me up on [Matrix](https://matrix.to/#/@lillecarl:matrix.org)!
+
 # Bootstrapping
 ## 0.0 Tools
 direnv will add the required tools to $PATH for you, it's not an invasive
@@ -30,7 +32,9 @@ clusterctl init \
 Since we don't deploy any loadbalancers you must set a resolveable DNS name on
 the cluster address. When you deploy your first controlplane node you must
 create the DNS record when the node is being created so everything resolves.
-This will later be taken over by external-dns.
+This will later be taken over by external-dns so make sure your domain is on a
+external-dns provider host or you can kiss your control-plane goodbye when
+you re-roll stuff with ClusterAPI.
 
 ```bash
 nix run --file . kubenix.deploymentScript --argstr stage capi

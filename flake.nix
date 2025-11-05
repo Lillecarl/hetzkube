@@ -26,6 +26,10 @@
       url = "github:lillecarl/easykubenix";
       flake = false;
     };
+    nix-csi = {
+      url = "github:lillecarl/nix-csi";
+      flake = false;
+    };
   };
   outputs = inputs: {
     nixosConfigurations.image-aarch64-linux = inputs.nixpkgs.lib.nixosSystem {

@@ -72,6 +72,22 @@
         "type": "github"
       }
     },
+    "nix-csi": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1762200346,
+        "narHash": "sha256-/Io+0RCOJI9bLiaO74kpDCQgvIFb8a907nN9gyQqfsc=",
+        "owner": "lillecarl",
+        "repo": "nix-csi",
+        "rev": "5e8e20630eb6c97078c1214c6f18f00c6c5ab833",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lillecarl",
+        "repo": "nix-csi",
+        "type": "github"
+      }
+    },
     "nix2conatiner": {
       "inputs": {
         "nixpkgs": [
@@ -114,6 +130,7 @@
         "easykubenix": "easykubenix",
         "flake-compatish": "flake-compatish",
         "home-manager": "home-manager",
+        "nix-csi": "nix-csi",
         "nix2conatiner": "nix2conatiner",
         "nixpkgs": "nixpkgs",
         "srvos": "srvos",

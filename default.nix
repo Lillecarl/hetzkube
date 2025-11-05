@@ -16,12 +16,54 @@ let
     ];
   };
 
-  easykubenix = import flake.inputs.easykubenix;
+  osOptions =
+    let
+      inherit (flake.impure.nixosConfigurations."image-${pkgs.system}") options;
+      optionsList = builtins.filter (v: v.visible && !v.internal) (
+        pkgs.lib.optionAttrSetToDocList options
+      );
+    in
+    pkgs.writeText "osOptions" (builtins.toJSON optionsList);
+
+  knOptions =
+    let
+      inherit (kubenixStaged.eval) options;
+      optionsList = builtins.filter (v: v.visible && !v.internal) (
+        pkgs.lib.optionAttrSetToDocList options
+      );
+    in
+    pkgs.writeText "osOptions" (builtins.toJSON optionsList);
+
+  optnixConfig = (pkgs.formats.toml { }).generate "optnix.toml" {
+    min_score = 3;
+    debounce_time = 25;
+    default_scope = "";
+    formatter_cmd = "nixfmt";
+    scopes.hkos = {
+      description = "NixOS options";
+      options-list-file = toString osOptions;
+    };
+    scopes.hkkn = {
+      description = "easykubenix options";
+      options-list-file = toString knOptions;
+    };
+  };
+
+  kubenix = import ./kubenix {
+    inherit pkgs args;
+    inherit (flake.inputs) easykubenix nix-csi;
+  };
+  kubenixStaged = import ./kubenix {
+    inherit pkgs;
+    inherit (flake.inputs) easykubenix nix-csi;
+    args.stage = "init";
+  };
 in
 flake.impure
 // rec {
   inherit pkgs;
   inherit (pkgs) lib;
+  inherit kubenix;
 
   # PATH for direnv
   repoenv = pkgs.buildEnv {
@@ -34,8 +76,11 @@ flake.impure
       sops
       age
       doggo
+      (writeScriptBin "optnix" # bash
+        ''
+          exec ${lib.getExe optnix} --config ${optnixConfig} $@
+        ''
+      )
     ];
   };
-
-  kubenix = import ./kubenix { inherit pkgs easykubenix args; };
 }
