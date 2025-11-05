@@ -9,7 +9,7 @@ easykubenix {
       kluctl = {
         discriminator = "init";
         deployment.vars = [ { file = "secrets/all.yaml"; } ];
-        files."secrets/all.yaml" = builtins.readFile ./secrets/all.yaml;
+        files."secrets/all.yaml" = builtins.readFile ../../secrets/all.yaml;
       };
       clusterName = "hetzkube";
       cilium = {
@@ -17,6 +17,6 @@ easykubenix {
         k8sServiceHost = "kubernetes.lillecarl.com";
       };
     }
-    ./kubenix
+    ../.
   ];
 }

@@ -9,7 +9,7 @@ easykubenix {
       kluctl = {
         discriminator = "capi";
         deployment.vars = [ { file = "secrets/all.yaml"; } ];
-        files."secrets/all.yaml" = builtins.readFile ./secrets/all.yaml;
+        files."secrets/all.yaml" = builtins.readFile ../../secrets/all.yaml;
       };
       clusterName = "hetzkube";
       capi = {
@@ -17,6 +17,6 @@ easykubenix {
         controlPlaneHost = "kubernetes.lillecarl.com";
       };
     }
-    ./kubenix
+    ../.
   ];
 }
