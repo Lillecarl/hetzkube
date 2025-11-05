@@ -41,7 +41,6 @@ in
 
       values = {
         # Disable HCCM LB
-        args.disable-load-balancer = "";
         env.HCLOUD_INSTANCES_ADDRESS_FAMILY.value = "dualstack";
         env.HCLOUD_LOAD_BALANCERS_LOCATION.value = "hel1"; # remove?
         additionalTolerations = [

@@ -31,10 +31,10 @@ easykubenix {
         enable = true;
         k8sServiceHost = "kubernetes.lillecarl.com";
       };
-      hccm = {
-        enable = true;
-        apiToken = "{{ hctoken }}";
-      };
+      # hccm = {
+      #   enable = true;
+      #   apiToken = "{{ hctoken }}";
+      # };
     }
     ./kubenix
   ];

@@ -39,7 +39,7 @@ let
       "feature-gates" = featureGates;
       "fail-swap-on" = "false";
       "cgroup-driver" = "systemd";
-      "cloud-provider" = "external";
+      # "cloud-provider" = "external";
       "resolv-conf" = "/etc/kubernetes/resolv.conf";
     };
     ignorePreflightErrors = [
