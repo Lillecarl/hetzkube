@@ -18,6 +18,8 @@ easykubenix {
         helmValues = {
           # Disable HCCM LB
           env.HCLOUD_LOAD_BALANCERS_ENABLED.value = "false";
+          env.HCLOUD_NETWORK_ROUTES_ENABLED.value = "false";
+          env.HCLOUD_NETWORK_DISABLE_ATTACHED_CHECK.value = "true";
           # We must IPv6!!
           env.HCLOUD_INSTANCES_ADDRESS_FAMILY.value = "dualstack";
           additionalTolerations = [
