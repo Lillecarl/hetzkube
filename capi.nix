@@ -1,24 +1,7 @@
 {
-  pkgs ? import <nixpkgs> { },
+  pkgs,
+  easykubenix,
 }:
-let
-  default = import ./.;
-  inherit (default) pkgs;
-  easykubenix =
-    let
-      path = /home/lillecarl/Code/easykubenix;
-    in
-    if builtins.pathExists path then
-      import path
-    else
-      import (
-        builtins.fetchTree {
-          type = "github";
-          owner = "lillecarl";
-          repo = "easykubenix";
-        }
-      );
-in
 easykubenix {
   inherit pkgs;
   modules = [

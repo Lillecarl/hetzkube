@@ -14,6 +14,20 @@ let
       (import ./pkgs)
     ];
   };
+  easykubenix =
+    let
+      path = /home/lillecarl/Code/easykubenix;
+    in
+    if builtins.pathExists path then
+      import path
+    else
+      import (
+        builtins.fetchTree {
+          type = "github";
+          owner = "lillecarl";
+          repo = "easykubenix";
+        }
+      );
 in
 flake.impure
 // rec {
@@ -31,4 +45,5 @@ flake.impure
       doggo
     ];
   };
+  capi = import ./capi.nix { inherit pkgs easykubenix; };
 }

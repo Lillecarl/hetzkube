@@ -2,7 +2,6 @@
   pkgs ? import <nixpkgs> { },
 }:
 let
-  clusterName = "hetzkube";
   easykubenix =
     let
       path = /home/lillecarl/Code/easykubenix;
