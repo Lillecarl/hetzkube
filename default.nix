@@ -48,8 +48,5 @@ flake.impure
     ];
   };
 
-  # CAPI configuration (targeting your local cluster)
-  capi = import ./kubenix/stages/capi.nix { inherit pkgs easykubenix; };
-  init = import ./kubenix/stages/init.nix { inherit pkgs easykubenix; };
-  full = import ./kubenix/stages/full.nix { inherit pkgs easykubenix; };
+  kubenix = import ./kubenix { inherit pkgs easykubenix args; };
 }
