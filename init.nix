@@ -26,6 +26,7 @@ easykubenix {
         deployment.vars = [ { file = "secrets/all.yaml"; } ];
         files."secrets/all.yaml" = builtins.readFile ./secrets/all.yaml;
       };
+      clusterName = "hetzkube";
       cilium = {
         enable = true;
         k8sServiceHost = "kubernetes.lillecarl.com";

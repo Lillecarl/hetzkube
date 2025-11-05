@@ -6,6 +6,7 @@
 }:
 let
   moduleName = "capi";
+  clusterName = config.clusterName;
   cfg = config.${moduleName};
 
   # Commands to run before kubeadm that initializes the node properly
@@ -51,23 +52,19 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption "capi";
-    clusterName = lib.mkOption {
-      type = lib.types.str;
-      description = "name of your cluster";
-    };
     controlPlaneHost = lib.mkOption {
       type = lib.types.str;
       description = "name of your cluster";
     };
   };
   config = lib.mkIf cfg.enable {
-    kubernetes.resources.none.Namespace.${cfg.clusterName} = { };
-    kubernetes.resources.${cfg.clusterName} = {
+    kubernetes.resources.none.Namespace.${clusterName} = { };
+    kubernetes.resources.${clusterName} = {
       # hcloud token, templated from SOPS with kluctl
       Secret.hetzner.stringData.hcloud = "{{ hctoken }}";
 
       # Contol plane
-      KubeadmControlPlane."${cfg.clusterName}-control-plane".spec = {
+      KubeadmControlPlane."${clusterName}-control-plane".spec = {
         kubeadmConfigSpec = {
           clusterConfiguration = {
             apiServer.extraArgs = {
@@ -113,14 +110,14 @@ in
           infrastructureRef = {
             apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
             kind = "HCloudMachineTemplate";
-            name = "${cfg.clusterName}-control-plane";
+            name = "${clusterName}-control-plane";
           };
         };
         replicas = 1;
         version = "v${pkgs.kubernetes.version}"; # beware to make images!
       };
-      Cluster.${cfg.clusterName} = {
-        metadata.labels.clusterName = cfg.clusterName;
+      Cluster.${clusterName} = {
+        metadata.labels.clusterName = clusterName;
         spec = {
           clusterNetwork = {
             pods.cidrBlocks = [
@@ -135,16 +132,16 @@ in
           controlPlaneRef = {
             apiVersion = "controlplane.cluster.x-k8s.io/v1beta1";
             kind = "KubeadmControlPlane";
-            name = "${cfg.clusterName}-control-plane";
+            name = "${clusterName}-control-plane";
           };
           infrastructureRef = {
             apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
             kind = "HetznerCluster";
-            name = cfg.clusterName;
+            name = clusterName;
           };
         };
       };
-      HetznerCluster.${cfg.clusterName}.spec = {
+      HetznerCluster.${clusterName}.spec = {
         controlPlaneRegions = [ dc ];
         # No LB for control-plane
         controlPlaneEndpoint.host = cfg.controlPlaneHost;
@@ -166,8 +163,8 @@ in
         #   hcloud = [ { name = "hetznerKeyName"; } ];
         # };
       };
-      MachineHealthCheck."${cfg.clusterName}-control-plane-unhealthy-5m".spec = {
-        inherit (cfg) clusterName;
+      MachineHealthCheck."${clusterName}-control-plane-unhealthy-5m".spec = {
+        inherit clusterName;
         maxUnhealthy = "100%";
         nodeStartupTimeout = "15m";
         remediationTemplate = {
@@ -193,7 +190,7 @@ in
           }
         ];
       };
-      HCloudMachineTemplate."${cfg.clusterName}-control-plane".spec.template.spec = {
+      HCloudMachineTemplate."${clusterName}-control-plane".spec.template.spec = {
         imageName = "2505-x86";
         placementGroupName = "control-plane";
         type = "cx23";
@@ -209,7 +206,7 @@ in
       # Worker config
       #
       # Share Kubeadm configuration between different worker configurations
-      KubeadmConfigTemplate."${cfg.clusterName}-workers".spec.template.spec = {
+      KubeadmConfigTemplate."${clusterName}-workers".spec.template.spec = {
         joinConfiguration.nodeRegistration = nodeRegistration;
         inherit preKubeadmCommands;
       };
@@ -220,36 +217,36 @@ in
       };
 
       # x86 pool
-      MachineDeployment."${cfg.clusterName}-workers-x86" = {
-        metadata.labels.nodepool = "${cfg.clusterName}-workers-x86";
+      MachineDeployment."${clusterName}-workers-x86" = {
+        metadata.labels.nodepool = "${clusterName}-workers-x86";
         spec = {
-          inherit (cfg) clusterName;
+          inherit clusterName;
           replicas = 0;
           selector = { };
           template = {
-            metadata.labels.nodepool = "${cfg.clusterName}-workers-x86";
+            metadata.labels.nodepool = "${clusterName}-workers-x86";
             spec = {
               bootstrap = {
                 configRef = {
                   apiVersion = "bootstrap.cluster.x-k8s.io/v1beta1";
                   kind = "KubeadmConfigTemplate";
-                  name = "${cfg.clusterName}-workers";
+                  name = "${clusterName}-workers";
                 };
               };
-              inherit (cfg) clusterName;
+              inherit clusterName;
               failureDomain = dc;
               infrastructureRef = {
                 apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
                 kind = "HCloudMachineTemplate";
-                name = "${cfg.clusterName}-workers-x86";
+                name = "${clusterName}-workers-x86";
               };
               version = "v${pkgs.kubernetes.version}"; # beware to make images!
             };
           };
         };
       };
-      MachineHealthCheck."${cfg.clusterName}-workers-x86-unhealthy-5m".spec = {
-        inherit (cfg) clusterName;
+      MachineHealthCheck."${clusterName}-workers-x86-unhealthy-5m".spec = {
+        inherit clusterName;
         maxUnhealthy = "100%";
         nodeStartupTimeout = "10m";
         remediationTemplate = {
@@ -259,7 +256,7 @@ in
         };
         selector = {
           matchLabels = {
-            nodepool = "${cfg.clusterName}-workers-x86";
+            nodepool = "${clusterName}-workers-x86";
           };
         };
         unhealthyConditions = [
@@ -275,43 +272,43 @@ in
           }
         ];
       };
-      HCloudMachineTemplate."${cfg.clusterName}-workers-x86".spec.template.spec = {
+      HCloudMachineTemplate."${clusterName}-workers-x86".spec.template.spec = {
         imageName = "2505-x86";
         placementGroupName = "workers";
         type = "cx23";
       };
 
       # arm64 pool
-      MachineDeployment."${cfg.clusterName}-workers-arm64" = {
-        metadata.labels.nodepool = "${cfg.clusterName}-workers-arm64";
+      MachineDeployment."${clusterName}-workers-arm64" = {
+        metadata.labels.nodepool = "${clusterName}-workers-arm64";
         spec = {
-          inherit (cfg) clusterName;
+          inherit clusterName;
           replicas = 0;
           selector = { };
           template = {
-            metadata.labels.nodepool = "${cfg.clusterName}-workers-arm64";
+            metadata.labels.nodepool = "${clusterName}-workers-arm64";
             spec = {
               bootstrap = {
                 configRef = {
                   apiVersion = "bootstrap.cluster.x-k8s.io/v1beta1";
                   kind = "KubeadmConfigTemplate";
-                  name = "${cfg.clusterName}-workers";
+                  name = "${clusterName}-workers";
                 };
               };
-              inherit (cfg) clusterName;
+              inherit clusterName;
               failureDomain = dc;
               infrastructureRef = {
                 apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
                 kind = "HCloudMachineTemplate";
-                name = "${cfg.clusterName}-workers-arm64";
+                name = "${clusterName}-workers-arm64";
               };
               version = "v${pkgs.kubernetes.version}"; # beware to make images!
             };
           };
         };
       };
-      MachineHealthCheck."${cfg.clusterName}-workers-arm64-unhealthy-5m".spec = {
-        inherit (cfg) clusterName;
+      MachineHealthCheck."${clusterName}-workers-arm64-unhealthy-5m".spec = {
+        inherit clusterName;
         maxUnhealthy = "100%";
         nodeStartupTimeout = "10m";
         remediationTemplate = {
@@ -321,7 +318,7 @@ in
         };
         selector = {
           matchLabels = {
-            nodepool = "${cfg.clusterName}-workers-arm64";
+            nodepool = "${clusterName}-workers-arm64";
           };
         };
         unhealthyConditions = [
@@ -337,7 +334,7 @@ in
           }
         ];
       };
-      HCloudMachineTemplate."${cfg.clusterName}-workers-arm64".spec.template.spec = {
+      HCloudMachineTemplate."${clusterName}-workers-arm64".spec.template.spec = {
         imageName = "2505-arm";
         placementGroupName = "workers";
         type = "cx23";

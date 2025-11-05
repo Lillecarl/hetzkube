@@ -11,9 +11,9 @@ easykubenix {
         deployment.vars = [ { file = "secrets/all.yaml"; } ];
         files."secrets/all.yaml" = builtins.readFile ./secrets/all.yaml;
       };
+      clusterName = "hetzkube";
       capi = {
         enable = true;
-        clusterName = "hetzkube";
         controlPlaneHost = "kubernetes.lillecarl.com";
       };
     }
