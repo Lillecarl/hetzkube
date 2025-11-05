@@ -41,7 +41,10 @@ let
       "cloud-provider" = "external";
       "resolv-conf" = "/etc/kubernetes/resolv.conf";
     };
-    ignorePreflightErrors = [ "Swap" ];
+    ignorePreflightErrors = [
+      "Swap"
+      "HTTPProxyCIDR"
+    ];
   };
   dc = "hel1";
 in
@@ -57,7 +60,7 @@ in
       description = "name of your cluster";
     };
   };
-  config = {
+  config = lib.mkEnable cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.clusterName} = { };
     kubernetes.resources.${cfg.clusterName} = {
       # hcloud token, templated from SOPS with kluctl
@@ -119,7 +122,16 @@ in
       Cluster.${cfg.clusterName} = {
         metadata.labels.clusterName = cfg.clusterName;
         spec = {
-          clusterNetwork.pods.cidrBlocks = [ "10.244.0.0/16" ];
+          clusterNetwork = {
+            pods.cidrBlocks = [
+              "10.133.7.0/16" # 65536
+              "fdce:9c4d:abcd::/48" # Very big
+            ];
+            services.cidrBlocks = [
+              "10.133.8.0/16" # 65536
+              "fdce:9c4d:dcba::/112" # 65536
+            ];
+          };
           controlPlaneRef = {
             apiVersion = "controlplane.cluster.x-k8s.io/v1beta1";
             kind = "KubeadmControlPlane";
