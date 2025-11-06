@@ -47,6 +47,18 @@ let
       "HTTPProxyCIDR"
     ];
   };
+  files = [
+    {
+      path = "/etc/kubernetes/patches/kubeletconfiguration-dns+strategic.json";
+      owner = "root:root";
+      permissions = "0644";
+      content = builtins.toJSON {
+        apiVersion = "kubelet.config.k8s.io/v1beta1";
+        kind = "KubeletConfiguration";
+        inherit (config) clusterDNS;
+      };
+    }
+  ];
   dc = "hel1";
 in
 {
@@ -77,7 +89,7 @@ in
             scheduler.extraArgs.feature-gates = featureGates;
             etcd = { };
           };
-          inherit preKubeadmCommands;
+          inherit preKubeadmCommands files;
           initConfiguration = {
             skipPhases = [
               "addon/kube-proxy" # Replaced by Cilium
@@ -86,11 +98,13 @@ in
             nodeRegistration = nodeRegistration // {
               taints = cpTaints;
             };
+            patches.directory = "/etc/kubernetes/patches";
           };
           joinConfiguration = {
             nodeRegistration = nodeRegistration // {
               taints = cpTaints;
             };
+            patches.directory = "/etc/kubernetes/patches";
           };
           postKubeadmCommands = [
             ''
@@ -119,14 +133,8 @@ in
         metadata.labels.clusterName = clusterName;
         spec = {
           clusterNetwork = {
-            pods.cidrBlocks = [
-              "10.133.0.0/16" # 65536
-              "fdce:9c4d:abcd::/48" # Very big
-            ];
-            services.cidrBlocks = [
-              "10.134.0.0/16" # 65536
-              "fdce:9c4d:dcba::/112" # 65536
-            ];
+            pods.cidrBlocks = config.clusterPodCIDR;
+            services.cidrBlocks = config.clusterServiceCIDR;
           };
           controlPlaneRef = {
             apiVersion = "controlplane.cluster.x-k8s.io/v1beta1";
@@ -158,7 +166,7 @@ in
           name = "hetzner";
         };
         # We already have SSH keys provisioned with Nix, CAPI doesn't need them.
-        sshKeys = lib.mkIf (cfg.keyName != null){
+        sshKeys = lib.mkIf (cfg.keyName != null) {
           hcloud = [ { name = cfg.keyName; } ];
         };
       };
@@ -206,8 +214,11 @@ in
       #
       # Share Kubeadm configuration between different worker configurations
       KubeadmConfigTemplate."${clusterName}-workers".spec.template.spec = {
-        joinConfiguration.nodeRegistration = nodeRegistration;
-        inherit preKubeadmCommands;
+        joinConfiguration = {
+          nodeRegistration = nodeRegistration;
+          patches.directory = "/etc/kubernetes/patches";
+        };
+        inherit preKubeadmCommands files;
       };
       HCloudRemediationTemplate."worker-remediation-request".spec.template.spec.strategy = {
         retryLimit = 1;

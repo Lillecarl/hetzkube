@@ -38,6 +38,7 @@ let
       hcsi.enable = true;
       metallb.enable = true;
       nginx.enable = true;
+      # nix-csi.enable = true;
     };
   };
   stageMod = stages.${stage};
@@ -53,8 +54,8 @@ import easykubenix {
     ./hcsi.nix
     ./metallb.nix
     ./nginx.nix
-    "${nix-csi}/kubenix"
     ./coredns.nix
+    # "${nix-csi}/kubenix"
     stageMod # We only use stages to enable or disable things
     {
       config = {
@@ -65,15 +66,29 @@ import easykubenix {
         };
         clusterName = "hetzkube";
         clusterHost = "kubernetes.lillecarl.com";
+        clusterDomain = "cluster.local";
+        clusterDNS = [
+          "fdce:9c4d:dcba::10"
+          "10.134.0.10"
+        ];
+        clusterPodCIDR = [
+          "fdce:9c4d:abcd::/48" # Very big
+          "10.133.0.0/16" # 65536
+        ];
+        clusterServiceCIDR = [
+          "fdce:9c4d:dcba::/112" # 65536
+          "10.134.0.0/16" # 65536
+        ];
 
         # If you don't set an SSH key Hetzner will kindly mail you invalid
         # credentials every time a server is created. Upload a key and set name
         capi.keyName = "lillecarl@lillecarl.com";
         cert-manager.email = "le@lillecarl.com";
 
-        nix-csi = {
-          enable = true;
-        };
+        # nix-csi = {
+        #   namespace = "nix-csi";
+        #   cache.storageClassName = "hcloud-volumes";
+        # };
         hccm = {
           # Templated SOPS with kluctl
           apiToken = "{{ hctoken }}";

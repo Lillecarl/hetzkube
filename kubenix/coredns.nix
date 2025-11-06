@@ -15,11 +15,7 @@ in
       type = lib.types.str;
       default = "kube-system";
     };
-    clusterDomain = lib.mkOption {
-      type = lib.types.str;
-      default = "cluster.local"; # Kubernetes stupid standard
-    };
-    helmAttrs = lib.mkOption {
+    helmValues = lib.mkOption {
       type = lib.types.anything;
       default = { };
     };
@@ -36,7 +32,7 @@ in
                lameduck 5s
             }
             ready
-            kubernetes ${cfg.clusterDomain} in-addr.arpa ip6.arpa {
+            kubernetes ${config.clusterDomain} in-addr.arpa ip6.arpa {
                pods insecure
                endpoint_pod_names
                fallthrough in-addr.arpa ip6.arpa
@@ -67,8 +63,9 @@ in
       }/charts/coredns";
 
       values = {
-        service.ipFamilyPolicy = "RequireDualStack";
-        service.name = "kube-dns";
+        service.ipFamilyPolicy = "PreferDualStack";
+        service.clusterIP = lib.head config.clusterDNS;
+        service.clusterIPs = config.clusterDNS;
         deployment.skipConfig = true;
         tolerations = [
           {
@@ -78,7 +75,7 @@ in
           }
         ];
       }
-      // cfg.helmAttrs;
+      // cfg.helmValues;
     };
   };
 }
