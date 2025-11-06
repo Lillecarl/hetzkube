@@ -27,7 +27,7 @@ let
 
   knOptions =
     let
-      inherit (kubenixStaged.eval) options;
+      inherit (kubenix.eval) options;
       optionsList = builtins.filter (v: v.visible && !v.internal) (
         pkgs.lib.optionAttrSetToDocList options
       );
@@ -52,11 +52,6 @@ let
   kubenix = import ./kubenix {
     inherit pkgs args;
     inherit (flake.inputs) easykubenix nix-csi;
-  };
-  kubenixStaged = import ./kubenix {
-    inherit pkgs;
-    inherit (flake.inputs) easykubenix nix-csi;
-    args.stage = "init";
   };
 in
 flake.impure
