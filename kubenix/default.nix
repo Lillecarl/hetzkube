@@ -29,6 +29,7 @@ let
         enable = true;
         bare = true;
       };
+      coredns.enable = true;
     };
     # Don't run full stage until you've migrated CAPI into the cluster
     full = lib.recursiveUpdate init {
@@ -50,6 +51,7 @@ import easykubenix {
     ./metallb.nix
     ./nginx.nix
     "${nix-csi}/kubenix"
+    ./coredns.nix
     stageMod # We only use stages to enable or disable things
     {
       config = {
@@ -66,7 +68,6 @@ import easykubenix {
         capi.keyName = "lillecarl@lillecarl.com";
         cert-manager.email = "le@lillecarl.com";
 
-        metallb.enable = true;
         nix-csi = {
           enable = true;
         };
@@ -90,7 +91,6 @@ import easykubenix {
           };
         };
         nginx = {
-          enable = true;
           values = {
             controller = {
               # We don't HA here.
