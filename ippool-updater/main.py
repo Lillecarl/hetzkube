@@ -69,7 +69,7 @@ async def update_ip_info():
                 {
                     "dnsName": "kubernetes.lillecarl.com",
                     "recordTTL": 60,
-                    "recordType": "A",
+                    "recordType": "AAAA",
                     "targets": sorted(list(set(addresses6))),
                 },
             ]
