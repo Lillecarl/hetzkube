@@ -116,11 +116,18 @@ in
                   external-dns = {
                     image = "registry.k8s.io/external-dns/external-dns:v${cfg.version}";
                     args = [
+                      # "--log-level=debug"
                       "--source=service"
                       "--source=crd"
                       "--source=ingress"
+                      "--crd-source-apiversion=externaldns.k8s.io/v1alpha1"
+                      "--crd-source-kind=DNSEndpoint"
+                      "--managed-record-types=A"
+                      "--managed-record-types=AAAA"
+                      "--managed-record-types=CNAME"
+                      "--managed-record-types=TXT"
                       "--provider=cloudflare"
-                      "--cloudflare-record-comment=\"provisioned by external-dns\""
+                      "--cloudflare-record-comment=\"provisioned by external-dns${cfg.version}\""
                       "--txt-owner-id=${config.clusterName}"
                     ];
                     env = [
