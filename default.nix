@@ -16,43 +16,15 @@ let
     ];
   };
 
-  osOptions =
-    let
-      inherit (flake.impure.nixosConfigurations."image-${pkgs.system}") options;
-      optionsList = builtins.filter (v: v.visible && !v.internal) (
-        pkgs.lib.optionAttrSetToDocList options
-      );
-    in
-    pkgs.writeText "osOptions" (builtins.toJSON optionsList);
-
-  knOptions =
-    let
-      inherit (kubenix.eval) options;
-      optionsList = builtins.filter (v: v.visible && !v.internal) (
-        pkgs.lib.optionAttrSetToDocList options
-      );
-    in
-    pkgs.writeText "osOptions" (builtins.toJSON optionsList);
-
-  optnixConfig = (pkgs.formats.toml { }).generate "optnix.toml" {
-    min_score = 3;
-    debounce_time = 25;
-    default_scope = "";
-    formatter_cmd = "nixfmt";
-    scopes.hkos = {
-      description = "NixOS options";
-      options-list-file = toString osOptions;
-    };
-    scopes.hkkn = {
-      description = "easykubenix options";
-      options-list-file = toString knOptions;
-    };
-  };
-
   kubenix = import ./kubenix {
     inherit pkgs args;
     inherit (flake.inputs) easykubenix nix-csi;
   };
+  python = pkgs.python3.withPackages (
+    ps: with ps; [
+      pkgs.kr8s
+    ]
+  );
 in
 flake.impure
 // rec {
@@ -71,11 +43,7 @@ flake.impure
       sops
       age
       doggo
-      (writeScriptBin "optnix" # bash
-        ''
-          exec ${lib.getExe optnix} --config ${optnixConfig} $@
-        ''
-      )
+      python
     ];
   };
 }
