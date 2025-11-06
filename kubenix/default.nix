@@ -34,6 +34,7 @@ let
     # Don't run full stage until you've migrated CAPI into the cluster
     full = lib.recursiveUpdate init {
       capi.enable = true;
+      cert-manager.bare = false;
       hcsi.enable = true;
       metallb.enable = true;
       nginx.enable = true;
