@@ -39,6 +39,7 @@ let
       metallb.enable = true;
       nginx.enable = true;
       nix-csi.enable = true;
+      external-dns.enable = true;
     };
   };
   stageMod = stages.${stage};
@@ -50,11 +51,12 @@ import easykubenix {
     ./cert-manager.nix
     ./cilium.nix
     ./clusteroptions.nix
+    ./coredns.nix
+    ./external-dns.nix
     ./hccm.nix
     ./hcsi.nix
     ./metallb.nix
     ./nginx.nix
-    ./coredns.nix
     "${nix-csi}/kubenix"
     stageMod # We only use stages to enable or disable things
     {
