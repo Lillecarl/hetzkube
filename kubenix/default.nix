@@ -55,7 +55,7 @@ import easykubenix {
     ./metallb.nix
     ./nginx.nix
     ./coredns.nix
-    # "${nix-csi}/kubenix"
+    "${nix-csi}/kubenix"
     stageMod # We only use stages to enable or disable things
     {
       config = {
