@@ -38,7 +38,7 @@ let
       hcsi.enable = true;
       metallb.enable = true;
       nginx.enable = true;
-      # nix-csi.enable = true;
+      nix-csi.enable = true;
     };
   };
   stageMod = stages.${stage};
@@ -68,16 +68,16 @@ import easykubenix {
         clusterHost = "kubernetes.lillecarl.com";
         clusterDomain = "cluster.local";
         clusterDNS = [
-          "fdce:9c4d:dcba::10"
           "10.134.0.10"
+          "fdce:9c4d:dcba::10"
         ];
         clusterPodCIDR = [
-          "fdce:9c4d:abcd::/48" # Very big
           "10.133.0.0/16" # 65536
+          "fdce:9c4d:abcd::/48" # Very big
         ];
         clusterServiceCIDR = [
-          "fdce:9c4d:dcba::/112" # 65536
           "10.134.0.0/16" # 65536
+          "fdce:9c4d:dcba::/112" # 65536
         ];
 
         # If you don't set an SSH key Hetzner will kindly mail you invalid
@@ -85,10 +85,10 @@ import easykubenix {
         capi.keyName = "lillecarl@lillecarl.com";
         cert-manager.email = "le@lillecarl.com";
 
-        # nix-csi = {
-        #   namespace = "nix-csi";
-        #   cache.storageClassName = "hcloud-volumes";
-        # };
+        nix-csi = {
+          namespace = "nix-csi";
+          cache.storageClassName = "hcloud-volumes";
+        };
         hccm = {
           # Templated SOPS with kluctl
           apiToken = "{{ hctoken }}";
