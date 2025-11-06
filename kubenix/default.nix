@@ -34,6 +34,7 @@ let
     # Don't run full stage until you've migrated CAPI into the cluster
     full = lib.recursiveUpdate init {
       capi.enable = true;
+      hcsi.enable = true;
       metallb.enable = true;
       nginx.enable = true;
     };
@@ -48,6 +49,7 @@ import easykubenix {
     ./cilium.nix
     ./clusteroptions.nix
     ./hccm.nix
+    ./hcsi.nix
     ./metallb.nix
     ./nginx.nix
     "${nix-csi}/kubenix"
@@ -90,6 +92,7 @@ import easykubenix {
             ];
           };
         };
+        hcsi.apiToken = "{{ hctoken }}";
         nginx = {
           values = {
             controller = {
