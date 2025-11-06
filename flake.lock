@@ -75,11 +75,11 @@
     "nix-csi": {
       "flake": false,
       "locked": {
-        "lastModified": 1762394628,
-        "narHash": "sha256-vH9e+uyf/ViqKz8udr0JrmdM99X93fCrd8rK0Pj9d+0=",
+        "lastModified": 1762396144,
+        "narHash": "sha256-F70mCBgN6GVpRxnBa6sIlQvDNZO+Ndtz8a2ryF2X17A=",
         "owner": "lillecarl",
         "repo": "nix-csi",
-        "rev": "3b593aa450ea133f511384ea012136d5531819dc",
+        "rev": "d001415845d1db7b6658c179ae7b528d0e489247",
         "type": "github"
       },
       "original": {
