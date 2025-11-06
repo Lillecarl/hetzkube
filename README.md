@@ -42,11 +42,11 @@ nix run --file . kubenix.deploymentScript --argstr stage capi
 ## 4 Move the CAPI to the cluster
 Copy kubeconfig
 ```bash
-clusterctl get kubeconfig hetzkube --namespace hetzkube > hetzkube.kubeconfig
+clusterctl get kubeconfig hetzkube --namespace hetzkube > ./tmp/hetzkube.kubeconfig
 ```
 Initialize ClusterAPI on the new cluster
 ```bash
-KUBECONFIG=$PWD/hetzkube.kubeconfig clusterctl init \
+KUBECONFIG=$PWD/tmp/hetzkube.kubeconfig clusterctl init \
   --core cluster-api:v1.10.7 \
   --bootstrap kubeadm:v1.10.7 \
   --control-plane kubeadm:v1.10.7 \
@@ -54,7 +54,7 @@ KUBECONFIG=$PWD/hetzkube.kubeconfig clusterctl init \
 ```
 Move the cluster
 ```bash
-clusterctl move --to-kubeconfig hetzkube.kubeconfig --namespace hetzkube
+clusterctl move --to-kubeconfig ./tmp/hetzkube.kubeconfig --namespace hetzkube
 ```
 ## 5 Deploy whatever you want bro easykubenix is cool asf
 
