@@ -40,7 +40,6 @@ let
       "fail-swap-on" = "false";
       "cgroup-driver" = "systemd";
       "cloud-provider" = "external";
-      "resolv-conf" = "/etc/kubernetes/resolv.conf";
     };
     ignorePreflightErrors = [
       "Swap"
@@ -121,11 +120,11 @@ in
         spec = {
           clusterNetwork = {
             pods.cidrBlocks = [
-              "10.133.7.0/16" # 65536
+              "10.133.0.0/16" # 65536
               "fdce:9c4d:abcd::/48" # Very big
             ];
             services.cidrBlocks = [
-              "10.133.8.0/16" # 65536
+              "10.134.0.0/16" # 65536
               "fdce:9c4d:dcba::/112" # 65536
             ];
           };
