@@ -14,6 +14,9 @@ for you and one for the node (or share idgaf).
 
 Inspect secrets/all.yaml, it you must set:
 hctoken: Hetzner Cloud token
+## 0.2 Image
+TODO: Make guide for making a nixos image available in your hcloud account using
+nixos-anywhere.
 ## 1 Local cluster
 Use kind or whatever to get a local cluster running, ClusterAPI uses Kubernetes
 resources to track cluster state, it'd be stupid for them to implement some
@@ -57,6 +60,16 @@ Move the cluster
 clusterctl move --to-kubeconfig ./tmp/hetzkube.kubeconfig --namespace hetzkube
 ```
 ## 5 Deploy whatever you want bro easykubenix is cool asf
+Run this if you wanna deploy all the bells and whistles I'm working on:
+```bash
+nix run --file . kubenix.deploymentScript --argstr stage full
+```
+See kubenix/default.nix stage for what's being deployed.
+## 6 DNS ownership
+TODO: Deploy "ippool-updater" (The thingy that maintains MetalLB IPAddressPool
+and DNSEndpoint resources with node IP's)
+Easiest way to make external-dns take ownership of your controlplane addresses
+is to just remove the address and wait one reconciliation period.
 
 # Discovering
 ```bash
