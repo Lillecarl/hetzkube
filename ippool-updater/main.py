@@ -2,7 +2,9 @@
 import asyncio
 import ipaddress
 import kr8s
-from kr8s.asyncio.objects import new_class
+import yaml
+from urllib.parse import urlparse
+from kr8s.asyncio.objects import new_class, ConfigMap
 
 # Configuration
 POOL_NAME = "external-ips"
@@ -24,7 +26,15 @@ DNSEndpoint = new_class(
 )
 
 
-async def update_ip_info():
+async def get_cluster_hostname():
+    cluster_info = await ConfigMap.get("cluster-info", "kube-public")
+    kubeconfig_data = yaml.safe_load(cluster_info.data["kubeconfig"])
+    server_url = kubeconfig_data["clusters"][0]["cluster"]["server"]
+    hostname = urlparse(server_url).hostname
+    return hostname
+
+
+async def update_ip_info(cluster_hostname: str):
     """Gathers ExternalIPs and creates or patches the MetalLB IPAddressPool."""
     nodes = kr8s.asyncio.get("nodes")
     subnets = []
@@ -71,13 +81,13 @@ async def update_ip_info():
         "spec": {
             "endpoints": [
                 {
-                    "dnsName": "kubernetes.lillecarl.com",
+                    "dnsName": cluster_hostname,
                     "recordTTL": 60,
                     "recordType": "A",
                     "targets": sorted(list(set(addresses4))),
                 },
                 {
-                    "dnsName": "kubernetes.lillecarl.com",
+                    "dnsName": cluster_hostname,
                     "recordTTL": 60,
                     "recordType": "AAAA",
                     "targets": sorted(list(set(addresses6))),
@@ -110,11 +120,12 @@ async def update_ip_info():
 
 async def main():
     """Watches for node changes and triggers IP pool updates."""
+    cluster_hostname = await get_cluster_hostname()
+    print(f"{cluster_hostname=}")
     while True:
         async for event, node in kr8s.asyncio.watch("nodes"):
-            if event in ("ADDED", "MODIFIED", "DELETED"):
-                print(f"Node {node.name} event: {event}. Re-evaluating IP pool.")
-                await update_ip_info()
+            print(f"{node.name=} {event=}. Re-evaluating IP pool.")
+            await update_ip_info(cluster_hostname)
 
 
 if __name__ == "__main__":
