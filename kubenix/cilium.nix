@@ -67,6 +67,8 @@ in
       values = {
         # Only required for multi-cluster Cilium but it doesn't hurt.
         cluster.name = config.clusterName;
+        # Masquerade with BPF
+        bpf.masquerade = true;
         # ServiceIP Cilium should use to talk to kube-apiserver. This is required
         # since Cilium is the CNI, uses hostNetwork and there's no cluster comms
         # before Cilium can talk to apiserver.
