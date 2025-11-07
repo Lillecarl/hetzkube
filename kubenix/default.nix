@@ -41,8 +41,12 @@ let
       nix-csi.enable = true;
       external-dns.enable = true;
       # TODO: This doesn't belong here
-      kubernetes.resources.nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" =
-        "true";
+      kubernetes.resources = {
+        nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
+        nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
+        nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
+          "nixbuild.lillecarl.com";
+      };
     };
   };
   stageMod = stages.${stage};
