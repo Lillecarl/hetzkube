@@ -92,6 +92,7 @@ import easykubenix {
 
         nix-csi = {
           namespace = "nix-csi";
+          internalServiceName = "hetzkube";
           cache.storageClassName = "hcloud-volumes";
         };
         hccm = {
