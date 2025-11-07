@@ -11,10 +11,31 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
+    helmValues = lib.mkOption {
+      type = lib.types.anything;
+      default = { };
+    };
   };
   config = lib.mkIf cfg.enable {
+    kubernetes.resources.none.Namespace.metallb-system = { };
     kubernetes.resources.metallb-system = {
       L2Advertisement.default = { };
+    };
+    helm.releases.${moduleName} = {
+      namespace = "metallb-system";
+      chart = "${
+        builtins.fetchTree {
+          type = "github";
+          owner = "metallb";
+          repo = "metallb";
+          ref = "v0.15.2";
+        }
+      }/charts/metallb";
+
+      values = {
+        speaker.enabled = lib.mkDefault false;
+      }
+      // cfg.helmValues;
     };
     kubernetes.apiMappings = {
       BFDProfile = "metallb.io/v1beta1";
@@ -35,9 +56,6 @@ in
       L2Advertisement = true;
       ServiceBGPStatus = true;
       ServiceL2Status = true;
-    };
-    importyaml.metal-lb = {
-      src = "https://raw.githubusercontent.com/metallb/metallb/refs/heads/main/config/manifests/metallb-native.yaml";
     };
   };
 }
