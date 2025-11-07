@@ -36,13 +36,23 @@ async def update_ip_info():
                 try:
                     ip = ipaddress.ip_address(addr.address)
                     if ip.version == 4:
+                        # LB IPPool
                         network = ipaddress.ip_network(f"{ip}/32", strict=False)
                         subnets.append(str(network.with_prefixlen))
-                        addresses4.append(addr.address)
+                        # CP RRDNS
+                        if "node-role.kubernetes.io/control-plane" in node.metadata.get(
+                            "labels", {}
+                        ):
+                            addresses4.append(addr.address)
                     elif ip.version == 6:
+                        # LB IPPool
                         network = ipaddress.ip_network(f"{ip}/64", strict=False)
                         subnets.append(str(network.with_prefixlen))
-                        addresses6.append(addr.address)
+                        # CP RRDNS
+                        if "node-role.kubernetes.io/control-plane" in node.metadata.get(
+                            "labels", {}
+                        ):
+                            addresses6.append(addr.address)
                 except ValueError:
                     print(f"Skipping invalid IP address: {addr.address}")
 
@@ -50,11 +60,11 @@ async def update_ip_info():
         print("No ExternalIPs found. IPAddressPool will not be modified.")
         return
 
-    pool_spec = {
+    ippool_spec = {
         "metadata": {"name": POOL_NAME},
         "spec": {"addresses": sorted(set(subnets))},
     }
-    pool = await IPAddressPool(pool_spec, "metallb-system")
+    ippool = await IPAddressPool(ippool_spec, "metallb-system")
 
     dnsendpoint_spec = {
         "metadata": {"name": DNSENDPOINT_NAME},
@@ -78,12 +88,12 @@ async def update_ip_info():
     dnsendpoint = await DNSEndpoint(dnsendpoint_spec, "kube-system")
 
     try:
-        if await pool.exists():
-            await pool.patch(pool_spec)
-            print(f"Patched {pool.kind} '{pool.name}'")
+        if await ippool.exists():
+            await ippool.patch(ippool_spec)
+            print(f"Patched {ippool.kind} '{ippool.name}'")
         else:
-            await pool.create()
-            print(f"Created {pool.kind} '{pool.name}'")
+            await ippool.create()
+            print(f"Created {ippool.kind} '{ippool.name}'")
     except Exception as e:
         print(f"An error occurred: {e}")
 
