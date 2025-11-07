@@ -37,6 +37,7 @@ flake.impure
     name = "repoenv";
     paths = with pkgs; [
       clusterctl
+      cilium-cli
       kubectl
       kubelogin-oidc
       kind
