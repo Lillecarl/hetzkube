@@ -11,7 +11,7 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
-    helmAttrs = lib.mkOption {
+    helmValues = lib.mkOption {
       type = lib.types.anything;
       default = { };
     };
@@ -67,13 +67,6 @@ in
       values = {
         # Only required for multi-cluster Cilium but it doesn't hurt.
         cluster.name = config.clusterName;
-        # We must set tls.secretsNamespace since it's bugged in their Helm chart
-        # and set by two different templates. It's hilarious that Nix finds bugs
-        # in their official deployment method... :)
-        # tls.secretsNamespace = {
-        #   create = false;
-        #   name = cfg.namespace;
-        # };
         # ServiceIP Cilium should use to talk to kube-apiserver. This is required
         # since Cilium is the CNI, uses hostNetwork and there's no cluster comms
         # before Cilium can talk to apiserver.
@@ -91,7 +84,7 @@ in
         # which intercept vxlan that you don't wanna interact with (EVPN switches)
         tunnelProtocol = "vxlan";
       }
-      // cfg.helmAttrs;
+      // cfg.helmValues;
     };
     kubernetes.apiMappings = {
       CiliumCIDRGroup = "cilium.io/v2";
