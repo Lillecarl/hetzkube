@@ -44,10 +44,6 @@
       "xhci_pci"
     ];
 
-    # Apparently you do this for VM's too
-    hardware.cpu.intel.updateMicrocode = true;
-    hardware.cpu.amd.updateMicrocode = true;
-
     # Get impure hostname
     networking.hostName =
       let
