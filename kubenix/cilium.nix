@@ -71,6 +71,8 @@ in
         enableIPv6Masquerade = true;
         # Disable LB IPAM, we use MetalLB for this
         enableLBIPAM = false;
+        # Enable IPv6
+        ipv6.enabled = true;
         # Masquerade with BPF
         bpf.masquerade = true;
         # ServiceIP Cilium should use to talk to kube-apiserver. This is required
