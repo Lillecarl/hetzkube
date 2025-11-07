@@ -40,6 +40,8 @@ let
       nginx.enable = true;
       nix-csi.enable = true;
       external-dns.enable = true;
+      # TODO: This doesn't belong here
+      kubernetes.resources.nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
     };
   };
   stageMod = stages.${stage};
@@ -125,6 +127,7 @@ import easykubenix {
                 # Allow annotating config per ingress. YOLO
                 allow-snippet-annotations = true;
               };
+              service.annotations."metallb.io/allow-shared-ip" = "true";
             };
           };
         };
