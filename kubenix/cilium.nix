@@ -67,6 +67,8 @@ in
       values = {
         # Only required for multi-cluster Cilium but it doesn't hurt.
         cluster.name = config.clusterName;
+        # Enable IPv6 masquerading until we have a better solution
+        enableIPv6Masquerade = true;
         # Masquerade with BPF
         bpf.masquerade = true;
         # ServiceIP Cilium should use to talk to kube-apiserver. This is required
