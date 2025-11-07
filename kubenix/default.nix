@@ -41,7 +41,8 @@ let
       nix-csi.enable = true;
       external-dns.enable = true;
       # TODO: This doesn't belong here
-      kubernetes.resources.nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
+      kubernetes.resources.nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" =
+        "true";
     };
   };
   stageMod = stages.${stage};
@@ -75,14 +76,10 @@ import easykubenix {
           "10.134.0.10"
           "fdce:9c4d:dcba::10"
         ];
-        clusterPodCIDR = [
-          "10.133.0.0/16" # 65536
-          "fdce:9c4d:abcd::/48" # Very big
-        ];
-        clusterServiceCIDR = [
-          "10.134.0.0/16" # 65536
-          "fdce:9c4d:dcba::/112" # 65536
-        ];
+        clusterPodCIDR4 = "10.133.0.0/16"; # 65536
+        clusterPodCIDR6 = "fdce:9c4d:abcd::/48"; # Very big
+        clusterServiceCIDR4 = "10.134.0.0/16"; # 65536
+        clusterServiceCIDR6 = "fdce:9c4d:dcba::/112"; # 65536
 
         # If you don't set an SSH key Hetzner will kindly mail you invalid
         # credentials every time a server is created. Upload a key and set name

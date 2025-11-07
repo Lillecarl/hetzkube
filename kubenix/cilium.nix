@@ -73,6 +73,12 @@ in
         enableLBIPAM = false;
         # Enable IPv6
         ipv6.enabled = true;
+        ipam.operator = {
+          clusterPoolIPv4MaskSize = 24;
+          clusterPoolIPv4PodCIDRList = [ config.clusterPodCIDR4 ];
+          clusterPoolIPv6MaskSize = 64;
+          clusterPoolIPv6PodCIDRList = [ config.clusterPodCIDR6 ];
+        };
         # Masquerade with BPF
         bpf.masquerade = true;
         # ServiceIP Cilium should use to talk to kube-apiserver. This is required
