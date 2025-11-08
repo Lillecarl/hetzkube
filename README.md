@@ -1,10 +1,60 @@
 # Kubernetes on the cheap
+NixOS, Hetzner, ClusterAPI, no external loadbalancer$
 
-NixOS, Hetzner, ClusterAPI
+Need help? Hit me up on [Matrix](https://matrix.to/#/@lillecarl:matrix.org)!\
+Not a Hetzner customer? Feel free to use my [referral link](https://hetzner.cloud/?ref=B8AOT3O43YXw)
 
-Need help? Hit me up on [Matrix](https://matrix.to/#/@lillecarl:matrix.org)!
+# Image creation
+## Create VM
+Create a Hetzner VM. Currently the control-plane expects x86 but for workers
+both architectures are supported.
 
-# Bootstrapping
+## nixos-anywhere
+Edit flake.nix and set the IP for the architecture and machine you're building.
+
+Run nixos-anywhere which installs NixOS on the machine
+```bash
+nix run --file . nixosConfigurations.image-x86_64-linux.config.lib.anywhereScript
+#nix run --file . nixosConfigurations.image-aarch64-linux.config.lib.anywhereScript
+```
+
+If you want to iterate on the image a bit before settling
+```bash
+nix run --file . nixosConfigurations.image-x86_64-linux.config.lib.rebuildScript
+#nix run --file . nixosConfigurations.image-aarch64-linux.config.lib.rebuildScript
+```
+
+Maybe run these commands on the machine
+```bash
+sudo cloud-init clean
+sudo journalctl --flush --rotate --vacuum-time=1s
+sudo journalctl --user --flush --rotate --vacuum-time=1s
+```
+
+If you want to poke around and see what the scripts actuallyo do they're located
+in ./nixos/installscript.nix. We use flakes for nixos-anywhere because that's
+the only way to support remote building (at this point).
+
+## Snapshots
+Once the VM is cleaned and shut down create a snapshot of it, then tag it as
+CAPH expects it to be tagged.
+Currently tags are "hardcoded" (ofc you can override them with modules) to
+2505-x86 or 2505-arm. In Hetzner that means you should tag as follows:
+```
+caph-image-name=2505-x86
+caph-image-name=2505-arm
+```
+Tip: Search the codebase for 2505-x86 to see where it's used, you can change
+these as you please :)
+
+## Updating your images
+Just spin up a VM from the image, rebuild however you want, clean, tag.
+Either you do it the CAPI way and update the deployments or you recycle
+the tag, I'm lazy so I've been recycling the tag and used the command
+```bash
+clusterctl alpha rollout restart $moreshithere
+```
+# Cluster bootstrapping
 ## 0.0 Tools
 direnv will add the required tools to $PATH for you, it's not an invasive
 supermegadirenv like some projects do it for you.
