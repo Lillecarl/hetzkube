@@ -40,6 +40,7 @@ let
       nginx.enable = true;
       nix-csi.enable = true;
       external-dns.enable = true;
+      chaoskube.enable = true;
       # TODO: This doesn't belong here
       kubernetes.resources = {
         nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
@@ -64,6 +65,7 @@ import easykubenix {
     ./hcsi.nix
     ./metallb.nix
     ./nginx.nix
+    ./chaoskube.nix
     "${nix-csi}/kubenix"
     stageMod # We only use stages to enable or disable things
     {
