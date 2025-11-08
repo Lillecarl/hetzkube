@@ -38,7 +38,7 @@
         ./nixos
         {
           lib.hetzkube = {
-            ip = "37.27.47.29";
+            ip = "37.27.248.233";
             configName = "image-aarch64-linux";
           };
         }

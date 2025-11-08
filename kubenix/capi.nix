@@ -293,7 +293,7 @@ in
         metadata.labels.nodepool = "${clusterName}-workers-arm64";
         spec = {
           inherit clusterName;
-          replicas = 0;
+          replicas = 1;
           selector = { };
           template = {
             metadata.labels.nodepool = "${clusterName}-workers-arm64";
