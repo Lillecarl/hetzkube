@@ -347,7 +347,7 @@ in
       HCloudMachineTemplate."${clusterName}-workers-arm64".spec.template.spec = {
         imageName = "2505-arm";
         placementGroupName = "workers";
-        type = "cx23";
+        type = "cax11";
       };
     };
     kubernetes.apiMappings = {
