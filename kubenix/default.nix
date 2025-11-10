@@ -41,7 +41,15 @@ let
       nginx.enable = true;
       nix-csi.enable = true;
       external-dns.enable = true;
-      chaoskube.enable = true;
+      chaoskube.chaoskube = {
+        enable = true;
+        args = {
+          no-dry-run = "";
+          interval = "15m";
+          minimum-age = "6h";
+          timezone = "Europe/Stockholm";
+        };
+      };
       cheapam.enable = true;
       # TODO: This doesn't belong here
       kubernetes.resources = {
