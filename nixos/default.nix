@@ -98,7 +98,7 @@
     };
     home-manager.backupFileExtension = "bak";
     home-manager.users.hetzkube = {
-      imports = [ ../home-manager ];
+      imports = [ ./home-manager ];
       home.stateVersion = config.system.stateVersion;
     };
   };
