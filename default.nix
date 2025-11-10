@@ -15,9 +15,15 @@ let
       (import ./pkgs)
     ];
   };
+  pkgsArm = import flake.inputs.nixpkgs {
+    system = "aarch64-linux";
+    overlays = [
+      (import ./pkgs)
+    ];
+  };
 
   kubenix = import ./kubenix {
-    inherit pkgs args;
+    inherit pkgs pkgsArm args;
     inherit (flake.inputs) easykubenix nix-csi;
   };
   python = pkgs.python3.withPackages (

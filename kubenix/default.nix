@@ -1,5 +1,6 @@
 {
   pkgs,
+  pkgsArm,
   easykubenix,
   nix-csi,
   args,
@@ -41,6 +42,7 @@ let
       nix-csi.enable = true;
       external-dns.enable = true;
       chaoskube.enable = true;
+      cheapam.enable = true;
       # TODO: This doesn't belong here
       kubernetes.resources = {
         nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
@@ -54,6 +56,9 @@ let
 in
 import easykubenix {
   inherit pkgs;
+  specialArgs = {
+    inherit pkgsArm;
+  };
   modules = [
     ./capi.nix
     ./cert-manager.nix
@@ -66,6 +71,7 @@ import easykubenix {
     ./metallb.nix
     ./nginx.nix
     ./chaoskube.nix
+    ./cheapam.nix
     "${nix-csi}/kubenix"
     stageMod # We only use stages to enable or disable things
     {
@@ -74,6 +80,15 @@ import easykubenix {
           discriminator = stage; # And set discriminator
           deployment.vars = [ { file = "secrets/all.yaml"; } ];
           files."secrets/all.yaml" = builtins.readFile ../secrets/all.yaml;
+          preDeployScript =
+            pkgs.writeScriptBin "preDeployScript" # bash
+              ''
+                #! ${pkgs.runtimeShell}
+                set -euo pipefail
+                set -x
+                sudo -E nix copy --substitute-on-destination --no-check-sigs --to ssh-ng://nixbuild.lillecarl.com "$1" -v || true
+              '';
+
         };
         clusterName = "hetzkube";
         clusterHost = "kubernetes.lillecarl.com";
