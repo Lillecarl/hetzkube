@@ -135,6 +135,7 @@ import easykubenix {
             };
           };
         };
+        kubernetes.resources.kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
         kubernetes.resources.kube-public.ConfigMap.initialized = { };
       };
     }

@@ -68,9 +68,11 @@ in
         # Only required for multi-cluster Cilium but it doesn't hurt.
         cluster.name = config.clusterName;
         # Enable IPv6 masquerading until we have a better solution
-        enableIPv6Masquerade = true;
+        enableIPv6Masquerade = false;
         # Disable LB IPAM, we use MetalLB for this
         enableLBIPAM = false;
+        # Use cheapam to configure
+        ipam.mode = "kubernetes";
         # Enable IPv6
         ipv6.enabled = true;
         ipam.operator = {

@@ -85,7 +85,16 @@ in
               oidc-username-claim = "sub";
               oidc-groups-claim = "groups";
             };
-            controllerManager.extraArgs.feature-gates = featureGates;
+            controllerManager.extraArgs = {
+              feature-gates = featureGates;
+              allocate-node-cidrs = "false";
+              controllers = pkgs.lib.strings.concatStringsSep "," [
+                "*"
+                "bootstrapsigner"
+                "tokencleaner"
+                "-nodeipam"
+              ];
+            };
             scheduler.extraArgs.feature-gates = featureGates;
             etcd = { };
           };
