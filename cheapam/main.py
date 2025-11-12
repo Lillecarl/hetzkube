@@ -66,7 +66,10 @@ async def reconcile_ipam(nodes: list[Node]):
         )
         raise SystemExit(1)
 
-    state_cm_spec = {"metadata": {"name": IPAM_STATE_MAP}, "data": {}}
+    state_cm_spec = {
+        "metadata": {"name": IPAM_STATE_MAP},
+        "data": {"placeholder": "10.13.37.0/24"},
+    }
     try:
         state_cm = await ConfigMap.get(IPAM_STATE_MAP, namespace=IPAM_NAMESPACE)
         print(f"Fetched IPAM state ConfigMap '{IPAM_STATE_MAP}'")
@@ -83,8 +86,18 @@ async def reconcile_ipam(nodes: list[Node]):
             print(f"Node '{node_name}' deleted. Reclaiming its IPv4 CIDR.")
             state_cm.data[node_name] = None
 
+    # Populate state from existing nodes that already have a podCIDR
+    for node in nodes:
+        if pod_cidr := node.spec.get("podCIDR"):
+            if state_cm.get("data", {}).get(node.name) != pod_cidr:
+                print(
+                    f"Discovered existing IPv4 CIDR '{pod_cidr}' on node '{node.name}'. Importing to state."
+                )
+                state_cm.data[node.name] = pod_cidr
+
     # Allocate IPs for all nodes
-    allocated_ipv4_subnets = set(state_cm.data.values())
+    # Filter out None values from reclaimed IPs before creating the set
+    allocated_ipv4_subnets = {cidr for cidr in state_cm.data.values() if cidr}
     available_ipv4_subnets = iter(ipv4_pool.subnets(new_prefix=IPV4_PREFIX))
 
     for node in nodes:
