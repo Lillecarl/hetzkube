@@ -5,7 +5,7 @@
   ...
 }:
 let
-  moduleName = "nginx";
+  moduleName = "ingress-nginx";
   cfg = config.${moduleName};
 in
 {
@@ -13,18 +13,7 @@ in
     enable = lib.mkEnableOption moduleName;
     namespace = lib.mkOption {
       type = lib.types.str;
-      default = "ingress-nginx";
-    };
-    chart = lib.mkOption {
-      type = lib.types.either lib.types.package lib.types.path;
-      default = "${
-        builtins.fetchTree {
-          type = "github";
-          owner = "kubernetes";
-          repo = "ingress-nginx";
-          ref = "helm-chart-4.13.3";
-        }
-      }/charts/ingress-nginx";
+      default = moduleName;
     };
     values = lib.mkOption {
       type = lib.types.anything;
@@ -34,7 +23,15 @@ in
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
     helm.releases.${moduleName} = {
-      inherit (cfg) namespace chart values;
+      chart = "${
+        builtins.fetchTree {
+          type = "github";
+          owner = "kubernetes";
+          repo = "ingress-nginx";
+          ref = "helm-chart-4.13.3";
+        }
+      }/charts/ingress-nginx";
+      inherit (cfg) namespace values;
     };
   };
 }

@@ -1,0 +1,94 @@
+{
+  config,
+  lib,
+  ...
+}:
+{
+  imports = [
+    ./kluctl.nix
+  ];
+  options.stage = lib.mkOption {
+    type = lib.types.enum [
+      "capi"
+      "full"
+    ];
+    default = "full";
+  };
+  config = {
+    clusterName = "hetzkube";
+    clusterHost = "kubernetes.lillecarl.com";
+    clusterDomain = "cluster.local";
+    clusterDNS = [
+      "10.134.0.10"
+      "fdce:9c4d:dcba::10"
+    ];
+    clusterPodCIDR4 = "10.133.0.0/16"; # 65536
+    clusterPodCIDR6 = "fdce:9c4d:abcd::/48"; # Very big
+    clusterServiceCIDR4 = "10.134.0.0/16"; # 65536
+    clusterServiceCIDR6 = "fdce:9c4d:dcba::/112"; # 65536
+    chaoskube.chaoskube = {
+      args = {
+        no-dry-run = "";
+        interval = "15m";
+        minimum-age = "6h";
+        timezone = "Europe/Stockholm";
+      };
+    };
+
+    # If you don't set an SSH key Hetzner will kindly mail you invalid
+    # credentials every time a server is created. Upload a key and set name
+    capi.keyName = "lillecarl@lillecarl.com";
+    cert-manager.email = "le@lillecarl.com";
+
+    nix-csi = {
+      namespace = "nix-csi";
+      internalServiceName = "hetzkube";
+      cache.storageClassName = "hcloud-volumes";
+    };
+    hccm = {
+      # Templated SOPS with kluctl
+      apiToken = "{{ hctoken }}";
+      values = {
+        # Only use HCCM to assign providerID
+        env.HCLOUD_LOAD_BALANCERS_ENABLED.value = "false";
+        env.HCLOUD_NETWORK_ROUTES_ENABLED.value = "false";
+        env.HCLOUD_NETWORK_DISABLE_ATTACHED_CHECK.value = "true";
+        # We must IPv6!!
+        env.HCLOUD_INSTANCES_ADDRESS_FAMILY.value = "dualstack";
+        # Idk if this is needed, it's followed me for awhile
+        additionalTolerations = [
+          {
+            key = "node.cilium.io/agent-not-ready";
+            operator = "Exists";
+          }
+        ];
+      };
+    };
+    hcsi.apiToken = "{{ hctoken }}";
+    ingress-nginx = {
+      values = {
+        controller = {
+          # We don't HA here.
+          replicaCount = 1;
+          # Get certificate for admissionwebhook from cert-manager instead
+          # of dumb unreliable Helm hook.
+          admissionWebhooks.certManager.enabled = true;
+          config = {
+            # Set forwarded headers
+            enable-real-ip = true;
+            # Allow annotating config per ingress. YOLO
+            allow-snippet-annotations = true;
+          };
+          service.annotations."metallb.io/allow-shared-ip" = "true";
+        };
+      };
+    };
+    kubernetes.resources = lib.mkIf (config.stage == "full") {
+      nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
+      nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
+      nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
+        "nixbuild.lillecarl.com";
+      kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
+    };
+  };
+}

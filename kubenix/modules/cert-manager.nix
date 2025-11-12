@@ -22,10 +22,7 @@ in
     };
   };
   config = lib.mkMerge [
-    (lib.mkIf cfg.enable {
-      importyaml.${moduleName} = {
-        src = cfg.url;
-      };
+    {
       kubernetes.apiMappings = {
         Certificate = "cert-manager.io/v1";
         CertificateRequest = "cert-manager.io/v1";
@@ -41,6 +38,11 @@ in
         ClusterIssuer = true;
         Issuer = true;
         Order = true;
+      };
+    }
+    (lib.mkIf cfg.enable {
+      importyaml.${moduleName} = {
+        src = cfg.url;
       };
     })
     (lib.mkIf (cfg.enable && !cfg.bare) {

@@ -78,12 +78,19 @@ in
       KubeadmControlPlane."${clusterName}-control-plane".spec = {
         kubeadmConfigSpec = {
           clusterConfiguration = {
-            apiServer.extraArgs = {
-              feature-gates = featureGates;
-              oidc-issuer-url = "https://keycloak.lillecarl.com/realms/master";
-              oidc-client-id = "kubernetes";
-              oidc-username-claim = "sub";
-              oidc-groups-claim = "groups";
+            apiServer = {
+              certSANs = [
+                "127.0.0.1"
+                "localhost"
+                config.clusterHost
+              ];
+              extraArgs = {
+                feature-gates = featureGates;
+                oidc-issuer-url = "https://keycloak.lillecarl.com/realms/master";
+                oidc-client-id = "kubernetes";
+                oidc-username-claim = "sub";
+                oidc-groups-claim = "groups";
+              };
             };
             controllerManager.extraArgs = {
               feature-gates = featureGates;
@@ -118,11 +125,6 @@ in
           postKubeadmCommands = [
             ''
               #! /usr/bin/env bash
-              export KUBECONFIG=/etc/kubernetes/admin.conf
-              # This only exists on the image
-              export SOPS_AGE_KEY_FILE=/etc/nodekey
-              # Check if cluster has been previously initialized, if not run init deployment script
-              kubectl --namespace kube-public get configmaps initialized || nix run --file /etc/hetzkube kubenix.deploymentScript --argstr stage init -- --yes --no-wait
               # Install admin config to node
               install -D --mode=0600 --owner=hetzkube /etc/kubernetes/admin.conf /home/hetzkube/.kube/config
             ''
@@ -302,7 +304,7 @@ in
         metadata.labels.nodepool = "${clusterName}-workers-arm64";
         spec = {
           inherit clusterName;
-          replicas = 1;
+          replicas = 0;
           selector = { };
           template = {
             metadata.labels.nodepool = "${clusterName}-workers-arm64";

@@ -15,64 +15,55 @@ in
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources = {
-      kube-system.ServiceAccount.cheapam = { };
-      none.ClusterRole.cheapam = {
-        rules = [
-          {
-            apiGroups = [ "" ];
-            resources = [ "nodes" ];
+      kube-system.ServiceAccount.${moduleName} = { };
+      none.ClusterRole.${moduleName} = {
+        rules =
+          let
             verbs = [
               "get"
               "list"
-              "watch"
-              "patch"
-            ];
-          }
-          {
-            apiGroups = [ "" ];
-            resources = [ "configmaps" ];
-            verbs = [
-              "get"
-              "list"
-              "watch"
               "create"
               "patch"
             ];
-          }
-          {
-            apiGroups = [ "metallb.io" ];
-            resources = [ "ipaddresspools" ];
-            verbs = [
-              "get"
-              "list"
-              "watch"
-              "create"
-              "patch"
-            ];
-          }
-          {
-            apiGroups = [ "externaldns.k8s.io" ];
-            resources = [ "dnsendpoints" ];
-            verbs = [
-              "get"
-              "list"
-              "watch"
-              "create"
-              "patch"
-            ];
-          }
-        ];
+          in
+          [
+            {
+              apiGroups = [ "" ];
+              resources = [ "nodes" ];
+              verbs = [
+                "get"
+                "list"
+                "watch"
+                "patch"
+              ];
+            }
+            {
+              apiGroups = [ "" ];
+              resources = [ "configmaps" ];
+              inherit verbs;
+            }
+            {
+              apiGroups = [ "metallb.io" ];
+              resources = [ "ipaddresspools" ];
+              inherit verbs;
+            }
+            {
+              apiGroups = [ "externaldns.k8s.io" ];
+              resources = [ "dnsendpoints" ];
+              inherit verbs;
+            }
+          ];
       };
-      none.ClusterRoleBinding.cheapam = {
+      none.ClusterRoleBinding.${moduleName} = {
         roleRef = {
           apiGroup = "rbac.authorization.k8s.io";
           kind = "ClusterRole";
-          name = "cheapam";
+          name = moduleName;
         };
         subjects = [
           {
             kind = "ServiceAccount";
-            name = "cheapam";
+            name = moduleName;
             namespace = "kube-system";
           }
         ];
@@ -81,15 +72,15 @@ in
       kube-system.Deployment.cheapam = {
         spec = {
           replicas = 1;
-          selector.matchLabels.app = "cheapam";
+          selector.matchLabels.app = moduleName;
           template = {
-            metadata.labels.app = "cheapam";
+            metadata.labels.app = moduleName;
             spec = {
-              serviceAccountName = "cheapam";
+              serviceAccountName = moduleName;
               containers = [
                 {
-                  name = "cheapam";
-                  command = [ "cheapam" ];
+                  name = moduleName;
+                  command = [ moduleName ];
                   image = "quay.io/nix-csi/scratch:1.0.0";
                   env = {
                     _namedlist = true;
@@ -110,8 +101,8 @@ in
                   csi = {
                     driver = "nix.csi.store";
                     readOnly = true;
-                    volumeAttributes.${pkgs.system} = pkgs.callPackage ../cheapam { };
-                    volumeAttributes.${pkgsArm.system} = pkgsArm.callPackage ../cheapam { };
+                    volumeAttributes.${pkgs.system} = pkgs.callPackage ../../cheapam { };
+                    volumeAttributes.${pkgsArm.system} = pkgsArm.callPackage ../../cheapam { };
                   };
                 }
               ];
