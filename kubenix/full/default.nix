@@ -1,20 +1,19 @@
 { config, lib, ... }:
 {
   config = lib.mkIf (config.stage == "full") {
-    cilium.enable = true;
-    hccm.enable = true;
-    cert-manager = {
-      enable = true;
-      bare = true;
-    };
-    coredns.enable = true;
     capi.enable = true;
-    hcsi.enable = true;
-    metallb.enable = true;
-    ingress-nginx.enable = true;
-    nix-csi.enable = true;
-    external-dns.enable = true;
+    cert-manager.bare = true;
+    cert-manager.enable = true;
     chaoskube.chaoskube.enable = true;
     cheapam.enable = true;
+    cilium.enable = true;
+    coredns.enable = true;
+    external-dns.enable = true;
+    hccm.enable = true;
+    hcsi.enable = true;
+    ingress-nginx.enable = true;
+    metallb.enable = true;
+    metrics-server.enable = true;
+    nix-csi.enable = true;
   };
 }

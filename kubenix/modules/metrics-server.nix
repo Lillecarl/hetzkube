@@ -11,29 +11,35 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
-    helmAttrs = lib.mkOption {
+    version = lib.mkOption {
+      type = lib.types.nonEmptyStr;
+      default = "0.8.0";
+    };
+    helmValues = lib.mkOption {
       type = lib.types.anything;
       default = { };
     };
   };
-  config = lib.mkIf cfg.enable {
-    helm.releases.${moduleName} = {
-      namespace = "kube-system";
-      chart = "${
-        builtins.fetchTree {
-          type = "github";
-          owner = "kubernetes-sigs";
-          repo = "metrics-server";
-          ref = "v0.8.0";
-        }
-      }/charts/metrics-server";
+  config =
+    let
+      src = builtins.fetchTree {
+        type = "github";
+        owner = "kubernetes-sigs";
+        repo = "metrics-server";
+        ref = "v${cfg.version}";
+      };
+    in
+    lib.mkIf cfg.enable {
+      helm.releases.${moduleName} = {
+        namespace = "kube-system";
+        chart = "${src}/charts/metrics-server";
 
-      values = {
-        # apiService.insecureSkipTLSVerify = false;
-        # tls.type = "cert-manager";
-        args = [ "--kubelet-insecure-tls" ];
-      }
-      // cfg.helmAttrs;
+        values = {
+          # apiService.insecureSkipTLSVerify = false;
+          # tls.type = "cert-manager";
+          args = [ "--kubelet-insecure-tls" ];
+        }
+        // cfg.helmValues;
+      };
     };
-  };
 }
