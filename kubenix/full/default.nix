@@ -7,6 +7,7 @@
     chaoskube.chaoskube.enable = true;
     cheapam.enable = true;
     cilium.enable = true;
+    cnpg.enable = true;
     coredns.enable = true;
     external-dns.enable = true;
     hccm.enable = true;
