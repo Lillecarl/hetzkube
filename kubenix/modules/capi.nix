@@ -141,6 +141,10 @@ in
         version = "v${pkgs.kubernetes.version}"; # beware to make images!
       };
       Cluster.${clusterName} = {
+        # Both CAPI and CNPG uses the "Cluster" kind, we default to CNPG since
+        # it's more "end-user" facing than CAPI. To get CAPI clusters apiVersion
+        # must be set manually.
+        apiVersion = "cluster.x-k8s.io/v1beta1";
         metadata.labels.clusterName = clusterName;
         spec = {
           clusterNetwork = {
@@ -362,7 +366,8 @@ in
       };
     };
     kubernetes.apiMappings = {
-      Cluster = "cluster.x-k8s.io/v1beta1";
+      # Collides with CloudnativePG
+      # Cluster = "cluster.x-k8s.io/v1beta1";
       HCloudMachineTemplate = "infrastructure.cluster.x-k8s.io/v1beta1";
       HCloudRemediationTemplate = "infrastructure.cluster.x-k8s.io/v1beta1";
       HetznerCluster = "infrastructure.cluster.x-k8s.io/v1beta1";
