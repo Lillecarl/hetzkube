@@ -1,3 +1,4 @@
+{ lib, ... }:
 {
   imports = [
     ./capi.nix
@@ -9,6 +10,7 @@
     ./cnpg.nix
     ./coredns.nix
     ./external-dns.nix
+    ./haproxy.nix
     ./hccm.nix
     ./hcsi.nix
     ./ingress-nginx.nix
