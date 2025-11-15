@@ -20,6 +20,7 @@ IPAM_CONFIG_KEY_V4 = "IPv4"
 IPAM_NAMESPACE = "kube-system"
 IPV4_PREFIX = 24
 IPV6_PREFIX = 64
+IPV6_SERVICE_PREFIX = 118
 DEBOUNCE_DELAY_SECONDS = 2.0
 
 # --- Kubernetes API Object Definitions ---
@@ -89,7 +90,7 @@ async def reconcile_ipam(nodes: list[Node]):
     # Populate state from existing nodes that already have a podCIDR
     for node in nodes:
         if pod_cidr := node.spec.get("podCIDR"):
-            if state_cm.get("data", {}).get(node.name) != pod_cidr:
+            if state_cm.data.get(node.name) != pod_cidr:
                 print(
                     f"Discovered existing IPv4 CIDR '{pod_cidr}' on node '{node.name}'. Importing to state."
                 )
@@ -165,13 +166,12 @@ async def update_external_resources(nodes: list[Node], cluster_hostname: str):
                         ):
                             cp_addresses4.append(addr.address)
                     elif ip.version == 6:
-                        # Split the /64, use the *first* /65 for services and
-                        # nodes, second goes to pods
                         ipv6_net = ipaddress.ip_network(
-                            f"{ip}/{IPV6_PREFIX}", strict=False
+                            f"{ip}/{IPV6_SERVICE_PREFIX}", strict=False
                         )
-                        subnets = list(ipv6_net.subnets(prefixlen_diff=1))
-                        service_subnets.append(str(subnets[0]))
+                        supernet = ipv6_net.supernet()
+                        subnets = list(supernet.subnets())
+                        service_subnets.append(str(subnets[1]))
                         if "node-role.kubernetes.io/control-plane" in node.metadata.get(
                             "labels", {}
                         ):
@@ -191,6 +191,7 @@ async def update_external_resources(nodes: list[Node], cluster_hostname: str):
     ippool = await IPAddressPool(ippool_spec, "metallb-system")
     try:
         if await ippool.exists():
+            print(ippool_spec)
             await ippool.patch(ippool_spec)
             print(f"Patched {ippool.kind} '{ippool.name}'")
         else:
@@ -254,7 +255,7 @@ async def reconciliation_worker(event: asyncio.Event, cluster_hostname: str):
             await reconcile_ipam(all_nodes)
             await update_external_resources(all_nodes, cluster_hostname)
         except Exception as e:
-            print(f"Error during reconciliation: {e}", file=sys.stderr)
+            print(f"Error during reconciliation: {e.with_traceback}", file=sys.stderr)
         print("--- Full reconciliation complete. Awaiting next change. ---")
 
 
