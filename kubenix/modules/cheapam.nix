@@ -23,6 +23,7 @@ in
               "get"
               "list"
               "create"
+              "watch"
               "patch"
             ];
           in
@@ -30,12 +31,7 @@ in
             {
               apiGroups = [ "" ];
               resources = [ "nodes" ];
-              verbs = [
-                "get"
-                "list"
-                "watch"
-                "patch"
-              ];
+              inherit verbs;
             }
             {
               apiGroups = [ "" ];
@@ -101,8 +97,8 @@ in
                   csi = {
                     driver = "nix.csi.store";
                     readOnly = true;
-                    volumeAttributes.${pkgs.system} = pkgs.callPackage ../../cheapam { };
-                    volumeAttributes.${pkgsArm.system} = pkgsArm.callPackage ../../cheapam { };
+                    volumeAttributes.${pkgs.system} = pkgs.cheapam;
+                    volumeAttributes.${pkgsArm.system} = pkgsArm.cheapam;
                   };
                 }
               ];

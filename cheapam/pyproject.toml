@@ -1,0 +1,12 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cheapam"
+version = "0.1.0"
+description = "A simple CCM and IPAM controller for Kubernetes on Hetzner."
+dependencies = ["kr8s", "hcloud"]
+
+[project.scripts]
+cheapam = "cheapam.__main__:cli"

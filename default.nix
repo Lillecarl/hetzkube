@@ -29,6 +29,7 @@ let
   python = pkgs.python3.withPackages (
     ps: with ps; [
       pkgs.kr8s
+      hcloud
     ]
   );
 in

@@ -12,5 +12,5 @@ self: pkgs: {
 
   python-jsonpath = pkgs.python3Packages.callPackage ./python-jsonpath.nix { };
   kr8s = pkgs.python3Packages.callPackage ./kr8s.nix { inherit (self) python-jsonpath; };
-  ippool-updater = pkgs.callPackage ../ippool-updater {};
+  cheapam = pkgs.python3Packages.callPackage ../cheapam { };
 }
