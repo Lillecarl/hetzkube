@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption moduleName;
     url = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = "https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.27/releases/cnpg-1.27.0.yaml";
+      default = "https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.27/releases/cnpg-1.27.1.yaml";
     };
   };
   config = lib.mkIf cfg.enable {
