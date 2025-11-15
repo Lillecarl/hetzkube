@@ -105,7 +105,7 @@ in
             # Enable NAT64
             nat46x64Gateway.enabled = true;
             # Cheap is good
-            operator.replicas = 1;
+            operator.replicas = 2;
             # Tunnel mode requires the least from the underlying network, as long as
             # hosts can communicate we're golden
             routingMode = "tunnel";
