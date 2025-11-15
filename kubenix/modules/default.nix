@@ -10,10 +10,8 @@
     ./cnpg.nix
     ./coredns.nix
     ./external-dns.nix
-    ./haproxy.nix
     ./hccm.nix
     ./hcsi.nix
-    ./ingress-nginx.nix
     ./metallb.nix
     ./metrics-server.nix
   ];

@@ -65,24 +65,6 @@
       };
     };
     hcsi.apiToken = "{{ hctoken }}";
-    ingress-nginx = {
-      values = {
-        controller = {
-          # We don't HA here.
-          replicaCount = 1;
-          # Get certificate for admissionwebhook from cert-manager instead
-          # of dumb unreliable Helm hook.
-          admissionWebhooks.certManager.enabled = true;
-          config = {
-            # Set forwarded headers
-            enable-real-ip = true;
-            # Allow annotating config per ingress. YOLO
-            allow-snippet-annotations = true;
-          };
-          service.annotations."metallb.io/allow-shared-ip" = "true";
-        };
-      };
-    };
     kubernetes.resources = lib.mkIf (config.stage == "full") {
       nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";

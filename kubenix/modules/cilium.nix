@@ -99,6 +99,15 @@ in
             # Cilium uses it's own eBPF rules which scale better and can do more voodoo
             # at the expense of being harder to troubleshoot.
             kubeProxyReplacement = true;
+            # RIP ingress-nginx
+            ingressController = {
+              enabled = true;
+              default = true;
+              # Only one LB service since we don't have unlimited IP port combos
+              loadBalancerMode = "shared";
+              # Allow sharing IP with other LB services
+              service.annotations."metallb.io/allow-shared-ip" = "true";
+            };
             operator.replicas = 1;
             # Tunnel mode requires the least from the underlying network, as long as
             # hosts can communicate we're golden

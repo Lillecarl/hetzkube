@@ -12,7 +12,6 @@
     external-dns.enable = true;
     hccm.enable = true;
     hcsi.enable = true;
-    ingress-nginx.enable = true;
     metallb.enable = true;
     metrics-server.enable = true;
     nix-csi.enable = true;
