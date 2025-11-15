@@ -12,6 +12,7 @@
     ./external-dns.nix
     ./hccm.nix
     ./hcsi.nix
+    ./keycloak.nix
     ./metallb.nix
     ./metrics-server.nix
   ];

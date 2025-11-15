@@ -39,6 +39,8 @@
     # credentials every time a server is created. Upload a key and set name
     capi.keyName = "lillecarl@lillecarl.com";
     cert-manager.email = "le@lillecarl.com";
+    # Must match with OIDC
+    keycloak.hostname = "keycloak.lillecarl.com";
 
     nix-csi = {
       namespace = "nix-csi";
