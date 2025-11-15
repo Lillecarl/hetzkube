@@ -49,6 +49,7 @@ in
             type = "rw";
             serviceTemplate = {
               metadata.labels.app = "pooler";
+              metadata.annotations."metallb.io/allow-shared-ip" = "true";
               spec.type = "LoadBalancer";
             };
             pgbouncer = {
