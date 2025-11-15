@@ -89,6 +89,26 @@ async def reconcile_ipam(nodes: list[Node]):
 
     # Populate state from existing nodes that already have a podCIDR
     for node in nodes:
+        # Patch InternalIP onto nodes
+        addresses = node.status.get("addresses", [])
+        has_internal_ip = any(addr["type"] == "InternalIP" for addr in addresses)
+        external_ip_entry = next((addr for addr in addresses if addr["type"] == "ExternalIP"), None)
+
+        if not has_internal_ip and external_ip_entry:
+            external_ip = external_ip_entry["address"]
+            print(f"Node '{node.name}' is missing InternalIP. Patching with ExternalIP: {external_ip}")
+
+            patch = {
+                "status": {
+                    "addresses": addresses + [{"type": "InternalIP", "address": external_ip}]
+                }
+            }
+
+            # Note: Patching the status subresource requires a specific content type.
+            # kr8s handles this automatically when using the .patch() method with a dict.
+            await node.patch(patch, subresource="status")
+            print(f"Successfully patched node '{node.name}'.")
+
         if pod_cidr := node.spec.get("podCIDR"):
             if state_cm.data.get(node.name) != pod_cidr:
                 print(
