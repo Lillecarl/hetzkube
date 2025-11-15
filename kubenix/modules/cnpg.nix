@@ -26,8 +26,7 @@ in
           username = "lillecarl";
           password = "{{ lillepass }}";
         };
-        Cluster.pg0 = {
-          spec = {
+        Cluster.pg0.spec = {
             instances = 2;
             storage.size = "1Gi";
             monitoring.enablePodMonitor = true;
@@ -41,7 +40,6 @@ in
               };
             };
           };
-        };
         Pooler.pb0 = {
           spec = {
             cluster.name = "pg0";
@@ -58,21 +56,17 @@ in
             };
           };
         };
-        Database.keycloak = {
-          spec = {
-            name = "keycloak";
-            owner = "lillecarl";
-            cluster.name = "pg0";
-            databaseReclaimPolicy = "delete";
-          };
+        Database.lillecarl.spec = {
+          name = "lillecarl";
+          owner = "lillecarl";
+          cluster.name = "pg0";
+          databaseReclaimPolicy = "delete";
         };
-        Database.grafana = {
-          spec = {
-            name = "grafana";
-            owner = "lillecarl";
-            cluster.name = "pg0";
-            databaseReclaimPolicy = "delete";
-          };
+        Database.grafana.spec = {
+          name = "grafana";
+          owner = "lillecarl";
+          cluster.name = "pg0";
+          databaseReclaimPolicy = "delete";
         };
       };
       apiMappings = {
