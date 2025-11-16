@@ -1,7 +1,6 @@
 {
   lib,
   buildPythonPackage,
-  fetchFromGitHub,
   # dependencies
   hcloud,
   kr8s,
@@ -9,9 +8,9 @@
   hatchling,
   hatch-vcs,
 }:
-buildPythonPackage rec {
+buildPythonPackage {
   pname = "cheapam";
-  version = "0.1.0";
+  version = (builtins.fromTOML (builtins.readFile ./pyproject.toml)).project.version;
   pyproject = true;
 
   src = ./.;
@@ -29,8 +28,8 @@ buildPythonPackage rec {
   pythonImportsCheck = [ "cheapam" ];
 
   meta = with lib; {
-    description = "A Python client library for Kubernetes";
-    homepage = "https://github.com/kr8s-org/kr8s";
+    description = "An IPAM / LARPing CCM for Kubernetes on Hetzner";
+    homepage = "https://github.com/lillecarl/hetzkube";
     license = licenses.mit;
     maintainers = with maintainers; [ lillecarl ];
   };
