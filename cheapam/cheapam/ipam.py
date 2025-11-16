@@ -1,6 +1,6 @@
 import ipaddress
 import logging
-from typing import Iterator, List, Optional, cast
+from typing import Iterator, List, cast
 
 import kr8s
 from kr8s.asyncio.objects import ConfigMap, Node
@@ -14,35 +14,50 @@ logger = logging.getLogger(__name__)
 class IPAMReconciler:
     """Handles IPAM reconciliation, including node initialization and podCIDR allocation."""
 
-    def __init__(self):
-        # how could we change these so they're not optional? I'd prefer doing work in the ctor over checking them everywhere AI?
-        self.ipv4_pool: Optional[ipaddress.IPv4Network] = None
-        self.state_cm: Optional[ConfigMap] = None
+    ipv4_pool: ipaddress.IPv4Network
+    state_cm: ConfigMap
 
-    async def _load_config(self) -> None:
+    def __init__(self, ipv4_pool: ipaddress.IPv4Network, state_cm: ConfigMap):
+        self.ipv4_pool = ipv4_pool
+        self.state_cm = state_cm
+
+    @classmethod
+    async def create(cls) -> "IPAMReconciler":
+        """
+        Asynchronous factory method to create and initialize an IPAMReconciler instance.
+        """
+        ipv4_pool = await cls._load_ipv4_pool()
+        state_cm = await cls._load_or_create_state_cm()
+        return cls(ipv4_pool, state_cm)
+
+    @staticmethod
+    async def _load_ipv4_pool() -> ipaddress.IPv4Network:
         """Loads the IPv4 pool from the config ConfigMap."""
         try:
             config_cm = await ConfigMap.get(config.IPAM_CONFIG_MAP, config.IPAM_NAMESPACE)
             ipv4_pool_str = config_cm.data.get(config.IPAM_CONFIG_KEY_V4)
             if not ipv4_pool_str:
                 raise ValueError(f"ConfigMap '{config.IPAM_CONFIG_MAP}' is missing required key '{config.IPAM_CONFIG_KEY_V4}'.")
-            self.ipv4_pool = cast(ipaddress.IPv4Network, ipaddress.ip_network(ipv4_pool_str))
+            return cast(ipaddress.IPv4Network, ipaddress.ip_network(ipv4_pool_str))
         except kr8s.NotFoundError:
             raise ValueError(f"Required ConfigMap '{config.IPAM_CONFIG_MAP}' not found in namespace '{config.IPAM_NAMESPACE}'.")
         except Exception as e:
             logger.error(f"Error loading IPAM config: {e}")
             raise
 
-    async def _load_or_create_state(self) -> None:
+    @staticmethod
+    async def _load_or_create_state_cm() -> ConfigMap:
         """Loads or creates the state ConfigMap."""
         state_cm_spec = {"metadata": {"name": config.IPAM_STATE_MAP}, "data": {"placeholder": "10.13.37.0/24"}}
         try:
-            self.state_cm = await ConfigMap.get(config.IPAM_STATE_MAP, namespace=config.IPAM_NAMESPACE)
+            state_cm = await ConfigMap.get(config.IPAM_STATE_MAP, namespace=config.IPAM_NAMESPACE)
             logger.info(f"Fetched IPAM state ConfigMap '{config.IPAM_STATE_MAP}'")
+            return state_cm
         except kr8s.NotFoundError:
-            self.state_cm = await ConfigMap(state_cm_spec, namespace=config.IPAM_NAMESPACE)
-            await self.state_cm.create()
+            state_cm = await ConfigMap(state_cm_spec, namespace=config.IPAM_NAMESPACE)
+            await state_cm.create()
             logger.info(f"Created IPAM state ConfigMap '{config.IPAM_STATE_MAP}'")
+            return state_cm
 
     async def _initialize_node(self, node: Node) -> None:
         """Initializes an uninitialized node by setting providerID, addresses, and removing taints."""
@@ -154,9 +169,6 @@ class IPAMReconciler:
         """
         logger.info("--- Starting IPAM reconciliation ---")
 
-        await self._load_config()
-        await self._load_or_create_state()
-
         current_nodes = {node.name for node in nodes}
 
         await self._reclaim_deleted_nodes(current_nodes)
@@ -174,5 +186,5 @@ class IPAMReconciler:
 
 async def reconcile_ipam(nodes: List[Node]) -> None:
     """Legacy entry point for IPAM reconciliation."""
-    reconciler = IPAMReconciler()
+    reconciler = await IPAMReconciler.create()
     await reconciler.reconcile(nodes)

@@ -44,6 +44,7 @@ async def reconciliation_worker(event: asyncio.Event, cluster_hostname: str) -> 
         logger.info("--- Debounce period over. Starting full reconciliation. ---")
         try:
             all_nodes = [cast(Node, node) async for node in kr8s.asyncio.get("nodes")]
+            # reconcile_ipam now handles its own IPAMReconciler creation
             await reconcile_ipam(all_nodes)
             await update_external_resources(all_nodes, cluster_hostname)
         except Exception as e:
