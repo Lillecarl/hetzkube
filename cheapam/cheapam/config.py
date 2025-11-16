@@ -1,11 +1,20 @@
 import logging
+import os
+
+# Get log level from environment variable or default to INFO
+CHEAPAM_LOG_LEVEL = os.environ.get("CHEAPAM_LOG_LEVEL", "INFO").upper()
+# Get dependencies log level from environment variable or default to WARNING
+DEPENDENCIES_LOG_LEVEL = os.environ.get("DEPENDENCIES_LOG_LEVEL", "WARNING").upper()
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, DEPENDENCIES_LOG_LEVEL, logging.WARNING),  # Set default level for all loggers
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
-logger = logging.getLogger(__name__)
+
+# Set specific level for cheapam loggers
+cheapam_logger = logging.getLogger("cheapam")
+cheapam_logger.setLevel(getattr(logging, CHEAPAM_LOG_LEVEL, logging.INFO))
 
 # MetalLB / external-dns
 POOL_NAME = "external-ips"
