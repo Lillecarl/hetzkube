@@ -234,7 +234,6 @@ in
             "external-dns.alpha.kubernetes.io/ttl" = "60";
           };
           spec = {
-            ingressClassName = "nginx";
             tls = [
               {
                 hosts = [ cfg.hostname ];
