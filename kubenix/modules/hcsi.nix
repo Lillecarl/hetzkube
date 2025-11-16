@@ -30,6 +30,7 @@ in
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
     kubernetes.resources.${cfg.namespace}.Secret.hcloud.stringData.token = cfg.apiToken;
     # Override which namespace the role should bind to
-    kubernetes.resources.none.ClusterRoleBinding.hcloud-csi-controller.subjects.hcloud-csi-controller.namespace= lib.mkForce cfg.namespace;
+    kubernetes.resources.none.ClusterRoleBinding.hcloud-csi-controller.subjects.hcloud-csi-controller.namespace =
+      lib.mkForce cfg.namespace;
   };
 }

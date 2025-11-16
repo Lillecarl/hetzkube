@@ -27,19 +27,19 @@ in
           password = "{{ lillepass }}";
         };
         Cluster.pg0.spec = {
-            instances = 2;
-            storage.size = "1Gi";
-            monitoring.enablePodMonitor = true;
-            managed.roles = {
-              _namedlist = true;
-              lillecarl = {
-                comment = "Carl Andersson";
-                login = true;
-                superuser = true;
-                passwordSecret.name = "pg0-lillecarl";
-              };
+          instances = 2;
+          storage.size = "1Gi";
+          monitoring.enablePodMonitor = true;
+          managed.roles = {
+            _namedlist = true;
+            lillecarl = {
+              comment = "Carl Andersson";
+              login = true;
+              superuser = true;
+              passwordSecret.name = "pg0-lillecarl";
             };
           };
+        };
         Pooler.pb0 = {
           spec = {
             cluster.name = "pg0";

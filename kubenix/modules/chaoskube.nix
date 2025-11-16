@@ -37,7 +37,7 @@ in
             kubernetes = lib.mkOption {
               type = lib.types.anything;
               internal = true;
-              default = {};
+              default = { };
             };
           };
           config =
