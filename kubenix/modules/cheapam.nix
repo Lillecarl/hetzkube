@@ -65,6 +65,7 @@ in
         ];
       };
 
+      kube-system.Secret.hcloud-cheapam.stringData.token = "{{ hctoken }}";
       kube-system.Deployment.cheapam = {
         spec = {
           replicas = 1;
@@ -82,6 +83,10 @@ in
                     _namedlist = true;
                     PATH.value = "/nix/var/result/bin";
                     PYTHONUNBUFFERED.value = "1";
+                    HCLOUD_TOKEN.valueFrom.secretKeyRef = {
+                      name = "hcloud-cheapam";
+                      key = "token";
+                    };
                   };
                   volumeMounts = [
                     {
