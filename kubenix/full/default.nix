@@ -2,7 +2,7 @@
 {
   config = lib.mkIf (config.stage == "full") {
     capi.enable = true;
-    cert-manager.bare = true;
+    cert-manager.bare = false;
     cert-manager.enable = true;
     chaoskube.chaoskube.enable = true;
     cheapam.enable = true;
