@@ -1,6 +1,6 @@
 import ipaddress
 import logging
-from typing import List, Optional
+from typing import Iterator, List, Optional, cast
 
 import kr8s
 from kr8s.asyncio.objects import ConfigMap, Node
@@ -15,6 +15,7 @@ class IPAMReconciler:
     """Handles IPAM reconciliation, including node initialization and podCIDR allocation."""
 
     def __init__(self):
+        # how could we change these so they're not optional? I'd prefer doing work in the ctor over checking them everywhere AI?
         self.ipv4_pool: Optional[ipaddress.IPv4Network] = None
         self.state_cm: Optional[ConfigMap] = None
 
@@ -25,7 +26,7 @@ class IPAMReconciler:
             ipv4_pool_str = config_cm.data.get(config.IPAM_CONFIG_KEY_V4)
             if not ipv4_pool_str:
                 raise ValueError(f"ConfigMap '{config.IPAM_CONFIG_MAP}' is missing required key '{config.IPAM_CONFIG_KEY_V4}'.")
-            self.ipv4_pool = ipaddress.ip_network(ipv4_pool_str)
+            self.ipv4_pool = cast(ipaddress.IPv4Network, ipaddress.ip_network(ipv4_pool_str))
         except kr8s.NotFoundError:
             raise ValueError(f"Required ConfigMap '{config.IPAM_CONFIG_MAP}' not found in namespace '{config.IPAM_NAMESPACE}'.")
         except Exception as e:
@@ -69,8 +70,9 @@ class IPAMReconciler:
                 if server.public_net.ipv6:
                     # The API returns a subnet like "2a01:4f9:c012:7d72::/64".
                     # We parse it and take the first available host IP (e.g., ...::1).
-                    ipv6_subnet = ipaddress.ip_network(server.public_net.ipv6.ip)
-                    first_host_ipv6: ipaddress.IPv6Address = next(ipv6_subnet.hosts())
+                    ipv6_subnet = ipaddress.IPv6Network(ipaddress.ip_network(server.public_net.ipv6.ip))
+                    hosts = cast(Iterator[ipaddress.IPv6Address],ipv6_subnet.hosts())
+                    first_host_ipv6: ipaddress.IPv6Address = next(hosts)
                     addresses.append({"type": "ExternalIP", "address": str(first_host_ipv6)})
 
                 # Patch providerID
