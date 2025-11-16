@@ -41,6 +41,7 @@
     cert-manager.email = "le@lillecarl.com";
     # Must match with OIDC
     keycloak.hostname = "keycloak.lillecarl.com";
+    pgadmin.hostname = "pgadmin.lillecarl.com";
 
     nix-csi = {
       namespace = "nix-csi";

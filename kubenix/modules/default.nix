@@ -14,5 +14,6 @@
     ./keycloak.nix
     ./metallb.nix
     ./metrics-server.nix
+    ./pgadmin.nix
   ];
 }
