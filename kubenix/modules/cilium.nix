@@ -32,50 +32,18 @@ in
       (lib.mkIf cfg.enable {
 
         kubernetes.resources.none.CiliumClusterwideNetworkPolicy = {
-          deny-all-host = {
+          host-policy = {
             spec = {
-              description = "Deny all host traffic by default";
-              nodeSelector.matchLabels = { };
-              ingress = [ { } ];
+              description = "Consolidated policy for all host traffic";
+              endpointSelector.matchLabels."reserved:host" = "";
+
+              # Allow all egress traffic from the host
               egress = [ { } ];
-            };
-          };
 
-          allow-all-pod-egress = {
-            spec = {
-              description = "Allow all egress traffic from all pods";
-              endpointSelector.matchLabels."io.kubernetes.pod.namespace" = "";
-              egress = [
-                {
-                  toEndpoints = [ { } ];
-                }
-              ];
-            };
-          };
-
-          allow-intra-cluster-host = {
-            spec = {
-              description = "Allow all intra-cluster host traffic";
-              nodeSelector.matchLabels = { };
+              # Define all allowed ingress traffic
               ingress = [
                 {
-                  fromEntities = [ "cluster" ];
-                }
-              ];
-              egress = [
-                {
-                  toEntities = [ "cluster" ];
-                }
-              ];
-            };
-          };
-
-          allow-ssh = {
-            spec = {
-              description = "Allow SSH from anywhere";
-              nodeSelector.matchLabels = { };
-              ingress = [
-                {
+                  # Allow SSH from anywhere
                   fromCIDR = [
                     "0.0.0.0/0"
                     "::/0"
@@ -91,15 +59,8 @@ in
                     }
                   ];
                 }
-              ];
-            };
-          };
-          allow-apiserver = {
-            spec = {
-              description = "Allow kube-apiserver from anywhere";
-              nodeSelector.matchLabels = { };
-              ingress = [
                 {
+                  # Allow kube-apiserver from anywhere
                   fromCIDR = [
                     "0.0.0.0/0"
                     "::/0"
@@ -115,8 +76,43 @@ in
                     }
                   ];
                 }
+                {
+                  # Allow all traffic from within the cluster
+                  fromEntities = [ "cluster" ];
+                }
+                {
+                  # Allow inbound traffic for LoadBalancer/NodePort services
+                  fromCIDR = [
+                    "0.0.0.0/0"
+                    "::/0"
+                  ];
+                  toPorts = [
+                    {
+                      ports = [
+                        {
+                          port = "30000-32767";
+                          protocol = "TCP";
+                        }
+                      ];
+                    }
+                    {
+                      ports = [
+                        {
+                          port = "30000-32767";
+                          protocol = "UDP";
+                        }
+                      ];
+                    }
+                  ];
+                }
               ];
             };
+          };
+
+          allow-all-pod-egress.spec = {
+            description = "Allow all egress traffic from all pods";
+            endpointSelector.matchLabels."io.kubernetes.pod.namespace" = "";
+            egress = [ { } ];
           };
         };
         kubernetes.resources.kube-system = {
