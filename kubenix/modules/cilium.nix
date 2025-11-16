@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   lib,
   ...
 }:
@@ -31,35 +30,93 @@ in
     in
     lib.mkMerge [
       (lib.mkIf cfg.enable {
-        kubernetes.resources.none = {
-          CiliumClusterwideNetworkPolicy.ssh.spec = {
-            description = "Allow SSH + APIserver from anywhere and all intra-cluster traffic";
-            nodeSelector.matchLabels = { }; # Applies to all nodes
-            ingress = [
-              {
-                fromEntities = [ "cluster" ];
-              }
-              {
-                fromCIDR = [
-                  "0.0.0.0/0"
-                  "::/0"
-                ];
-                toPorts = [
-                  {
-                    ports = [
-                      {
-                        port = "22";
-                        protocol = "TCP";
-                      }
-                      {
-                        port = "6443";
-                        protocol = "TCP";
-                      }
-                    ];
-                  }
-                ];
-              }
-            ];
+
+        kubernetes.resources.none.CiliumClusterwideNetworkPolicy = {
+          deny-all-host = {
+            spec = {
+              description = "Deny all host traffic by default";
+              nodeSelector.matchLabels = { };
+              ingress = [ { } ];
+              egress = [ { } ];
+            };
+          };
+
+          allow-all-pod-egress = {
+            spec = {
+              description = "Allow all egress traffic from all pods";
+              endpointSelector.matchLabels."io.kubernetes.pod.namespace" = "";
+              egress = [
+                {
+                  toEndpoints = [ { } ];
+                }
+              ];
+            };
+          };
+
+          allow-intra-cluster-host = {
+            spec = {
+              description = "Allow all intra-cluster host traffic";
+              nodeSelector.matchLabels = { };
+              ingress = [
+                {
+                  fromEntities = [ "cluster" ];
+                }
+              ];
+              egress = [
+                {
+                  toEntities = [ "cluster" ];
+                }
+              ];
+            };
+          };
+
+          allow-ssh = {
+            spec = {
+              description = "Allow SSH from anywhere";
+              nodeSelector.matchLabels = { };
+              ingress = [
+                {
+                  fromCIDR = [
+                    "0.0.0.0/0"
+                    "::/0"
+                  ];
+                  toPorts = [
+                    {
+                      ports = [
+                        {
+                          port = "22";
+                          protocol = "TCP";
+                        }
+                      ];
+                    }
+                  ];
+                }
+              ];
+            };
+          };
+          allow-apiserver = {
+            spec = {
+              description = "Allow kube-apiserver from anywhere";
+              nodeSelector.matchLabels = { };
+              ingress = [
+                {
+                  fromCIDR = [
+                    "0.0.0.0/0"
+                    "::/0"
+                  ];
+                  toPorts = [
+                    {
+                      ports = [
+                        {
+                          port = "6443";
+                          protocol = "TCP";
+                        }
+                      ];
+                    }
+                  ];
+                }
+              ];
+            };
           };
         };
         kubernetes.resources.kube-system = {
@@ -72,6 +129,8 @@ in
           chart = "${src}/install/kubernetes/cilium";
 
           values = {
+            # Debug policies
+            # policyEnforcementMode = "never";
             # Only required for multi-cluster Cilium but it doesn't hurt.
             cluster.name = config.clusterName;
             # Enable IPv6 masquerading until we have a better solution
@@ -84,6 +143,8 @@ in
             ipv6.enabled = true;
             # Masquerade with BPF
             bpf.masquerade = true;
+            # Use Cilium as firewall for the entire nodes
+            hostFirewall.enabled = true;
             # ServiceIP Cilium should use to talk to kube-apiserver. This is required
             # since Cilium is the CNI, uses hostNetwork and there's no cluster comms
             # before Cilium can talk to apiserver.
@@ -93,6 +154,10 @@ in
             # Cilium uses it's own eBPF rules which scale better and can do more voodoo
             # at the expense of being harder to troubleshoot.
             kubeProxyReplacement = true;
+            # Always tunnel
+            autoDirectNodeRoutes = false;
+            # Efficient on-node forwarding
+            enableLocalRedirectPolicy = true;
             # RIP ingress-nginx
             ingressController = {
               enabled = true;
@@ -102,16 +167,14 @@ in
               # Allow sharing IP with other LB services
               service.annotations."metallb.io/allow-shared-ip" = "true";
             };
-            # Enable NAT64
-            nat46x64Gateway.enabled = true;
-            # Cheap is good
+            # Cilium is quite important
             operator.replicas = 2;
             # Tunnel mode requires the least from the underlying network, as long as
             # hosts can communicate we're golden
             routingMode = "tunnel";
             # Can use GENEVE as well, useful if you have things in your network paths
             # which intercept vxlan that you don't wanna interact with (EVPN switches)
-            tunnelProtocol = "vxlan";
+            tunnelProtocol = "geneve";
           }
           // cfg.helmValues;
         };
