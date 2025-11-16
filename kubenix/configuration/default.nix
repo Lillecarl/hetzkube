@@ -47,25 +47,6 @@
       internalServiceName = "hetzkube";
       cache.storageClassName = "hcloud-volumes";
     };
-    hccm = {
-      # Templated SOPS with kluctl
-      apiToken = "{{ hctoken }}";
-      values = {
-        # Only use HCCM to assign providerID
-        env.HCLOUD_LOAD_BALANCERS_ENABLED.value = "false";
-        env.HCLOUD_NETWORK_ROUTES_ENABLED.value = "false";
-        env.HCLOUD_NETWORK_DISABLE_ATTACHED_CHECK.value = "true";
-        # We must IPv6!!
-        env.HCLOUD_INSTANCES_ADDRESS_FAMILY.value = "dualstack";
-        # Idk if this is needed, it's followed me for awhile
-        additionalTolerations = [
-          {
-            key = "node.cilium.io/agent-not-ready";
-            operator = "Exists";
-          }
-        ];
-      };
-    };
     hcsi.apiToken = "{{ hctoken }}";
     kubernetes.resources = lib.mkIf (config.stage == "full") {
       nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";

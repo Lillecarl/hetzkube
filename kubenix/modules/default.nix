@@ -10,7 +10,6 @@
     ./cnpg.nix
     ./coredns.nix
     ./external-dns.nix
-    ./hccm.nix
     ./hcsi.nix
     ./keycloak.nix
     ./metallb.nix

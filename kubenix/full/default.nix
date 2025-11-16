@@ -10,7 +10,6 @@
     cnpg.enable = true;
     coredns.enable = true;
     external-dns.enable = true;
-    hccm.enable = true;
     hcsi.enable = true;
     metallb.enable = true;
     metrics-server.enable = true;
