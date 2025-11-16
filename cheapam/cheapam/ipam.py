@@ -70,7 +70,7 @@ class IPAMReconciler:
                     # The API returns a subnet like "2a01:4f9:c012:7d72::/64".
                     # We parse it and take the first available host IP (e.g., ...::1).
                     ipv6_subnet = ipaddress.ip_network(server.public_net.ipv6.ip)
-                    # The typechecker is complaining that it doesn't know if this is a ipv4 or ipv6. Fix it AI!
+                    # The next line here gives a typechecker error. Suggest a fix AI?
                     first_host_ipv6 = next(ipv6_subnet.hosts())
                     addresses.append({"type": "ExternalIP", "address": str(first_host_ipv6)})
 
