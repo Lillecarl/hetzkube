@@ -1,3 +1,12 @@
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 # MetalLB / external-dns
 POOL_NAME = "external-ips"
 DNSENDPOINT_NAME = "apiservers"
@@ -11,4 +20,3 @@ IPV4_PREFIX = 24
 IPV6_PREFIX = 64
 IPV6_SERVICE_PREFIX = 118
 DEBOUNCE_DELAY_SECONDS = 2.0
-
