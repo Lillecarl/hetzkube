@@ -1,6 +1,6 @@
 import ipaddress
 import logging
-from typing import Iterator, List, cast
+from typing import Iterator, List, Optional, cast
 
 import kr8s
 from kr8s.asyncio.objects import ConfigMap, Node
