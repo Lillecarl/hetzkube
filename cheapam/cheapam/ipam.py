@@ -106,7 +106,7 @@ class IPAMReconciler:
                 ]
                 await node.patch({"spec": {"taints": taints}})
             else:
-                logger.warning(f"Could not initialize node '{node.name}', server details not found.")
+                logger.error(f"Could not initialize node '{node.name}', server details not found.")
                 return  # Skip to next node if we can't find it in Hetzner
 
     async def _import_existing_pod_cidrs(self, nodes: List[Node]) -> None:
