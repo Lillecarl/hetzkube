@@ -14,5 +14,6 @@
     metallb.enable = true;
     metrics-server.enable = true;
     nix-csi.enable = true;
+    pgadmin.enable = true;
   };
 }
