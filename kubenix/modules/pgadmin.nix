@@ -36,13 +36,12 @@ in
               containers = [
                 {
                   name = moduleName;
-                  command = [ "pgadmin-launcher" ];
-                  image = "quay.io/nix-csi/scratch:1.0.1";
+                  image = "docker.io/dpage/pgadmin4:latest";
                   env = {
                     _namedlist = true;
                     PYTHONUNBUFFERED.value = "1";
-                    INITIAL_EMAIL.value = "admin@lillecarl.com";
-                    INITIAL_PASSWORD.valueFrom.secretKeyRef = {
+                    PGADMIN_DEFAULT_EMAIL.value = "admin@lillecarl.com";
+                    PGADMIN_DEFAULT_PASSWORD.valueFrom.secretKeyRef = {
                       name = "initpass";
                       key = "pass";
                     };
@@ -112,7 +111,7 @@ in
             {
               protocol = "TCP";
               port = 8080;
-              targetPort = 5050;
+              targetPort = 80;
               name = "http";
             }
           ];
