@@ -10,6 +10,8 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
+    # You'll have to re-roll Cilium pods manually when changing this.
+    policyAuditMode = lib.mkEnableOption "policy-audit-mode";
     version = lib.mkOption {
       type = lib.types.str;
       default = "1.18.4";
@@ -30,24 +32,20 @@ in
     in
     lib.mkMerge [
       (lib.mkIf cfg.enable {
-
+        # Disables enforcing policies
+        kubernetes.resources.kube-system.ConfigMap.cilium-config.data.policy-audit-mode = lib.boolToString cfg.policyAuditMode;
+        # Cilium network policies
         kubernetes.resources.none.CiliumClusterwideNetworkPolicy = {
-          host-policy = {
+          # nodeSelector and endpointSelector target different "something"
+          # nodeSelector only apply to "node endpoints"
+          # This is a "catch-all" policy
+          node-default = lib.mkIf true {
             spec = {
-              description = "Consolidated policy for all host traffic";
-              endpointSelector.matchLabels."reserved:host" = "";
-
-              # Allow all egress traffic from the host
-              egress = [ { } ];
-
-              # Define all allowed ingress traffic
+              nodeSelector = { };
               ingress = [
+                # Allow SSH and kube-apiserver from anywhere
                 {
-                  # Allow SSH from anywhere
-                  fromCIDR = [
-                    "0.0.0.0/0"
-                    "::/0"
-                  ];
+                  fromEntities = [ "all" ];
                   toPorts = [
                     {
                       ports = [
@@ -55,19 +53,6 @@ in
                           port = "22";
                           protocol = "TCP";
                         }
-                      ];
-                    }
-                  ];
-                }
-                {
-                  # Allow kube-apiserver from anywhere
-                  fromCIDR = [
-                    "0.0.0.0/0"
-                    "::/0"
-                  ];
-                  toPorts = [
-                    {
-                      ports = [
                         {
                           port = "6443";
                           protocol = "TCP";
@@ -76,45 +61,83 @@ in
                     }
                   ];
                 }
+                # Allow all traffic from cluster
+                { fromEntities = [ "cluster" ]; }
+                # Allow ICMP requests from anywhere
                 {
-                  # Allow all traffic from within the cluster
-                  fromEntities = [ "cluster" ];
-                }
-                {
-                  # Allow inbound traffic for LoadBalancer/NodePort services
-                  fromCIDR = [
-                    "0.0.0.0/0"
-                    "::/0"
-                  ];
-                  toPorts = [
+                  fromEntities = [ "all" ];
+                  icmps = [
                     {
-                      ports = [
+                      fields = [
                         {
-                          port = "30000-32767";
-                          protocol = "TCP";
+                          type = "EchoRequest";
+                          family = "IPv4";
                         }
-                      ];
-                    }
-                    {
-                      ports = [
                         {
-                          port = "30000-32767";
-                          protocol = "UDP";
+                          type = "EchoRequest";
+                          family = "IPv6";
                         }
                       ];
                     }
                   ];
                 }
               ];
+              # Allow outbound traffic
+              egress = [ { toEntities = [ "all" ]; } ];
             };
           };
-
-          allow-all-pod-egress.spec = {
-            description = "Allow all egress traffic from all pods";
-            endpointSelector.matchLabels."io.kubernetes.pod.namespace" = "";
-            egress = [ { } ];
+          # Allow Cilium ingress
+          ep-ingress-reserved = lib.mkIf true {
+            spec = {
+              endpointSelector.matchLabels."reserved:ingress" = "";
+              ingress = [ { fromEntities = [ "all" ]; } ];
+            };
+          };
+          # Allow "direct" connections directly to pods with this label
+          ep-ingress-label = lib.mkIf true {
+            spec = {
+              endpointSelector.matchLabels."cilium.io/ingress" = "true";
+              ingress = [ { fromEntities = [ "all" ]; } ];
+            };
+          };
+          # endpointSelector selects in-cluster endpoints (ish)
+          # This is a "catch-all" policy
+          ep-default = lib.mkIf true {
+            spec = {
+              endpointSelector = { };
+              ingress = [
+                # Allow traffic from cluster or ingress
+                {
+                  fromEntities = [
+                    "cluster"
+                    "ingress"
+                  ];
+                }
+                # Allow ICMP EchoRequest from anywhere
+                {
+                  fromEntities = [ "all" ];
+                  icmps = [
+                    {
+                      fields = [
+                        {
+                          type = "EchoRequest";
+                          family = "IPv4";
+                        }
+                        {
+                          type = "EchoRequest";
+                          family = "IPv6";
+                        }
+                      ];
+                    }
+                  ];
+                }
+              ];
+              # Allow all outbound traffic
+              egress = [ { toEntities = [ "all" ]; } ];
+            };
           };
         };
+
         kubernetes.resources.kube-system = {
           Secret.cilium-ca.metadata.annotations."kluctl.io/ignore-diff" = true;
           Secret.hubble-server-certs.metadata.annotations."kluctl.io/ignore-diff" = true;
@@ -125,8 +148,15 @@ in
           chart = "${src}/install/kubernetes/cilium";
 
           values = {
-            # Debug policies
-            # policyEnforcementMode = "never";
+            # Probably don't change this, we apply catch-all rules instead.
+            # Cilium developers say it can cause bootstrapping issues to set
+            # this to always.
+            policyEnforcementMode = "default";
+            # Hubble
+            hubble.relay.enabled = true;
+            hubble.ui.enabled = true;
+            # hubble.tls.auto.method = "certmanager";
+            # hubble.tls.auto.certManagerIssuerRef = ""
             # Only required for multi-cluster Cilium but it doesn't hurt.
             cluster.name = config.clusterName;
             # Enable IPv6 masquerading until we have a better solution
@@ -139,8 +169,18 @@ in
             ipv6.enabled = true;
             # Masquerade with BPF
             bpf.masquerade = true;
+            # Enable PMTUD in case we send traffic somewhere with a small MTU
+            pmtuDiscovery.enabled = true;
             # Use Cilium as firewall for the entire nodes
             hostFirewall.enabled = true;
+            # Select nodes by label
+            nodeSelectorLabels = true;
+            # Roll out when config changes
+            rollOutCiliumPods = true;
+            envoy.rollOutPods = true;
+            hubble.relay.rollOutPods = true;
+            hubble.ui.rollOutPods = true;
+            operator.rollOutPods = true;
             # ServiceIP Cilium should use to talk to kube-apiserver. This is required
             # since Cilium is the CNI, uses hostNetwork and there's no cluster comms
             # before Cilium can talk to apiserver.
@@ -159,9 +199,11 @@ in
               enabled = true;
               default = true;
               # Only one LB service since we don't have unlimited IP port combos
-              loadBalancerMode = "shared";
+              loadbalancerMode = "shared";
               # Allow sharing IP with other LB services
               service.annotations."metallb.io/allow-shared-ip" = "true";
+              # Policy stuff
+              service.labels.ingress = "all";
             };
             # Cilium is quite important
             operator.replicas = 2;
