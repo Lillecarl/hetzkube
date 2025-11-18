@@ -11,6 +11,7 @@
     coredns.enable = true;
     external-dns.enable = true;
     hcsi.enable = true;
+    keycloak.enable = true;
     metallb.enable = true;
     metrics-server.enable = true;
     nix-csi.enable = true;
