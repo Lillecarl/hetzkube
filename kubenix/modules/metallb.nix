@@ -32,10 +32,9 @@ in
         }
       }/charts/metallb";
 
-      values = {
+      values = lib.recursiveUpdate {
         speaker.enabled = lib.mkDefault false;
-      }
-      // cfg.helmValues;
+      } cfg.helmValues;
     };
     kubernetes.apiMappings = {
       BFDProfile = "metallb.io/v1beta1";

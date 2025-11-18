@@ -62,7 +62,7 @@ in
         }
       }/charts/coredns";
 
-      values = {
+      values = lib.recursiveUpdate {
         service.ipFamilyPolicy = "PreferDualStack";
         service.clusterIP = lib.head config.clusterDNS;
         service.clusterIPs = config.clusterDNS;
@@ -74,8 +74,7 @@ in
             effect = "NoSchedule";
           }
         ];
-      }
-      // cfg.helmValues;
+      } cfg.helmValues;
     };
   };
 }

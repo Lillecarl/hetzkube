@@ -34,12 +34,9 @@ in
         namespace = "kube-system";
         chart = "${src}/charts/metrics-server";
 
-        values = {
-          # apiService.insecureSkipTLSVerify = false;
-          # tls.type = "cert-manager";
+        values = lib.recursiveUpdate {
           args = [ "--kubelet-insecure-tls" ];
-        }
-        // cfg.helmValues;
+        } cfg.helmValues;
       };
     };
 }

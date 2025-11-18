@@ -33,7 +33,8 @@ in
     lib.mkMerge [
       (lib.mkIf cfg.enable {
         # Disables enforcing policies
-        kubernetes.resources.kube-system.ConfigMap.cilium-config.data.policy-audit-mode = lib.boolToString cfg.policyAuditMode;
+        kubernetes.resources.kube-system.ConfigMap.cilium-config.data.policy-audit-mode =
+          lib.boolToString cfg.policyAuditMode;
         # Cilium network policies
         kubernetes.resources.none.CiliumClusterwideNetworkPolicy = {
           # nodeSelector and endpointSelector target different "something"
@@ -147,7 +148,7 @@ in
           namespace = "kube-system";
           chart = "${src}/install/kubernetes/cilium";
 
-          values = {
+          values = lib.recursiveUpdate {
             # Probably don't change this, we apply catch-all rules instead.
             # Cilium developers say it can cause bootstrapping issues to set
             # this to always.
@@ -213,8 +214,7 @@ in
             # Can use GENEVE as well, useful if you have things in your network paths
             # which intercept vxlan that you don't wanna interact with (EVPN switches)
             tunnelProtocol = "geneve";
-          }
-          // cfg.helmValues;
+          } cfg.helmValues;
         };
         importyaml = lib.pipe (builtins.readDir "${src}/pkg/k8s/apis/cilium.io/client/crds/v2") [
           (lib.mapAttrs' (
