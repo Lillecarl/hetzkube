@@ -25,12 +25,26 @@ in
       secretName = "keycloak-pg";
     in
     lib.mkIf cfg.enable {
+      # Enable CNPG if it isn't enabled
       cnpg.enable = true;
+      # Database configuration
       kubernetes.resources.cnpg-user = {
+        Secret.pg0-keycloak = {
+          type = "kubernetes.io/basic-auth";
+          metadata.labels."cnpg.io/reload" = "true";
+          stringData = {
+            username = "keycloak";
+            password = "{{ lillepass }}";
+          };
+        };
         Cluster.pg0.spec.managed.roles.keycloak = {
+          ensure = "present";
           login = true;
-          superuser = false;
-          passwordSecret.name = "pg0-lillecarl"; # TODO: Fix
+          superuser = true;
+          createdb = true;
+          createrole = true;
+          "inherit" = false;
+          passwordSecret.name = "pg0-keycloak";
         };
         Database.keycloak.spec = {
           name = "keycloak";
@@ -39,7 +53,9 @@ in
           databaseReclaimPolicy = "delete";
         };
       };
+      # Keycloak namespace
       kubernetes.resources.none.Namespace.${cfg.namespace} = { };
+      # OIDC role configuration
       kubernetes.resources.none.ClusterRoleBinding.oidc-kubernetes-admin = {
         roleRef = {
           apiGroup = "rbac.authorization.k8s.io";
@@ -53,6 +69,7 @@ in
           }
         ];
       };
+      # Keycloak configuration
       kubernetes.resources.${cfg.namespace} = {
         Secret.${secretName}.stringData = {
           username = "keycloak";
@@ -142,7 +159,7 @@ in
                       {
                         # host
                         name = "KC_DB_URL_HOST";
-                        value = "pb0.cnpg-user.svc";
+                        value = "pb0-cluster.cnpg-user";
                       }
                       {
                         # dbname

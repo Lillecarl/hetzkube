@@ -22,31 +22,42 @@ in
     kubernetes = {
       resources.none.Namespace.cnpg-user = { };
       resources.cnpg-user = {
-        Secret.pg0-lillecarl.stringData = {
-          username = "lillecarl";
-          password = "{{ lillepass }}";
+        Secret.pg0-lillecarl = {
+          type = "kubernetes.io/basic-auth";
+          metadata.labels."cnpg.io/reload" = "true";
+          stringData = {
+            username = "lillecarl";
+            password = "{{ lillepass }}";
+          };
         };
+        # Configure podmonitoring from CNPG docs
         Cluster.pg0.spec = {
+          # Required to manage roles properly
+          enableSuperuserAccess = true;
           instances = 2;
           storage.size = "1Gi";
-          monitoring.enablePodMonitor = true;
           managed.roles = {
             _namedlist = true;
             lillecarl = {
               comment = "Carl Andersson";
+              ensure = "present";
               login = true;
               superuser = true;
+              createdb = true;
+              createrole = true;
+              "inherit" = false;
               passwordSecret.name = "pg0-lillecarl";
             };
           };
         };
-        Pooler.pb0 = {
+        Pooler.pb0-lb = {
           spec = {
             cluster.name = "pg0";
             instances = 1;
             type = "rw";
             serviceTemplate = {
               metadata.labels.app = "pooler";
+              metadata.labels."cilium.io/ingress" = "true";
               metadata.annotations."metallb.io/allow-shared-ip" = "true";
               spec.type = "LoadBalancer";
             };
@@ -54,6 +65,14 @@ in
               poolMode = "session";
               parameters = { };
             };
+          };
+        };
+        Pooler.pb0-cluster = {
+          spec = {
+            cluster.name = "pg0";
+            instances = 1;
+            type = "rw";
+            pgbouncer.poolMode = "session";
           };
         };
         Database.lillecarl.spec = {
