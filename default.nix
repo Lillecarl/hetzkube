@@ -35,9 +35,8 @@ let
 in
 flake.impure
 // rec {
-  inherit pkgs;
+  inherit pkgs flake kubenix;
   inherit (pkgs) lib;
-  inherit kubenix;
 
   # PATH for direnv
   repoenv = pkgs.buildEnv {
