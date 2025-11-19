@@ -113,5 +113,27 @@ in
     resource.keycloak_group.grafana-admin = mkKC {
       name = "grafana-admin";
     };
+
+    resource.keycloak_openid_client.pgadmin =
+      let
+        host = "pgadmin.lillecarl.com";
+      in
+      mkKC {
+        client_id = "pgadmin";
+        name = "pgAdmin4";
+
+        valid_redirect_uris = [
+          "https://${host}/oauth2/authorize"
+        ];
+        base_url = "https://${host}";
+        root_url = "https://${host}";
+        admin_url = "https://${host}";
+        web_origins = [ "https://${host}" ];
+
+        standard_flow_enabled = true;
+        direct_access_grants_enabled = false;
+        service_accounts_enabled = false;
+        access_type = "PUBLIC";
+      };
   };
 }
