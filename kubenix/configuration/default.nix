@@ -32,6 +32,8 @@
         interval = "15m";
         minimum-age = "6h";
         timezone = "Europe/Stockholm";
+        # Don't kill primary databases, CNPG takes awhile to recover
+        labels = "cnpg.io/instanceRole!=primary";
       };
     };
 
