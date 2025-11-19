@@ -11,6 +11,7 @@
     ./coredns.nix
     ./external-dns.nix
     ./hcsi.nix
+    ./headlamp.nix
     ./keycloak.nix
     ./metallb.nix
     ./metrics-server.nix

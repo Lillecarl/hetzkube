@@ -42,6 +42,7 @@
     # Must match with OIDC
     keycloak.hostname = "keycloak.lillecarl.com";
     pgadmin.hostname = "pgadmin.lillecarl.com";
+    headlamp.hostname = "headlamp.lillecarl.com";
 
     nix-csi = {
       namespace = "nix-csi";
