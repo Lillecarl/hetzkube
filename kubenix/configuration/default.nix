@@ -44,6 +44,8 @@
     pgadmin.hostname = "pgadmin.lillecarl.com";
     headlamp.hostname = "headlamp.lillecarl.com";
 
+    coredns.replicas = 2;
+
     nix-csi = {
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
