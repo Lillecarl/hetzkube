@@ -25,7 +25,7 @@ in
       secretName = "keycloak-pg";
     in
     lib.mkIf cfg.enable {
-      # Enable CNPG if it isn't enabled
+      # Enable CNPG
       cnpg.enable = true;
       # Database configuration
       kubernetes.resources.cnpg-user = {
@@ -38,12 +38,7 @@ in
           };
         };
         Cluster.pg0.spec.managed.roles.keycloak = {
-          ensure = "present";
           login = true;
-          superuser = true;
-          createdb = true;
-          createrole = true;
-          "inherit" = false;
           passwordSecret.name = "pg0-keycloak";
         };
         Database.keycloak.spec = {

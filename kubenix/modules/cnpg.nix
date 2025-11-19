@@ -39,13 +39,8 @@ in
           managed.roles = {
             _namedlist = true;
             lillecarl = {
-              comment = "Carl Andersson";
-              ensure = "present";
               login = true;
               superuser = true;
-              createdb = true;
-              createrole = true;
-              "inherit" = false;
               passwordSecret.name = "pg0-lillecarl";
             };
           };
