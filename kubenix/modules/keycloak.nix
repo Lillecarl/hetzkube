@@ -19,6 +19,11 @@ in
       description = "hostname for Keycloak";
       type = lib.types.str;
     };
+    version = lib.mkOption {
+      type = lib.types.str;
+      description = "${moduleName} version";
+      default = "26.4";
+    };
   };
   config =
     let
@@ -93,7 +98,7 @@ in
               spec = {
                 containers = lib.mkNamedList {
                   keycloak = {
-                    image = "quay.io/keycloak/keycloak:26.4";
+                    image = "quay.io/keycloak/keycloak:${cfg.version}";
                     imagePullPolicy = "Always"; # We want minor updates
                     args = [ "start" ];
                     env = lib.mkNamedList {
