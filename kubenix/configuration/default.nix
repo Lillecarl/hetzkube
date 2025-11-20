@@ -36,7 +36,7 @@
         # Don't kill k8s control-plane components
         labels = "cnpg.io/instanceRole!=primary,tier!=control-plane";
         # Allow annotation to disable chaoskube targeting
-        annotations = "!chaos.alpha.kubernetes.io/enabled";
+        annotations = "!chaos.alpha.kubernetes.io/disabled";
       };
     };
 
