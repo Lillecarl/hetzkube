@@ -44,12 +44,12 @@ in
       access_type = "PUBLIC";
     };
 
-    resource.keycloak_openid_group_membership_protocol_mapper.kubernetes = mkKC {
+    resource.keycloak_openid_user_realm_role_protocol_mapper.kubernetes = mkKC {
       client_id = config.resource.keycloak_openid_client.kubernetes "id";
-      name = "Group Membership";
+      name = "groups";
 
       claim_name = "groups";
-      full_path = false;
+      multivalued = true;
     };
 
     resource.keycloak_openid_client.headlamp = mkKC {
@@ -67,12 +67,12 @@ in
       access_token_lifespan = "28800"; # 8 hour tokens
     };
 
-    resource.keycloak_openid_group_membership_protocol_mapper.headlamp = mkKC {
+    resource.keycloak_openid_user_realm_role_protocol_mapper.headlamp = mkKC {
       client_id = config.resource.keycloak_openid_client.headlamp "id";
-      name = "Group Membership";
+      name = "groups";
 
       claim_name = "groups";
-      full_path = false;
+      multivalued = true;
     };
 
     # Add kubernetes audience for headlamp since it passes it's oidc token onto Kubernetes
@@ -104,14 +104,6 @@ in
 
       claim_name = "groups";
       full_path = false;
-    };
-
-    resource.keycloak_group.kubernetes-admin = mkKC {
-      name = "kubernetes-admin";
-    };
-
-    resource.keycloak_group.grafana-admin = mkKC {
-      name = "grafana-admin";
     };
 
     resource.keycloak_openid_client.pgadmin =
