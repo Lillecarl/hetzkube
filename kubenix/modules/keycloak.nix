@@ -237,7 +237,7 @@ in
                 name = "http";
               }
             ];
-            selector.app = "keycloak";
+            selector."app.kubernetes.io/name" = moduleName;
             type = "ClusterIP";
           };
         };
