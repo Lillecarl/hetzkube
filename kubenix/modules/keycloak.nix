@@ -16,8 +16,8 @@ in
       default = "keycloak";
     };
     hostname = lib.mkOption {
-      description = "hostname for Keycloak";
       type = lib.types.str;
+      description = "hostname for ${moduleName}";
     };
     version = lib.mkOption {
       type = lib.types.str;
@@ -27,28 +27,28 @@ in
   };
   config =
     let
-      secretName = "keycloak-pg";
+      secretName = "${moduleName}-pg";
     in
     lib.mkIf cfg.enable {
       # Enable CNPG
       cnpg.enable = true;
       # Database configuration
       kubernetes.resources.cnpg-user = {
-        Secret.pg0-keycloak = {
+        Secret."pg0-${moduleName}" = {
           type = "kubernetes.io/basic-auth";
           metadata.labels."cnpg.io/reload" = "true";
           stringData = {
-            username = "keycloak";
+            username = moduleName;
             password = "{{ lillepass }}";
           };
         };
-        Cluster.pg0.spec.managed.roles.keycloak = {
+        Cluster.pg0.spec.managed.roles.${moduleName} = {
           login = true;
-          passwordSecret.name = "pg0-keycloak";
+          passwordSecret.name = "pg0-${moduleName}";
         };
-        Database.keycloak.spec = {
-          name = "keycloak";
-          owner = "keycloak";
+        Database.${moduleName}.spec = {
+          name = moduleName;
+          owner = moduleName;
           cluster.name = "pg0";
           databaseReclaimPolicy = "delete";
         };
@@ -77,27 +77,27 @@ in
       kubernetes.resources.${cfg.namespace} = {
         Secret.${secretName} = {
           stringData = {
-            username = "keycloak";
+            username = moduleName;
             password = "{{ lillepass }}";
           };
         };
-        StatefulSet.keycloak = {
+        StatefulSet.${moduleName} = {
           metadata.labels = {
-            "app.kubernetes.io/name" = "keycloak";
+            "app.kubernetes.io/name" = moduleName;
           };
           spec = {
-            serviceName = "keycloak-discovery";
+            serviceName = "${moduleName}-discovery";
             replicas = 1;
             selector.matchLabels = {
-              "app.kubernetes.io/name" = "keycloak";
+              "app.kubernetes.io/name" = moduleName;
             };
             template = {
               metadata.labels = {
-                "app.kubernetes.io/name" = "keycloak";
+                "app.kubernetes.io/name" = moduleName;
               };
               spec = {
                 containers = lib.mkNamedList {
-                  keycloak = {
+                  ${moduleName} = {
                     image = "quay.io/keycloak/keycloak:${cfg.version}";
                     imagePullPolicy = "Always"; # We want minor updates
                     args = [ "start" ];
@@ -130,7 +130,7 @@ in
                       # DB
                       KC_DB.value = "postgres"; # Database type
                       KC_DB_URL_HOST.value = "pb0-cluster.cnpg-user";
-                      KC_DB_URL_DATABASE.value = "keycloak"; # dbname
+                      KC_DB_URL_DATABASE.value = moduleName; # dbname
                       KC_DB_USERNAME.valueFrom.secretKeyRef = {
                         name = secretName;
                         key = "username";
@@ -182,14 +182,14 @@ in
                     maxSkew = 1;
                     topologyKey = "kubernetes.io/hostname";
                     whenUnsatisfiable = "DoNotSchedule";
-                    labelSelector.matchLabels."app.kubernetes.io/name" = "keycloak";
+                    labelSelector.matchLabels."app.kubernetes.io/name" = moduleName;
                   }
                 ];
               };
             };
           };
         };
-        Ingress.keycloak = {
+        Ingress.${moduleName} = {
           metadata.annotations = {
             "cert-manager.io/cluster-issuer" = "le-prod";
             "external-dns.alpha.kubernetes.io/ttl" = "60";
@@ -198,7 +198,7 @@ in
             tls = [
               {
                 hosts = [ cfg.hostname ];
-                secretName = "keycloak-cert";
+                secretName = "${moduleName}-cert";
               }
             ];
             rules = [
@@ -211,7 +211,7 @@ in
                       pathType = "Prefix";
                       backend = {
                         service = {
-                          name = "keycloak";
+                          name = moduleName;
                           port = {
                             number = 8080;
                           };
@@ -224,9 +224,9 @@ in
             ];
           };
         };
-        Service.keycloak = {
+        Service.${moduleName} = {
           metadata.labels = {
-            "app.kubernetes.io/name" = "keycloak";
+            "app.kubernetes.io/name" = moduleName;
           };
           spec = {
             ports = [
@@ -241,12 +241,12 @@ in
             type = "ClusterIP";
           };
         };
-        Service.keycloak-discovery = {
+        Service."${moduleName}-discovery" = {
           metadata.labels = {
-            "app.kubernetes.io/name" = "keycloak";
+            "app.kubernetes.io/name" = moduleName;
           };
           spec = {
-            selector."app.kubernetes.io/name" = "keycloak";
+            selector."app.kubernetes.io/name" = moduleName;
             clusterIP = "None";
             type = "ClusterIP";
           };
