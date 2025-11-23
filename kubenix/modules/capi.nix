@@ -57,6 +57,8 @@ let
         kind = "KubeletConfiguration";
         inherit (config) clusterDNS;
         imageMaximumGCAge = "12h";
+        shutdownGracePeriod = "30s";
+        shutdownGracePeriodCriticalPods = "10s";
       };
     }
   ];
