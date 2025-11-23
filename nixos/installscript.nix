@@ -16,7 +16,7 @@
             --flake .#${config.lib.hetzkube.configName} \
             --target-host root@${config.lib.hetzkube.ip} \
             --build-on remote \
-            --kexec https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-${pkgs.system}.tar.gz
+            --kexec https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-${pkgs.stdenv.hostPlatform.system}.tar.gz
           ssh-keygen -R ${config.lib.hetzkube.ip}
         '';
     lib.rebuildScript =
