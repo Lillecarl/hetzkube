@@ -23,7 +23,7 @@ in
             };
             namespace = lib.mkOption {
               type = lib.types.nonEmptyStr;
-              default = "chaoskube";
+              default = "kube-system";
             };
             version = lib.mkOption {
               type = lib.types.nonEmptyStr;
@@ -33,7 +33,7 @@ in
               type = lib.types.attrsOf lib.types.str;
               description = "Arguments to pass to chaoskube, see https://github.com/linki/chaoskube?tab=readme-ov-file#flags";
             };
-            # This will be consumed into the global configuration namespace
+            # This will be consumed into the global configuration space
             kubernetes = lib.mkOption {
               type = lib.types.anything;
               internal = true;
@@ -82,7 +82,6 @@ in
 
               kubernetes.resources.${config.namespace} = {
                 ServiceAccount.${config.name} = { };
-
                 Deployment.${config.name}.spec = {
                   strategy.type = "Recreate";
                   replicas = 1;
