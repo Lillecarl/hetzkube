@@ -33,7 +33,7 @@ let
     }
   ];
   # ImageVolume for CNPG, KubeletPSI because it's cool
-  featureGates = "ImageVolume=true,KubeletPSI=true";
+  featureGates = "ImageVolume=true,KubeletPSI=true,ContainerRestartRules=true";
   nodeRegistration = {
     kubeletExtraArgs = {
       "feature-gates" = featureGates;
