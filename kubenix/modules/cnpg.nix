@@ -37,6 +37,12 @@ in
           instances = 2;
           storage.size = "1Gi";
           storage.storageClass = "local-path";
+          enablePDB = true;
+          # Create new pods and stream database to replicas
+          nodeMaintenanceWindow = {
+            inProgress = true;
+            reusePVC = false;
+          };
           managed.roles = {
             _namedlist = true;
             lillecarl = {
@@ -55,6 +61,8 @@ in
               metadata.labels.app = "pooler";
               metadata.labels."cilium.io/ingress" = "true";
               metadata.annotations."metallb.io/allow-shared-ip" = "true";
+              metadata.annotations."lbipam.cilium.io/sharing-key" = "*";
+              metadata.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
               spec.type = "LoadBalancer";
             };
             pgbouncer = {

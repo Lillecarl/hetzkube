@@ -13,7 +13,7 @@
     hcsi.enable = true;
     keycloak.enable = true;
     local-path-provisioner.enable = true;
-    metallb.enable = true;
+    metallb.enable = false;
     metrics-server.enable = true;
     nix-csi.enable = true;
     pgadmin.enable = true;

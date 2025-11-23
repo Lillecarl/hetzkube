@@ -174,7 +174,7 @@ in
             # Enable IPv6 masquerading until we have a better solution
             enableIPv6Masquerade = false;
             # Disable LB IPAM, we use MetalLB for this
-            enableLBIPAM = false;
+            enableLBIPAM = true;
             # Use cheapam to configure
             ipam.mode = "kubernetes";
             # Enable IPv6
@@ -214,6 +214,8 @@ in
               loadbalancerMode = "shared";
               # Allow sharing IP with other LB services
               service.annotations."metallb.io/allow-shared-ip" = "true";
+              service.annotations."lbipam.cilium.io/sharing-key" = "*";
+              service.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
               # Policy stuff
               service.labels.ingress = "all";
             };

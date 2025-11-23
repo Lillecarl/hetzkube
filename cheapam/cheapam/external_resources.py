@@ -2,16 +2,22 @@ import ipaddress
 import logging
 from typing import List
 
+from asyncio import Event
 from kr8s.asyncio.objects import Node
 
 from . import config
-from .kr8s_objects import IPAddressPool, DNSEndpoint
+from .kr8s_objects import CiliumLoadBalancerIPPool, IPAddressPool, DNSEndpoint
 
 logger = logging.getLogger(__name__)
 
 
 class ExternalResourcesUpdater:
     """Handles updates to external resources like MetalLB IPAddressPool and external-dns DNSEndpoint."""
+
+    event: Event
+
+    def __init__(self, event: Event):
+        self.event = event
 
     async def _collect_addresses(self, nodes: List[Node]) -> tuple:
         """Collects service subnets and control plane addresses from nodes."""
@@ -41,16 +47,16 @@ class ExternalResourcesUpdater:
         return service_subnets, cp_addresses4, cp_addresses6
 
     async def _update_ip_address_pool(self, service_subnets: List[str]) -> None:
-        """Creates or patches the MetalLB IPAddressPool."""
+        """Creates or patches the LoadBalancer IPAddressPool."""
         if not service_subnets:
             logger.warning("No ExternalIPs found. IPAddressPool will not be modified.")
             return
 
         ippool_spec = {
             "metadata": {"name": config.POOL_NAME},
-            "spec": {"addresses": sorted(list(set(service_subnets)))},
+            "spec": {"blocks": [{"cidr": cidr} for cidr in sorted(list(set(service_subnets)))]},
         }
-        ippool = await IPAddressPool(ippool_spec, "metallb-system")
+        ippool = await CiliumLoadBalancerIPPool(ippool_spec)
         try:
             if await ippool.exists():
                 await ippool.patch(ippool_spec)
@@ -60,7 +66,8 @@ class ExternalResourcesUpdater:
                 logger.info(f"Created {ippool.kind} '{ippool.name}'")
         except Exception as e:
             logger.error(f"An error occurred updating IPAddressPool: {e}")
-            logger.debug(f"{ippool_spec=}")
+            logger.error(f"{ippool_spec=}")
+            self.event.set()
 
     async def _update_dns_endpoint(self, cp_addresses4: List[str], cp_addresses6: List[str], cluster_hostname: str) -> None:
         """Creates or patches the external-dns DNSEndpoint."""
@@ -84,6 +91,8 @@ class ExternalResourcesUpdater:
                 logger.info(f"Created {dnsendpoint.kind} '{dnsendpoint.name}'")
         except Exception as e:
             logger.error(f"An error occurred updating DNSEndpoint: {e}")
+            logger.error(f"{dnsendpoint_spec=}")
+            self.event.set()
 
     async def update(self, nodes: List[Node], cluster_hostname: str) -> None:
         """
@@ -102,7 +111,7 @@ class ExternalResourcesUpdater:
         logger.info("--- Finished external resource update ---")
 
 
-async def update_external_resources(nodes: List[Node], cluster_hostname: str) -> None:
+async def update_external_resources(nodes: List[Node], cluster_hostname: str, event: Event) -> None:
     """Legacy entry point for external resource updates."""
-    updater = ExternalResourcesUpdater()
+    updater = ExternalResourcesUpdater(event)
     await updater.update(nodes, cluster_hostname)

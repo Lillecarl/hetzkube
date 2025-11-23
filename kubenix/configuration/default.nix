@@ -59,6 +59,8 @@
     hcsi.apiToken = "{{ hctoken }}";
     kubernetes.resources = lib.mkIf (config.stage == "full") {
       nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
+      nix-csi.Service.nix-cache-lb.metadata.annotations."lbipam.cilium.io/sharing-key" = "*";
+      nix-csi.Service.nix-cache-lb.metadata.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixbuild.lillecarl.com";

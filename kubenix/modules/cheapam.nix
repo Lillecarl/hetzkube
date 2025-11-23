@@ -47,6 +47,11 @@ in
               inherit verbs;
             }
             {
+              apiGroups = [ "cilium.io" ];
+              resources = [ "ciliumloadbalancerippools" ];
+              inherit verbs;
+            }
+            {
               apiGroups = [ "externaldns.k8s.io" ];
               resources = [ "dnsendpoints" ];
               inherit verbs;
@@ -105,8 +110,8 @@ in
                   csi = {
                     driver = "nix.csi.store";
                     readOnly = true;
-                    volumeAttributes.${pkgs.system} = pkgs.cheapam;
-                    volumeAttributes.${pkgsArm.system} = pkgsArm.cheapam;
+                    volumeAttributes.${pkgs.stdenv.hostPlatform.system} = pkgs.cheapam;
+                    volumeAttributes.${pkgsArm.stdenv.hostPlatform.system} = pkgsArm.cheapam;
                   };
                 }
               ];

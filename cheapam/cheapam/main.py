@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 import kr8s
 import yaml
 from kr8s.asyncio.objects import ConfigMap, Node
+from asyncio import Event, sleep
 
 from . import config
 from .external_resources import update_external_resources
@@ -27,7 +28,7 @@ async def get_cluster_hostname() -> str:
     return urlparse(server_url).hostname
 
 
-async def reconciliation_worker(event: asyncio.Event, cluster_hostname: str) -> None:
+async def reconciliation_worker(event: Event, cluster_hostname: str) -> None:
     """
     Waits for an event, then triggers a full reconciliation.
 
@@ -38,21 +39,20 @@ async def reconciliation_worker(event: asyncio.Event, cluster_hostname: str) -> 
     while True:
         await event.wait()
         logger.info(f"Change detected, waiting {config.DEBOUNCE_DELAY_SECONDS}s for debounce period...")
-        await asyncio.sleep(config.DEBOUNCE_DELAY_SECONDS)
+        await sleep(config.DEBOUNCE_DELAY_SECONDS)
         event.clear()
 
         logger.info("--- Debounce period over. Starting full reconciliation. ---")
         try:
             all_nodes = [cast(Node, node) async for node in kr8s.asyncio.get("nodes")]
-            # reconcile_ipam now handles its own IPAMReconciler creation
-            await reconcile_ipam(all_nodes)
-            await update_external_resources(all_nodes, cluster_hostname)
+            await reconcile_ipam(all_nodes, event)
+            await update_external_resources(all_nodes, cluster_hostname, event)
         except Exception as e:
             logger.error(f"Error during reconciliation: {e}")
         logger.info("--- Full reconciliation complete. Awaiting next change. ---")
 
 
-async def node_watcher(event: asyncio.Event) -> None:
+async def node_watcher(event: Event) -> None:
     """
     Watches for node changes and sets an event to trigger reconciliation.
 
@@ -66,7 +66,7 @@ async def node_watcher(event: asyncio.Event) -> None:
                 event.set()
         except Exception as e:
             logger.error(f"Error in watch loop: {e}. Reconnecting in 10 seconds.")
-            await asyncio.sleep(10)
+            await sleep(10)
 
 
 class CheapamApp:
@@ -85,7 +85,7 @@ class CheapamApp:
         """Runs the main application loop."""
         await self.setup()
 
-        reconciliation_needed = asyncio.Event()
+        reconciliation_needed = Event()
         watcher_task = asyncio.create_task(node_watcher(reconciliation_needed))
         worker_task = asyncio.create_task(
             reconciliation_worker(reconciliation_needed, self.cluster_hostname)

@@ -1,5 +1,6 @@
 import ipaddress
 import logging
+from asyncio import Event
 from typing import Iterator, List, Optional, cast
 
 import kr8s
@@ -16,19 +17,21 @@ class IPAMReconciler:
 
     ipv4_pool: ipaddress.IPv4Network
     state_cm: ConfigMap
+    reconciliation_event: Event
 
-    def __init__(self, ipv4_pool: ipaddress.IPv4Network, state_cm: ConfigMap):
+    def __init__(self, ipv4_pool: ipaddress.IPv4Network, state_cm: ConfigMap, event: Event):
         self.ipv4_pool = ipv4_pool
         self.state_cm = state_cm
+        self.event = event
 
     @classmethod
-    async def create(cls) -> "IPAMReconciler":
+    async def create(cls, event: Event) -> "IPAMReconciler":
         """
         Asynchronous factory method to create and initialize an IPAMReconciler instance.
         """
         ipv4_pool = await cls._load_ipv4_pool()
         state_cm = await cls._load_or_create_state_cm()
-        return cls(ipv4_pool, state_cm)
+        return cls(ipv4_pool, state_cm, event)
 
     @staticmethod
     async def _load_ipv4_pool() -> ipaddress.IPv4Network:
@@ -70,41 +73,45 @@ class IPAMReconciler:
             logger.info(f"Node '{node.name}' is uninitialized. Fetching details from Hetzner.")
             server = await hetzner.get_server_details(node.name)
             if server:
-                provider_id = f"hcloud://{server.id}"
+                try:
+                    provider_id = f"hcloud://{server.id}"
 
-                assert server.public_net is not None
-                assert server.public_net.ipv4 is not None
-                assert server.public_net.ipv4.ip is not None
+                    assert server.public_net is not None
+                    assert server.public_net.ipv4 is not None
+                    assert server.public_net.ipv4.ip is not None
 
-                # Construct addresses
-                addresses = [
-                    {"type": "ExternalIP", "address": str(server.public_net.ipv4.ip)},
-                    {"type": "InternalIP", "address": str(server.public_net.ipv4.ip)},
-                    {"type": "Hostname", "address": node.name},
-                ]
-                if server.public_net.ipv6:
-                    # The API returns a subnet like "2a01:4f9:c012:7d72::/64".
-                    # We parse it and take the first available host IP (e.g., ...::1).
-                    ipv6_subnet = ipaddress.IPv6Network(ipaddress.ip_network(server.public_net.ipv6.ip))
-                    hosts = cast(Iterator[ipaddress.IPv6Address],ipv6_subnet.hosts())
-                    first_host_ipv6: ipaddress.IPv6Address = next(hosts)
-                    addresses.append({"type": "ExternalIP", "address": str(first_host_ipv6)})
+                    # Construct addresses
+                    addresses = [
+                        {"type": "ExternalIP", "address": str(server.public_net.ipv4.ip)},
+                        {"type": "InternalIP", "address": str(server.public_net.ipv4.ip)},
+                        {"type": "Hostname", "address": node.name},
+                    ]
+                    if server.public_net.ipv6:
+                        # The API returns a subnet like "2a01:4f9:c012:7d72::/64".
+                        # We parse it and take the first available host IP (e.g., ...::1).
+                        ipv6_subnet = ipaddress.IPv6Network(ipaddress.ip_network(server.public_net.ipv6.ip))
+                        hosts = cast(Iterator[ipaddress.IPv6Address],ipv6_subnet.hosts())
+                        first_host_ipv6: ipaddress.IPv6Address = next(hosts)
+                        addresses.append({"type": "ExternalIP", "address": str(first_host_ipv6)})
 
-                # Patch providerID
-                logger.info(f"Setting providerID for node '{node.name}' to '{provider_id}'")
-                await node.patch({"spec": {"providerID": provider_id}})
+                    # Patch providerID
+                    logger.info(f"Setting providerID for node '{node.name}' to '{provider_id}'")
+                    await node.patch({"spec": {"providerID": provider_id}})
 
-                # Patch addresses
-                logger.info(f"Setting addresses for node '{node.name}'")
-                await node.patch({"status": {"addresses": addresses}}, subresource="status")
+                    # Patch addresses
+                    logger.info(f"Setting addresses for node '{node.name}'")
+                    await node.patch({"status": {"addresses": addresses}}, subresource="status")
 
-                # Remove the uninitialized taint
-                logger.info(f"Removing uninitialized taint from node '{node.name}'")
-                taints = [
-                    taint for taint in node.spec.get("taints", [])
-                    if taint.get("key") != "node.cloudprovider.kubernetes.io/uninitialized"
-                ]
-                await node.patch({"spec": {"taints": taints}})
+                    # Remove the uninitialized taint
+                    logger.info(f"Removing uninitialized taint from node '{node.name}'")
+                    taints = [
+                        taint for taint in node.spec.get("taints", [])
+                        if taint.get("key") != "node.cloudprovider.kubernetes.io/uninitialized"
+                    ]
+                    await node.patch({"spec": {"taints": taints}})
+                except Exception as e:
+                    logger.error(e)
+                    self.event.set()
             else:
                 logger.error(f"Could not initialize node '{node.name}', server details not found.")
                 return  # Skip to next node if we can't find it in Hetzner
@@ -184,7 +191,7 @@ class IPAMReconciler:
         logger.info("--- Finished IPAM reconciliation ---")
 
 
-async def reconcile_ipam(nodes: List[Node]) -> None:
+async def reconcile_ipam(nodes: List[Node], event: Event) -> None:
     """Legacy entry point for IPAM reconciliation."""
-    reconciler = await IPAMReconciler.create()
+    reconciler = await IPAMReconciler.create(event)
     await reconciler.reconcile(nodes)
