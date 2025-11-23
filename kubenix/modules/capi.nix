@@ -41,11 +41,7 @@ let
       "cgroup-driver" = "systemd";
       "cloud-provider" = "external";
     };
-    ignorePreflightErrors = [
-      "Swap"
-      # TODO: Remove this when Kubeadm isn't bugged anymore
-      "HTTPProxyCIDR"
-    ];
+    ignorePreflightErrors = [ "Swap" ];
   };
   files = [
     {
