@@ -50,10 +50,21 @@ in
                   toPorts = [
                     {
                       ports = [
+                        # ssh
                         {
                           port = "22";
                           protocol = "TCP";
                         }
+                        # etcd (since node isn't part of cluster when joining)
+                        {
+                          port = "2379";
+                          protocol = "TCP";
+                        }
+                        {
+                          port = "2380";
+                          protocol = "TCP";
+                        }
+                        # apiserver
                         {
                           port = "6443";
                           protocol = "TCP";
