@@ -36,6 +36,7 @@ in
           enableSuperuserAccess = true;
           instances = 2;
           storage.size = "1Gi";
+          storage.storageClass = "local-path";
           managed.roles = {
             _namedlist = true;
             lillecarl = {
