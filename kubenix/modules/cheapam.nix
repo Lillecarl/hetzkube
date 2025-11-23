@@ -30,7 +30,10 @@ in
           [
             {
               apiGroups = [ "" ];
-              resources = [ "nodes" ];
+              resources = [
+                "nodes"
+                "nodes/status"
+              ];
               inherit verbs;
             }
             {
