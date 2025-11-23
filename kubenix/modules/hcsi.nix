@@ -19,7 +19,7 @@ in
     };
     url = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = "https://raw.githubusercontent.com/hetznercloud/csi-driver/v2.17.0/deploy/kubernetes/hcloud-csi.yml";
+      default = "https://raw.githubusercontent.com/hetznercloud/csi-driver/v2.18.1/deploy/kubernetes/hcloud-csi.yml";
     };
   };
   config = lib.mkIf cfg.enable {
