@@ -13,6 +13,7 @@
     ./hcsi.nix
     ./headlamp.nix
     ./keycloak.nix
+    ./local-path-provisioner.nix
     ./metallb.nix
     ./metrics-server.nix
     ./pgadmin.nix

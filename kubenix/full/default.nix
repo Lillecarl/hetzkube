@@ -12,6 +12,7 @@
     external-dns.enable = true;
     hcsi.enable = true;
     keycloak.enable = true;
+    local-path-provisioner.enable = true;
     metallb.enable = true;
     metrics-server.enable = true;
     nix-csi.enable = true;
