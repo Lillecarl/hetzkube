@@ -16,7 +16,7 @@ in
     };
     version = lib.mkOption {
       type = lib.types.str;
-      default = "0.19.0";
+      default = "0.20.0";
     };
   };
   config = lib.mkIf cfg.enable {
