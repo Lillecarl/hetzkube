@@ -23,12 +23,15 @@
       pkgs.writeScriptBin "imagedeploy" # bash
         ''
           #! ${pkgs.runtimeShell}
+          PATH=${lib.makeBinPath [ pkgs.nixos-rebuild-ng ]}:$PATH
           set -x
-          PATH=${lib.makeBinPath [ pkgs.nixos-rebuild ]}:$PATH
           nixos-rebuild switch \
-            --flake .#${config.lib.hetzkube.configName} \
-            --target-host root@${config.lib.hetzkube.ip} \
-            --build-host root@${config.lib.hetzkube.ip}
+            --use-substitutes \
+            --file . \
+            --attr nixosConfigurations.${config.lib.hetzkube.configName} \
+            --target-host root@${config.lib.hetzkube.ip}
+
+            # --build-host root@${config.lib.hetzkube.ip}
         '';
   };
 }

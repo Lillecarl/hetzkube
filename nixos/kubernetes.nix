@@ -67,10 +67,8 @@
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
 
-      unitConfig = {
         # This is our own custom thing, better than imperatively enabling the service
-        ConditionPathExists = "/var/lib/kubelet/config.yaml";
-      };
+      unitConfig.ConditionPathExists = "/var/lib/kubelet/config.yaml";
 
       # Kubelet needs "mount" binary.
       path = with pkgs; [
@@ -83,10 +81,11 @@
           "-/etc/sysconfig/kubelet"
         ];
         ExecStart = "${lib.getExe' pkgs.kubernetes "kubelet"} $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS";
-        Restart = "always";
+        Restart = "on-failure";
         RestartSec = 1;
         RestartMaxDelaySec = 60;
         RestartSteps = 10;
+        WatchdogSec = "10s";
       };
 
       environment = {

@@ -1,9 +1,9 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-compatish.url = "github:lillecarl/flake-compatish";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     srvos = {
@@ -51,7 +51,7 @@
         ./nixos
         {
           lib.hetzkube = {
-            ip = "37.27.91.156";
+            ip = "46.62.244.185";
             configName = "image-x86_64-linux";
           };
         }
