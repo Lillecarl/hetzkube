@@ -15,6 +15,10 @@ in
       type = lib.types.str;
       default = moduleName;
     };
+    version = lib.mkOption {
+      type = lib.types.str;
+      default = "0.38.0";
+    };
     hostname = lib.mkOption {
       type = lib.types.str;
     };
@@ -33,12 +37,12 @@ in
           type = "github";
           owner = "kubernetes-sigs";
           repo = "headlamp";
-          ref = "v0.37.0";
+          ref = "v${cfg.version}";
         }
       }/charts/headlamp";
 
       values = lib.recursiveUpdate {
-        image.tag = "v0.37.0";
+        image.tag = "v${cfg.version}";
         env = [
           {
             name = "OIDC_VALIDATOR_CLIENT_ID";
