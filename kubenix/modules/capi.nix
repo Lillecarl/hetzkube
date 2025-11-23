@@ -49,13 +49,14 @@ let
   };
   files = [
     {
-      path = "/etc/kubernetes/patches/kubeletconfiguration-dns+strategic.json";
+      path = "/etc/kubernetes/patches/kubeletconfiguration+strategic.json";
       owner = "root:root";
       permissions = "0644";
       content = builtins.toJSON {
         apiVersion = "kubelet.config.k8s.io/v1beta1";
         kind = "KubeletConfiguration";
         inherit (config) clusterDNS;
+        imageMaximumGCAge = "12h";
       };
     }
   ];
