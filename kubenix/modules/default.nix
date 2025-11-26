@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ ... }:
 {
   imports = [
     ./capi.nix
@@ -17,5 +17,6 @@
     ./metallb.nix
     ./metrics-server.nix
     ./pgadmin.nix
+    ./sealed-secrets.nix
   ];
 }

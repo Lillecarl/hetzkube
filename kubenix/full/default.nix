@@ -18,5 +18,6 @@
     metrics-server.enable = true;
     nix-csi.enable = true;
     pgadmin.enable = true;
+    sealed-secrets.enable = true;
   };
 }
