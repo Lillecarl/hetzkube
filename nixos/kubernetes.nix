@@ -37,7 +37,7 @@
       let
         dirs = [
           "/var/lib/etcd" # etcd doesn't like COW
-          "/var/lib/containerd" # AI says containerd doesn't like COW
+          # "/var/lib/containerd" # AI says containerd doesn't like COW
         ];
       in
       lib.concatLines (
