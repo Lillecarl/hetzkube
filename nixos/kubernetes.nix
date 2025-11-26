@@ -22,6 +22,8 @@
         plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options.SystemdCgroup = true;
         # Force /opt/cni/bin as CNI folder (all CNI's expect this and put their binaries here)
         plugins."io.containerd.grpc.v1.cri".cni.bin_dir = lib.mkForce "/opt/cni/bin";
+        # https://github.com/containerd/cgroups/issues/378
+        plugins."io.containerd.grpc.v1.cri".disable_hugetlb_controller = true;
       };
     };
 
@@ -67,7 +69,7 @@
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
 
-        # This is our own custom thing, better than imperatively enabling the service
+      # This is our own custom thing, better than imperatively enabling the service
       unitConfig.ConditionPathExists = "/var/lib/kubelet/config.yaml";
 
       # Kubelet needs "mount" binary.
@@ -94,7 +96,7 @@
       };
     };
 
-    ### Code from below is taken from clusterctl default templating stuff
+    # Code from below is taken from clusterctl default templating stuff
     boot.kernelModules = [
       "overlay"
       "br_netfilter"
