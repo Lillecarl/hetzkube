@@ -16,6 +16,9 @@ in
       type = lib.types.str;
       default = "1.18.4";
     };
+    gatewayAPI = (lib.mkEnableOption "gateway api") // {
+      default = true;
+    };
     helmValues = lib.mkOption {
       type = lib.types.anything;
       default = { };
@@ -31,6 +34,19 @@ in
       };
     in
     lib.mkMerge [
+      (lib.mkIf (cfg.enable && cfg.gatewayAPI) {
+        # Configure GatewayAPI version
+        gateway-api.enable = true;
+        gateway-api.version =
+          lib.mkDefault
+            {
+              "1.16" = "1.1.0";
+              "1.17" = "1.2.0";
+              "1.18" = "1.2.0";
+              "1.19" = "1.3.0";
+            }
+            .${lib.versions.majorMinor cfg.version};
+      })
       (lib.mkIf cfg.enable {
         # Disables enforcing policies
         kubernetes.resources.kube-system.ConfigMap.cilium-config.data.policy-audit-mode =
@@ -218,6 +234,10 @@ in
               service.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
               # Policy stuff
               service.labels.ingress = "all";
+            };
+            # Enable gateway API
+            gatewayAPI = {
+              enabled = true;
             };
             # Cilium is quite important
             operator.replicas = 2;
