@@ -46,6 +46,7 @@ flake.impure
       cilium-cli
       kubectl
       kubelogin-oidc
+      kubeseal
       kind
       sops
       age
