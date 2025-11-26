@@ -11,6 +11,7 @@
     coredns.enable = true;
     external-dns.enable = true;
     hcsi.enable = true;
+    headlamp.enable = false;
     keycloak.enable = true;
     local-path-provisioner.enable = true;
     metallb.enable = false;
