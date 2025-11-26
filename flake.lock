@@ -23,11 +23,11 @@
     "easykubenix": {
       "flake": false,
       "locked": {
-        "lastModified": 1763920671,
-        "narHash": "sha256-wC7jq1ZDntWwx8yPeR7J+4brfxwSQp7DbDcjEwVYYAg=",
+        "lastModified": 1763943450,
+        "narHash": "sha256-V88fdoF+TYqLgtfrdM19VdGfubohfhGXqb3BUE/H3zA=",
         "owner": "lillecarl",
         "repo": "easykubenix",
-        "rev": "660174977660b0011bb595818617b9274b5907a1",
+        "rev": "31d4df88afecf586c441c833fba5667a9413180e",
         "type": "github"
       },
       "original": {
@@ -75,11 +75,11 @@
     "nix-csi": {
       "flake": false,
       "locked": {
-        "lastModified": 1763920400,
-        "narHash": "sha256-6OUftAypVahJxIO2v5eDCqlUWIlhsxTfXSSWXGBXuAY=",
+        "lastModified": 1764168178,
+        "narHash": "sha256-2z2KC0OpE0ryHlF5VugyMdo0U1wXkYwC02kA5meLDuA=",
         "owner": "lillecarl",
         "repo": "nix-csi",
-        "rev": "37ec0c59ff1de3a509e4c0107ee5f64aa209e701",
+        "rev": "8edf5faf962fd86832d88d368c8115245cc03fe8",
         "type": "github"
       },
       "original": {
