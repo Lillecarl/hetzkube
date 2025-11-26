@@ -17,14 +17,14 @@ in
     apiToken = lib.mkOption {
       type = lib.types.str;
     };
-    url = lib.mkOption {
+    version = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = "https://raw.githubusercontent.com/hetznercloud/csi-driver/v2.18.1/deploy/kubernetes/hcloud-csi.yml";
+      default = "2.18.2";
     };
   };
   config = lib.mkIf cfg.enable {
     importyaml.${moduleName} = {
-      src = cfg.url;
+      src = "https://raw.githubusercontent.com/hetznercloud/csi-driver/v${cfg.version}/deploy/kubernetes/hcloud-csi.yml";
       overrideNamespace = cfg.namespace;
     };
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
