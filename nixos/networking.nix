@@ -10,8 +10,20 @@
     # Disable DHCP globally as it interferes with CNI operations
     networking.useDHCP = false;
     # Use Cloudflare nameservers, they're quite stable
-    networking.nameservers = lib.mkForce [ ];
+    networking.nameservers = [
+      "1.1.1.1"
+      "2606:4700:4700::1111"
+    ];
+    environment.etc."resolv.conf".text = # resolv
+      ''
+        options edns0 trust-ad
+        search .
+        nameserver 1.1.1.1
+        nameserver 2606:4700:4700::1111
+      '';
     # Enable systemd-networkd
     systemd.network.enable = true;
+    # Disable resolved
+    services.resolved.enable = false;
   };
 }
