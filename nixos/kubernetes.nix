@@ -24,6 +24,9 @@
         plugins."io.containerd.grpc.v1.cri".cni.bin_dir = lib.mkForce "/opt/cni/bin";
         # https://github.com/containerd/cgroups/issues/378
         plugins."io.containerd.grpc.v1.cri".disable_hugetlb_controller = true;
+        # Mount cgroups writable to allow systemd (and by proxy NixOS) in Kubernetes
+        plugins."io.containerd.cri.v1.runtime".containerd.runtimes.runc.cgroup_writable = false;
+
       };
     };
 
