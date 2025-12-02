@@ -85,6 +85,7 @@
         hashedPassword = "$y$j9T$OrH.jbsHxfI2KFYJhaIyk/$sqU6GT8uslzboO0VTRi/ARPd8MJIdSPFKq7WZjSMVK3";
         openssh.authorizedKeys.keyFiles = [
           ../pubkeys/carl.pub
+          ../pubkeys/lillecarlworld.pub
         ];
       };
       users.hetzkube = {
@@ -92,6 +93,7 @@
         extraGroups = [ "wheel" ];
         openssh.authorizedKeys.keyFiles = [
           ../pubkeys/carl.pub
+          ../pubkeys/lillecarlworld.pub
         ];
         shell = pkgs.fish;
       };
