@@ -37,6 +37,7 @@
       }
     },
     "flake-compatish": {
+      "flake": false,
       "locked": {
         "lastModified": 1764453176,
         "narHash": "sha256-/buZfkFEfX8pArH7r3gLaPrWGl/l5y1h5rjcaRrPBAQ=",

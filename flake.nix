@@ -1,7 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-compatish.url = "github:lillecarl/flake-compatish";
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,6 +16,10 @@
     nix2conatiner = {
       url = "github:nlewo/nix2container";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    flake-compatish = {
+      url = "github:lillecarl/flake-compatish";
+      flake = false;
     };
     terranix = {
       url = "github:terranix/terranix";
