@@ -55,6 +55,7 @@
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
       cache.storageClassName = "hcloud-volumes";
+      version = "develop";
     };
     hcsi.apiToken = "{{ hctoken }}";
     kubernetes.resources = lib.mkIf (config.stage == "full") {
