@@ -27,6 +27,9 @@
     clusterServiceCIDR4 = "10.134.0.0/16"; # 65536
     clusterServiceCIDR6 = "fdce:9c4d:dcba::/112"; # 65536
     chaoskube.chaoskube = {
+      labels = {
+        "chaos.alpha.kubernetes.io/disabled" = "";
+      };
       args = {
         no-dry-run = "";
         interval = "15m";
@@ -67,7 +70,6 @@
         "nixbuild.lillecarl.com";
       kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
       nix-csi.StatefulSet.nix-cache.spec.template.metadata.labels."cilium.io/ingress" = "true";
-
 
       kube-system.BitwardenSecret.bws = {
         spec = {

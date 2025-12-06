@@ -25,6 +25,14 @@ in
               type = lib.types.nonEmptyStr;
               default = "kube-system";
             };
+            labels = lib.mkOption {
+              type = lib.types.attrsOf lib.types.str;
+              default = { };
+            };
+            annotations = lib.mkOption {
+              type = lib.types.attrsOf lib.types.str;
+              default = { };
+            };
             version = lib.mkOption {
               type = lib.types.nonEmptyStr;
               default = "v0.37.0";
@@ -87,11 +95,15 @@ in
                   replicas = 1;
                   selector.matchLabels.app = config.name;
                   template = {
-                    metadata.labels.app = config.name;
+                    metadata = {
+                      labels = lib.recursiveUpdate {
+                        app = config.name;
+                      } config.labels;
+                      inherit (config) annotations;
+                    };
                     spec = {
                       serviceAccountName = config.name;
-                      containers = {
-                        _namedlist = true;
+                      containers = lib.mkNamedList {
                         ${config.name} = {
                           image = "ghcr.io/linki/chaoskube:${config.version}";
                           args = toChaosArgs config.args;
