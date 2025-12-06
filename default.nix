@@ -56,6 +56,7 @@ flake.impure
       age
       doggo
       python
+      openssh
     ];
   };
 }
