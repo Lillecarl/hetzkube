@@ -10,8 +10,8 @@
           set -euo pipefail
           set -x
           export NIX_SSHOPTS="-i $PWD/tmp/ed25519-hetzkube"
-          nix --store daemon copy --substitute-on-destination --no-check-sigs --to ssh-ng://nixbuild.lillecarl.com "$1" -v || true
-          cachix push nix-csi "$1"
+          nix copy --substitute-on-destination --no-check-sigs --from local?read-only=true --to ssh-ng://nix@nixbuild.lillecarl.com?port=2222 "$1" -v || true
+          # cachix push nix-csi "$1"
         '';
 
   };
