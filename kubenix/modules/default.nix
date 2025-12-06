@@ -15,6 +15,7 @@
     ./hcsi.nix
     ./headlamp.nix
     ./keycloak.nix
+    ./kro.nix
     ./local-path-provisioner.nix
     ./metallb.nix
     ./metrics-server.nix

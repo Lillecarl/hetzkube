@@ -14,6 +14,7 @@
     hcsi.enable = true;
     headlamp.enable = false;
     keycloak.enable = true;
+    kro.enable = false;
     local-path-provisioner.enable = true;
     metallb.enable = false;
     metrics-server.enable = true;
