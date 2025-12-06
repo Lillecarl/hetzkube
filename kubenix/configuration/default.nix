@@ -50,7 +50,7 @@
     headlamp.hostname = "headlamp.lillecarl.com";
 
     coredns.replicas = 2;
-
+    
     nix-csi = {
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
@@ -67,6 +67,24 @@
         "nixbuild.lillecarl.com";
       kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
       nix-csi.StatefulSet.nix-cache.spec.template.metadata.labels."cilium.io/ingress" = "true";
+
+
+      kube-system.BitwardenSecret.bws = {
+        spec = {
+          organizationId = "a5c85a84-042e-44b8-a07e-b16f00119301";
+          secretName = "bws";
+          map = [
+            {
+              bwSecretId = "98e2b889-3ec2-4660-9b05-b3ad003ecbdd";
+              secretKeyName = "secretName";
+            }
+          ];
+          authToken = {
+            secretName = "bw-auth-token";
+            secretKey = "token";
+          };
+        };
+      };
     };
   };
 }

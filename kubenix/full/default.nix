@@ -1,6 +1,7 @@
 { config, lib, ... }:
 {
   config = lib.mkIf (config.stage == "full") {
+    bitwarden.enable = true;
     capi.enable = true;
     cert-manager.bare = false;
     cert-manager.enable = true;

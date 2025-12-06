@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./bitwarden.nix
     ./capi.nix
     ./cert-manager.nix
     ./chaoskube.nix
