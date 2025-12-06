@@ -1,6 +1,6 @@
 {
   pkgs,
-  pkgsArm,
+  pkgsOff,
   easykubenix,
   nix-csi,
   args,
@@ -19,7 +19,7 @@ in
 import easykubenix {
   inherit pkgs;
   specialArgs = {
-    inherit pkgsArm;
+    inherit pkgsOff;
   };
   modules = [
     ./modules

@@ -15,15 +15,19 @@ let
       (import ./pkgs)
     ];
   };
-  pkgsArm = import flake.inputs.nixpkgs {
-    system = "aarch64-linux";
+  crossAttrs = {
+    "x86_64-linux" = "aarch64-linux";
+    "aarch64-linux" = "x86_64-linux";
+  };
+  pkgsOff = import flake.inputs.nixpkgs {
+    system = crossAttrs.${builtins.currentSystem};
     overlays = [
       (import ./pkgs)
     ];
   };
 
   kubenix = import ./kubenix {
-    inherit pkgs pkgsArm args;
+    inherit pkgs pkgsOff args;
     inherit (flake.inputs) easykubenix nix-csi;
   };
   python = pkgs.python3.withPackages (

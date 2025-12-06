@@ -1,7 +1,7 @@
 {
   config,
   pkgs,
-  pkgsArm,
+  pkgsOff,
   lib,
   ...
 }:
@@ -111,7 +111,7 @@ in
                     driver = "nix.csi.store";
                     readOnly = true;
                     volumeAttributes.${pkgs.stdenv.hostPlatform.system} = pkgs.cheapam;
-                    volumeAttributes.${pkgsArm.stdenv.hostPlatform.system} = pkgsArm.cheapam;
+                    volumeAttributes.${pkgsOff.stdenv.hostPlatform.system} = pkgsOff.cheapam;
                   };
                 }
               ];
