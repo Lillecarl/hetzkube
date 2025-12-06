@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import signal
 from typing import cast
 from urllib.parse import urlparse
 
@@ -82,19 +83,41 @@ class CheapamApp:
             logger.info(f"Operating on cluster: {self.cluster_hostname}")
 
     async def run(self) -> None:
-        """Runs the main application loop."""
+        """Runs the main application loop with signal handling."""
         await self.setup()
 
+        # 1. Setup events and loop
+        loop = asyncio.get_running_loop()
         reconciliation_needed = Event()
+        stop_event = Event()
+
+        # 2. Define signal handler
+        def signal_handler():
+            logger.info("Signal received, initiating shutdown...")
+            stop_event.set()
+
+        # 3. Register handlers for SIGTERM (K8s) and SIGINT (Local)
+        for sig in (signal.SIGTERM, signal.SIGINT):
+            loop.add_signal_handler(sig, signal_handler)
+
+        # 4. Start background tasks
         watcher_task = asyncio.create_task(node_watcher(reconciliation_needed))
         worker_task = asyncio.create_task(
             reconciliation_worker(reconciliation_needed, self.cluster_hostname)
         )
 
-        # No initial reconciliation trigger needed since nodes appear as ADDED
-        # when watch is started
-        await asyncio.gather(watcher_task, worker_task)
+        # 5. Wait until a signal is received
+        logger.info("Application started. Waiting for signals.")
+        await stop_event.wait()
 
+        # 6. Graceful cleanup
+        logger.info("Stopping tasks...")
+        watcher_task.cancel()
+        worker_task.cancel()
+
+        # Wait for tasks to finish cancelling (suppress CancelledError)
+        await asyncio.gather(watcher_task, worker_task, return_exceptions=True)
+        logger.info("Shutdown complete.")
 
 def cli():
     """Main command-line entrypoint."""
