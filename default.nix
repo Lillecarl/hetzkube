@@ -57,6 +57,7 @@ flake.impure
       doggo
       python
       openssh
+      cachix
     ];
   };
 }
