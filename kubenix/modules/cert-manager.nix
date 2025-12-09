@@ -52,8 +52,7 @@ in
           server = "https://acme-staging-v02.api.letsencrypt.org/directory";
           email = cfg.email;
           privateKeySecretRef.name = "le-staging-pk";
-          solvers = {
-            _numberedlist = true;
+          solvers = lib.mkNumberedList {
             "0" = {
               dns01.cloudflare.apiTokenSecretRef = {
                 name = "cloudflare";
@@ -68,8 +67,7 @@ in
           server = "https://acme-v02.api.letsencrypt.org/directory";
           email = cfg.email;
           privateKeySecretRef.name = "le-prod-pk";
-          solvers = {
-            _numberedlist = true;
+          solvers = lib.mkNumberedList {
             "0" = {
               dns01.cloudflare.apiTokenSecretRef = {
                 name = "cloudflare";

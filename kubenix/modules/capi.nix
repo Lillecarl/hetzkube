@@ -170,8 +170,7 @@ in
         controlPlaneEndpoint.port = 6443;
         # No private networking
         hcloudNetwork.enabled = false;
-        hcloudPlacementGroups = {
-          _namedlist = true;
+        hcloudPlacementGroups = lib.mkNamedList {
           control-plane.type = "spread";
           workers.type = "spread";
         };

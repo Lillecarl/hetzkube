@@ -87,8 +87,7 @@ in
                   name = moduleName;
                   command = [ moduleName ];
                   image = "quay.io/nix-csi/scratch:1.0.0";
-                  env = {
-                    _namedlist = true;
+                  env = lib.mkNamedList {
                     PATH.value = "/nix/var/result/bin";
                     PYTHONUNBUFFERED.value = "1";
                     HCLOUD_TOKEN.valueFrom.secretKeyRef = {

@@ -111,8 +111,7 @@ in
               metadata.labels.app = "external-dns";
               spec = {
                 serviceAccountName = "external-dns";
-                containers = {
-                  _namedlist = true;
+                containers = lib.mkNamedList {
                   external-dns = {
                     image = "registry.k8s.io/external-dns/external-dns:v${cfg.version}";
                     args = [

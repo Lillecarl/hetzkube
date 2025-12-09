@@ -43,8 +43,7 @@ in
             inProgress = true;
             reusePVC = false;
           };
-          managed.roles = {
-            _namedlist = true;
+          managed.roles = lib.mkNamedList {
             lillecarl = {
               login = true;
               superuser = true;

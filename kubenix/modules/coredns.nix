@@ -142,8 +142,7 @@ in
               labels.k8s-app = "coredns";
             };
             spec = {
-              containers = {
-                _namedlist = true;
+              containers = lib.mkNamedList {
                 coredns = {
                   args = [
                     "-conf"
@@ -163,8 +162,7 @@ in
                     successThreshold = 1;
                     timeoutSeconds = 5;
                   };
-                  ports = {
-                    _namedlist = true;
+                  ports = lib.mkNamedList {
                     udp-53 = {
                       containerPort = 53;
                       protocol = "UDP";
