@@ -1,11 +1,17 @@
 { pkgs, ... }:
 {
   kluctl = {
+    # Add SOPS secrets
     deployment.vars = [ { file = "secrets/all.yaml"; } ];
     files."secrets/all.yaml" = builtins.readFile ../../secrets/all.yaml;
     # Disable templating for default resource project
     files."default/.templateignore" = "*";
     # Put priorities on resources, this also excludes the from the templateignore above
+    resourcePriority = {
+      Namespace = 10;
+      CustomResourceDefinition = 10;
+      Secret = 20;
+    };
     preDeployScript =
       pkgs.writeScriptBin "preDeployScript" # bash
         ''
