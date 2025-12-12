@@ -49,6 +49,7 @@ flake.impure
       clusterctl
       cilium-cli
       kubectl
+      kubectl-cnpg
       kubelogin-oidc
       kubeseal
       kind
