@@ -60,7 +60,6 @@
       cache.storageClassName = "hcloud-volumes";
       version = "develop";
     };
-    hcsi.apiToken = "{{ hctoken }}";
     bitwarden.helmValues = {
       settings.bwSecretsManagerRefreshInterval = 180;
     };

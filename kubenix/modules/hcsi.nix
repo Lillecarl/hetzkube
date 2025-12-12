@@ -10,9 +10,6 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
-    apiToken = lib.mkOption {
-      type = lib.types.str;
-    };
     version = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = "2.18.2";
