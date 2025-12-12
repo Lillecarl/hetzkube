@@ -15,6 +15,7 @@
     headlamp.enable = false;
     keycloak.enable = true;
     kro.enable = false;
+    # kube-prometheus-stack.enable = true;
     local-path-provisioner.enable = true;
     metallb.enable = false;
     metrics-server.enable = true;

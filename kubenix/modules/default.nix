@@ -16,6 +16,7 @@
     ./headlamp.nix
     ./keycloak.nix
     ./kro.nix
+    ./kube-prometheus-stack.nix
     ./local-path-provisioner.nix
     ./metallb.nix
     ./metrics-server.nix
