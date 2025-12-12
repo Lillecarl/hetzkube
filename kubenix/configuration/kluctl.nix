@@ -3,6 +3,9 @@
   kluctl = {
     deployment.vars = [ { file = "secrets/all.yaml"; } ];
     files."secrets/all.yaml" = builtins.readFile ../../secrets/all.yaml;
+    # Disable templating for default resource project
+    files."default/.templateignore" = "*";
+    # Put priorities on resources, this also excludes the from the templateignore above
     preDeployScript =
       pkgs.writeScriptBin "preDeployScript" # bash
         ''
