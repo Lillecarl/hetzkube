@@ -19,6 +19,10 @@ in
       type = lib.types.anything;
       default = { };
     };
+    secretMapping = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = {};
+    };
   };
   config =
     let
