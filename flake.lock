@@ -23,11 +23,11 @@
     "easykubenix": {
       "flake": false,
       "locked": {
-        "lastModified": 1763943450,
-        "narHash": "sha256-V88fdoF+TYqLgtfrdM19VdGfubohfhGXqb3BUE/H3zA=",
+        "lastModified": 1765533369,
+        "narHash": "sha256-Rvg9FXoeuyK4UAlfFfmPp2b1o5ddj5iyr4S5PBcCIj0=",
         "owner": "lillecarl",
         "repo": "easykubenix",
-        "rev": "31d4df88afecf586c441c833fba5667a9413180e",
+        "rev": "f6ac33b8e09f90b646fed408bf299666807b5661",
         "type": "github"
       },
       "original": {
