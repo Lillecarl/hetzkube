@@ -71,7 +71,24 @@ in
     kubernetes.resources.none.Namespace.${clusterName} = { };
     kubernetes.resources.${clusterName} = {
       # hcloud token, templated from SOPS with kluctl
-      Secret.hetzner.stringData.hcloud = "{{ hctoken }}";
+      # Secret.hetzner.stringData.hcloud = "{{ hctoken }}";
+      Secret.bw-auth-token.stringData.token = "{{ bwtoken }}";
+      BitwardenSecret.hcloud = {
+        spec = {
+          organizationId = "a5c85a84-042e-44b8-a07e-b16f00119301";
+          secretName = "hcloud";
+          map = [
+            {
+              bwSecretId = "4a2e1d5f-f44a-4034-afe1-b3b100adf118";
+              secretKeyName = "token";
+            }
+          ];
+          authToken = {
+            secretName = "bw-auth-token";
+            secretKey = "token";
+          };
+        };
+      };
 
       # Contol plane
       KubeadmControlPlane."${clusterName}-control-plane".spec = {

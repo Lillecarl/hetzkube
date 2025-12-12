@@ -22,6 +22,5 @@ in
     importyaml.${moduleName} = {
       src = "https://raw.githubusercontent.com/hetznercloud/csi-driver/v${cfg.version}/deploy/kubernetes/hcloud-csi.yml";
     };
-    kubernetes.resources.kube-system.Secret.hcloud.stringData.token = cfg.apiToken;
   };
 }

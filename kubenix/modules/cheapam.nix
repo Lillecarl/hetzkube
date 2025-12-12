@@ -73,7 +73,23 @@ in
         ];
       };
 
-      kube-system.Secret.hcloud-cheapam.stringData.token = "{{ hctoken }}";
+      # kube-system.Secret.hcloud-cheapam.stringData.token = "{{ hctoken }}";
+      kube-system.BitwardenSecret.hcloud-cheapam = {
+        spec = {
+          organizationId = "a5c85a84-042e-44b8-a07e-b16f00119301";
+          secretName = "hcloud-cheapam";
+          map = [
+            {
+              bwSecretId = "4a2e1d5f-f44a-4034-afe1-b3b100adf118";
+              secretKeyName = "token";
+            }
+          ];
+          authToken = {
+            secretName = "bw-auth-token";
+            secretKey = "token";
+          };
+        };
+      };
       kube-system.Deployment.cheapam = {
         spec = {
           replicas = 1;
