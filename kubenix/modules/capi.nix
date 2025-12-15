@@ -32,14 +32,11 @@ let
       key = "node-role.kubernetes.io/control-plane";
     }
   ];
-  # ImageVolume for CNPG, KubeletPSI because it's cool
+  # Remove these and use patching instead?
   featureGates = "ImageVolume=true,KubeletPSI=true,ContainerRestartRules=true";
   nodeRegistration = {
     kubeletExtraArgs = {
-      "feature-gates" = featureGates;
-      "fail-swap-on" = "false";
-      "cgroup-driver" = "systemd";
-      "cloud-provider" = "external";
+      cloud-provider = "external";
     };
     ignorePreflightErrors = [ "Swap" ];
   };
@@ -56,6 +53,14 @@ let
         shutdownGracePeriod = "30s";
         shutdownGracePeriodCriticalPods = "10s";
         resolvConf = "/etc/resolv.conf";
+        featureGates = {
+          ImageVolume = true;
+          KubeletPSI = true;
+          ContainerRestartRules = true;
+        };
+        failSwapOn = false;
+        cgroupDriver = "systemd";
+        cloudProvider = "external";
       };
     }
   ];
