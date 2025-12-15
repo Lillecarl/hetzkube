@@ -59,6 +59,7 @@ flake.impure
       python
       openssh
       cachix
+      yamlfmt
     ];
   };
 }
