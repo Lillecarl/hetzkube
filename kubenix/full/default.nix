@@ -22,5 +22,6 @@
     nix-csi.enable = true;
     pgadmin.enable = true;
     sealed-secrets.enable = true;
+    vertical-pod-autoscaler.enable = true;
   };
 }

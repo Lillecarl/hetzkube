@@ -63,6 +63,13 @@
     bitwarden.helmValues = {
       settings.bwSecretsManagerRefreshInterval = 180;
     };
+    vertical-pod-autoscaler.helmValues = {
+      admissionController.certManager.enabled = true;
+      recommender.extraArgs = [
+        "--pod-recommendation-min-memory-mb=0"
+        "--pod-recommendation-min-cpu-millicores=0"
+      ];
+    };
     kubernetes.resources = lib.mkIf (config.stage == "full") {
       nix-csi.Service.nix-cache-lb.metadata.annotations."metallb.io/allow-shared-ip" = "true";
       nix-csi.Service.nix-cache-lb.metadata.annotations."lbipam.cilium.io/sharing-key" = "*";

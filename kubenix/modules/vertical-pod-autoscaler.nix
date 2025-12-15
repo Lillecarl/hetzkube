@@ -28,19 +28,21 @@ in
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
     helm.releases.${moduleName} = {
       namespace = cfg.namespace;
+      includeCRDs = true;
 
       chart = "${
         builtins.fetchTree {
           type = "github";
-          owner = "kubernetes";
-          repo = "autoscaler";
-          # ref = "vpa-release-${cfg.version}";
-          ref = "master";
+          owner = "stevehipwell";
+          repo = "helm-charts";
+          ref = "main";
         }
-      }/vertical-pod-autoscaler/charts/vertical-pod-autoscaler";
+      }/charts/vertical-pod-autoscaler";
 
       values = lib.recursiveUpdate {
       } cfg.helmValues;
     };
+    kubernetes.apiMappings.VerticalPodAutoscaler = "autoscaling.k8s.io/v1";
+    kubernetes.namespacedMappings.VerticalPodAutoscaler = true;
   };
 }
