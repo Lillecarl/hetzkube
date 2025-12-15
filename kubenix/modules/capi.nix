@@ -55,6 +55,7 @@ let
         imageMaximumGCAge = "12h";
         shutdownGracePeriod = "30s";
         shutdownGracePeriodCriticalPods = "10s";
+        resolvConf = "/etc/resolv.conf";
       };
     }
   ];
