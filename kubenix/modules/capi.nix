@@ -267,7 +267,7 @@ in
         metadata.labels.nodepool = "${clusterName}-workers-x86";
         spec = {
           inherit clusterName;
-          replicas = 0;
+          replicas = 1;
           selector = { };
           template = {
             metadata.labels.nodepool = "${clusterName}-workers-x86";
@@ -321,7 +321,7 @@ in
       HCloudMachineTemplate."${clusterName}-workers-x86".spec.template.spec = {
         imageName = "2505-x86";
         placementGroupName = "workers";
-        type = "cx23";
+        type = "cx33";
       };
 
       # arm64 pool
