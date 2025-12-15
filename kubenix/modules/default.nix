@@ -22,5 +22,6 @@
     ./metrics-server.nix
     ./pgadmin.nix
     ./sealed-secrets.nix
+    ./vertical-pod-autoscaler.nix
   ];
 }
