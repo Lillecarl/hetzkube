@@ -4,6 +4,7 @@
   ...
 }:
 let
+  topConfig = config;
   moduleName = "chaoskube";
   toChaosArgs =
     args: lib.mapAttrsToList (n: v: if lib.stringLength v > 0 then "--${n}=${v}" else "--${n}") args;
@@ -36,6 +37,10 @@ in
             version = lib.mkOption {
               type = lib.types.nonEmptyStr;
               default = "v0.37.0";
+            };
+            vpa = lib.mkOption {
+              type = lib.types.bool;
+              default = topConfig.vertical-pod-autoscaler.enable;
             };
             args = lib.mkOption {
               type = lib.types.attrsOf lib.types.str;
@@ -111,6 +116,26 @@ in
                       };
                     };
                   };
+                };
+
+                VerticalPodAutoscaler.chaoskube = lib.mkIf config.vpa {
+                  spec.targetRef = {
+                    apiVersion = "apps/v1";
+                    kind = "Deployment";
+                    name = config.name;
+                  };
+
+                  # Automatically evicts and resizes pods
+                  spec.updatePolicy.updateMode = "InPlaceOrRecreate";
+
+                  # Optional: Prevent VPA from requesting too little or too much
+                  # spec.resourcePolicy.containerPolicies = [
+                  #   {
+                  #     containerName = "*";
+                  #     minAllowed.cpu = "10m";
+                  #     minAllowed.memory = "15Mi";
+                  #   }
+                  # ];
                 };
               };
             };
