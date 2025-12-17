@@ -18,6 +18,7 @@
     virtualisation.containerd = {
       enable = true;
       settings = {
+        version = lib.mkForce 3;
         # Use systemd cgroups, this will tell Kubernetes to do the same
         plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options.SystemdCgroup = true;
         # Force /opt/cni/bin as CNI folder (all CNI's expect this and put their binaries here)
