@@ -43,8 +43,38 @@
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
       cache.enable = true;
+      builders.enable = true;
       cache.storageClassName = "hcloud-volumes";
-      # version = "develop";
+      authorizedKeys = [
+        (builtins.readFile ../../pubkeys/carl.pub)
+        (builtins.readFile ../../pubkeys/lillecarlworld.pub)
+      ];
+      loggingConfig = {
+        version = 1;
+        formatters = {
+          standard = {
+            format = "%(asctime)s %(levelname)s [%(name)s] %(message)s";
+          };
+        };
+        handlers = {
+          console = {
+            class = "logging.StreamHandler";
+            formatter = "standard";
+            stream = "ext://sys.stdout";
+          };
+        };
+        loggers = {
+          "nix-csi" = {
+            level = "DEBUG";
+            handlers = [ "console" ];
+            propagate = false;
+          };
+        };
+        root = {
+          level = "WARN";
+          handlers = [ "console" ];
+        };
+      };
     };
     bitwarden.helmValues = {
       settings.bwSecretsManagerRefreshInterval = 180;
