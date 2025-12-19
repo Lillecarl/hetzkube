@@ -42,6 +42,7 @@
     nix-csi = {
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
+      cache.enable = true;
       cache.storageClassName = "hcloud-volumes";
       # version = "develop";
     };
@@ -62,7 +63,9 @@
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixbuild.lillecarl.com";
       kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
-      nix-csi.StatefulSet.nix-cache.spec.template.metadata.labels."cilium.io/ingress" = "true";
+      nix-csi.StatefulSet = lib.mkIf config.nix-csi.cache.enable {
+        nix-cache.spec.template.metadata.labels."cilium.io/ingress" = "true";
+      };
 
       kube-system.Secret.bw-auth-token.stringData.token = "{{ bwtoken }}";
       kube-system.BitwardenSecret.hcloud = {
