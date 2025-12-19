@@ -8,6 +8,7 @@
     ./cert-manager.nix
     ./chaoskube.nix
     ./cilium.nix
+    ./external-secrets.nix
     ./kluctl.nix
   ];
   options.stage = lib.mkOption {
@@ -42,7 +43,7 @@
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
       cache.storageClassName = "hcloud-volumes";
-      version = "develop";
+      # version = "develop";
     };
     bitwarden.helmValues = {
       settings.bwSecretsManagerRefreshInterval = 180;
