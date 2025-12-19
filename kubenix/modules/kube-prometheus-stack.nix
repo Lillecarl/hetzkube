@@ -46,7 +46,7 @@ in
 
       values = lib.recursiveUpdate {
         crds.enabled = true;
-        prometheusOperator.admissionWebhooks.certManager.enabled = true;
+        prometheusOperator.admissionWebhooks.certManager.enabled = config.cert-manager.enable;
       } cfg.helmValues;
     };
   };

@@ -64,7 +64,7 @@
       settings.bwSecretsManagerRefreshInterval = 180;
     };
     vertical-pod-autoscaler.helmValues = {
-      admissionController.certManager.enabled = true;
+      admissionController.certManager.enabled = config.cert-manager.enable;
       recommender.extraArgs = [
         "--pod-recommendation-min-memory-mb=0"
         "--pod-recommendation-min-cpu-millicores=0"
