@@ -159,7 +159,7 @@ in
             name = "${clusterName}-control-plane";
           };
         };
-        replicas = 3;
+        replicas = 1;
         version = "v${pkgs.kubernetes.version}"; # beware to make images!
       };
       Cluster.${clusterName} = {
