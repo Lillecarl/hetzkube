@@ -22,7 +22,7 @@
         cluster.name = config.clusterName;
         # Enable IPv6 masquerading until we have a better solution
         enableIPv6Masquerade = false;
-        # Disable LB IPAM, we use MetalLB for this
+        # Use LB IPAM, managed by cheapam
         enableLBIPAM = true;
         # Use cheapam to configure
         ipam.mode = "kubernetes";
@@ -62,7 +62,6 @@
           # Only one LB service since we don't have unlimited IP port combos
           loadbalancerMode = "shared";
           # Allow sharing IP with other LB services
-          service.annotations."metallb.io/allow-shared-ip" = "true";
           service.annotations."lbipam.cilium.io/sharing-key" = "*";
           service.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
           # Policy stuff

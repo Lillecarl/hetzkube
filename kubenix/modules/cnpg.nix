@@ -80,7 +80,6 @@ in
             serviceTemplate = {
               metadata.labels.app = "pooler";
               metadata.labels."cilium.io/ingress" = "true";
-              metadata.annotations."metallb.io/allow-shared-ip" = "true";
               metadata.annotations."lbipam.cilium.io/sharing-key" = "*";
               metadata.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
               spec.type = "LoadBalancer";

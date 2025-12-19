@@ -6,13 +6,13 @@ from asyncio import Event
 from kr8s.asyncio.objects import Node
 
 from . import config
-from .kr8s_objects import CiliumLoadBalancerIPPool, IPAddressPool, DNSEndpoint
+from .kr8s_objects import CiliumLoadBalancerIPPool, DNSEndpoint
 
 logger = logging.getLogger(__name__)
 
 
 class ExternalResourcesUpdater:
-    """Handles updates to external resources like MetalLB IPAddressPool and external-dns DNSEndpoint."""
+    """Handles updates to external resources like CiliumLoadbalancerIPPool and external-dns DNSEndpoint."""
 
     event: Event
 
@@ -47,9 +47,9 @@ class ExternalResourcesUpdater:
         return service_subnets, cp_addresses4, cp_addresses6
 
     async def _update_ip_address_pool(self, service_subnets: List[str]) -> None:
-        """Creates or patches the LoadBalancer IPAddressPool."""
+        """Creates or patches the LoadBalancer CiliumLoadbalancerIPPool."""
         if not service_subnets:
-            logger.warning("No ExternalIPs found. IPAddressPool will not be modified.")
+            logger.warning("No ExternalIPs found. CiliumLoadbalancerIPPool will not be modified.")
             return
 
         ippool_spec = {
@@ -65,7 +65,7 @@ class ExternalResourcesUpdater:
                 await ippool.create()
                 logger.info(f"Created {ippool.kind} '{ippool.name}'")
         except Exception as e:
-            logger.error(f"An error occurred updating IPAddressPool: {e}")
+            logger.error(f"An error occurred updating CiliumLoadbalancerIPPool: {e}")
             logger.error(f"{ippool_spec=}")
             self.event.set()
 
@@ -96,7 +96,7 @@ class ExternalResourcesUpdater:
 
     async def update(self, nodes: List[Node], cluster_hostname: str) -> None:
         """
-        Creates/patches MetalLB IPAddressPool and external-dns DNSEndpoint.
+        Creates/patches CiliumLoadbalancerIPPool and external-dns DNSEndpoint.
 
         Args:
             nodes: List of current Node objects.

@@ -42,11 +42,6 @@ in
               inherit verbs;
             }
             {
-              apiGroups = [ "metallb.io" ];
-              resources = [ "ipaddresspools" ];
-              inherit verbs;
-            }
-            {
               apiGroups = [ "cilium.io" ];
               resources = [ "ciliumloadbalancerippools" ];
               inherit verbs;

@@ -116,8 +116,6 @@ nix run --file . kubenix.deploymentScript --argstr stage full
 ```
 See kubenix/default.nix stage for what's being deployed.
 ## 6 DNS ownership
-TODO: Deploy "ippool-updater" (The thingy that maintains MetalLB IPAddressPool
-and DNSEndpoint resources with node IP's)
 Easiest way to make external-dns take ownership of your controlplane addresses
 is to just remove the address and wait one reconciliation period.
 
