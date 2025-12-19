@@ -6,6 +6,7 @@
 {
   imports = [
     ./kluctl.nix
+    ./cilium.nix
   ];
   options.stage = lib.mkOption {
     type = lib.types.enum [

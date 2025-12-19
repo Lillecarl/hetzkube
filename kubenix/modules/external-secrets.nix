@@ -43,8 +43,8 @@ in
         };
 
         values = lib.recursiveUpdate {
-          image.tag = "v${cfg.version}";
-          certManager.enabled = config.cert-manager.enable;
+          image.tag = lib.mkDefault "v${cfg.version}";
+          certManager.enabled = lib.mkDefault config.cert-manager.enable;
         } cfg.helmValues;
       };
       importyaml.${moduleName} = {
