@@ -10,92 +10,30 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
-    url = lib.mkOption {
+    version = lib.mkOption {
       type = lib.types.nonEmptyStr;
-      default = "https://github.com/cert-manager/cert-manager/releases/download/v1.19.1/cert-manager.yaml";
-    };
-    bare = lib.mkOption {
-      type = lib.types.bool;
-    };
-    email = lib.mkOption {
-      type = lib.types.nonEmptyStr;
+      default = "1.19.1";
     };
   };
-  config = lib.mkMerge [
-    {
-      kubernetes.apiMappings = {
-        Certificate = "cert-manager.io/v1";
-        CertificateRequest = "cert-manager.io/v1";
-        Challenge = "acme.cert-manager.io/v1";
-        ClusterIssuer = "cert-manager.io/v1";
-        Issuer = "cert-manager.io/v1";
-        Order = "acme.cert-manager.io/v1";
-      };
-      kubernetes.namespacedMappings = {
-        Certificate = true;
-        CertificateRequest = true;
-        Challenge = true;
-        ClusterIssuer = true;
-        Issuer = true;
-        Order = true;
-      };
-    }
-    (lib.mkIf cfg.enable {
-      importyaml.${moduleName} = {
-        src = cfg.url;
-      };
-    })
-    (lib.mkIf (cfg.enable && !cfg.bare) {
-      kubernetes.resources.cert-manager = {
-        # Secret.cloudflare.stringData.token = "{{ cftoken }}";
-        Secret.bw-auth-token.stringData.token = "{{ bwtoken }}";
-        BitwardenSecret.cloudflare = {
-          spec = {
-            organizationId = "a5c85a84-042e-44b8-a07e-b16f00119301";
-            secretName = "cloudflare";
-            map = [
-              {
-                bwSecretId = "92277b8d-37e0-434f-b30f-b3b100adcc03";
-                secretKeyName = "token";
-              }
-            ];
-            authToken = {
-              secretName = "bw-auth-token";
-              secretKey = "token";
-            };
-          };
-        };
-      };
-      kubernetes.resources.none.ClusterIssuer.le-staging.spec = {
-        acme = {
-          server = "https://acme-staging-v02.api.letsencrypt.org/directory";
-          email = cfg.email;
-          privateKeySecretRef.name = "le-staging-pk";
-          solvers = lib.mkNumberedList {
-            "0" = {
-              dns01.cloudflare.apiTokenSecretRef = {
-                name = "cloudflare";
-                key = "token";
-              };
-            };
-          };
-        };
-      };
-      kubernetes.resources.none.ClusterIssuer.le-prod.spec = {
-        acme = {
-          server = "https://acme-v02.api.letsencrypt.org/directory";
-          email = cfg.email;
-          privateKeySecretRef.name = "le-prod-pk";
-          solvers = lib.mkNumberedList {
-            "0" = {
-              dns01.cloudflare.apiTokenSecretRef = {
-                name = "cloudflare";
-                key = "token";
-              };
-            };
-          };
-        };
-      };
-    })
-  ];
+  config = lib.mkIf cfg.enable {
+    importyaml.${moduleName} = {
+      src = "https://github.com/cert-manager/cert-manager/releases/download/v${cfg.version}/cert-manager.yaml";
+    };
+    kubernetes.apiMappings = {
+      Certificate = "cert-manager.io/v1";
+      CertificateRequest = "cert-manager.io/v1";
+      Challenge = "acme.cert-manager.io/v1";
+      ClusterIssuer = "cert-manager.io/v1";
+      Issuer = "cert-manager.io/v1";
+      Order = "acme.cert-manager.io/v1";
+    };
+    kubernetes.namespacedMappings = {
+      Certificate = true;
+      CertificateRequest = true;
+      Challenge = true;
+      ClusterIssuer = true;
+      Issuer = true;
+      Order = true;
+    };
+  };
 }

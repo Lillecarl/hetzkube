@@ -5,8 +5,10 @@
 }:
 {
   imports = [
-    ./kluctl.nix
+    ./cert-manager.nix
+    ./chaoskube.nix
     ./cilium.nix
+    ./kluctl.nix
   ];
   options.stage = lib.mkOption {
     type = lib.types.enum [
@@ -27,27 +29,8 @@
     clusterPodCIDR6 = "fdce:9c4d:abcd::/48"; # Very big
     clusterServiceCIDR4 = "10.134.0.0/16"; # 65536
     clusterServiceCIDR6 = "fdce:9c4d:dcba::/112"; # 65536
-    chaoskube.chaoskube = {
-      labels = {
-        "chaos.alpha.kubernetes.io/disabled" = "";
-      };
-      args = {
-        no-dry-run = "";
-        interval = "15m";
-        minimum-age = "6h";
-        timezone = "Europe/Stockholm";
-        # Don't kill primary databases, CNPG takes awhile to recover
-        # Don't kill k8s control-plane components
-        labels = "cnpg.io/instanceRole!=primary,tier!=control-plane";
-        # Allow annotation to disable chaoskube targeting
-        annotations = "!chaos.alpha.kubernetes.io/disabled";
-      };
-    };
 
-    # If you don't set an SSH key Hetzner will kindly mail you invalid
-    # credentials every time a server is created. Upload a key and set name
     capi.keyName = "lillecarl@lillecarl.com";
-    cert-manager.email = "le@lillecarl.com";
     # Must match with OIDC
     keycloak.hostname = "keycloak.lillecarl.com";
     pgadmin.hostname = "pgadmin.lillecarl.com";
