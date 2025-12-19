@@ -11,6 +11,7 @@
     cnpg.enable = true;
     coredns.enable = true;
     external-dns.enable = true;
+    external-secrets.enable = true;
     hcsi.enable = true;
     headlamp.enable = false;
     keycloak.enable = true;

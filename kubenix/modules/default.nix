@@ -11,6 +11,7 @@
     ./cnpg.nix
     ./coredns.nix
     ./external-dns.nix
+    ./external-secrets.nix
     ./gateway-api.nix
     ./hcsi.nix
     ./headlamp.nix
