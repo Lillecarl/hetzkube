@@ -47,8 +47,8 @@
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
       cache.enable = true;
+      builders.enable = true;
       cache.storageClassName = "hcloud-volumes";
-      # version = "develop";
     };
     bitwarden.helmValues = {
       settings.bwSecretsManagerRefreshInterval = 180;
