@@ -14,6 +14,10 @@ in
     enable = lib.mkEnableOption moduleName;
   };
   config = lib.mkIf cfg.enable {
+    copyDerivations = [
+      pkgs.cheapam
+      pkgsOff.cheapam
+    ];
     kubernetes.resources = {
       kube-system.ServiceAccount.${moduleName} = { };
       none.ClusterRole.${moduleName} = {

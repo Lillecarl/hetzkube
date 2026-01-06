@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, lib, ... }:
 {
   kluctl = {
     # Add SOPS secrets
@@ -12,16 +12,16 @@
       CustomResourceDefinition = 10;
       Secret = 20;
     };
-    preDeployScript =
-      pkgs.writeScriptBin "preDeployScript" # bash
-        ''
-          #! ${pkgs.runtimeShell}
-          set -euo pipefail
-          set -x
-          export NIX_SSHOPTS="-i $PWD/tmp/ed25519-hetzkube"
-          nix copy --substitute-on-destination --no-check-sigs --from local?read-only=true --to ssh-ng://nix@nixbuild.lillecarl.com?port=2222 "$1" -v || true
-          # cachix push nix-csi "$1"
-        '';
+    preDeployScript = # bash
+      ''
+        nix copy \
+          --substitute-on-destination \
+          --no-check-sigs \
+          --from local?read-only=true \
+          --to ssh-ng://nix@nixbuild.lillecarl.com?port=2222 \
+          ${lib.join " " config.copyDerivations} \
+          -vvvvv || true
+      '';
 
   };
 }

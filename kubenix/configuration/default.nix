@@ -18,6 +18,10 @@
     ];
     default = "full";
   };
+  options.copyDerivations = lib.mkOption {
+    type = lib.types.listOf lib.types.package;
+    default = [];
+  };
   config = {
     clusterName = "hetzkube";
     clusterHost = "kubernetes.lillecarl.com";
