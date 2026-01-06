@@ -26,7 +26,7 @@
           --substitute-on-destination \
           --no-check-sigs \
           --to ssh-ng://nix@nixcache.lillecarl.com?port=2222 \
-          ${lib.join " " config.copyDerivations} \
+          ${lib.join " " config.copyDerivations} ${config.internal.manifestJSONFile} \
           -v || true
           # --from local?read-only=true \
       '';
