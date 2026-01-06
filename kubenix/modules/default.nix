@@ -1,4 +1,4 @@
-{ ... }:
+{ config, lib, ... }:
 {
   imports = [
     ./bitwarden.nix
@@ -28,4 +28,11 @@
     ./sealed-secrets.nix
     ./vertical-pod-autoscaler.nix
   ];
+  options.hlib = lib.mkOption {
+    type = lib.types.anything;
+    default = {};
+  };
+  config = {
+    _module.args.hlib = config.hlib;
+  };
 }
