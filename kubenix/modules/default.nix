@@ -9,6 +9,7 @@
     ./cilium.nix
     ./clusteroptions.nix
     ./cnpg.nix
+    ./csi-driver-smb.nix
     ./coredns.nix
     ./external-dns.nix
     ./external-secrets.nix
