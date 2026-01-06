@@ -33,9 +33,9 @@ in
       helm.releases.${moduleName} = {
         namespace = "kube-system";
         chart = "${src}/helm";
-        
+
         values = lib.recursiveUpdate {
-          image.tag = "v${cfg.version}";  
+          image.tag = "v${cfg.version}";
         } cfg.helmValues;
       };
     };
