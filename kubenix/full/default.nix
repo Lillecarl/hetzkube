@@ -7,6 +7,7 @@
     coredns.enable = true;
     external-dns.enable = true;
     external-secrets.enable = true;
+    fullstopslop.enable = true;
     hcsi.enable = true;
     headlamp.enable = false;
     keycloak.enable = true;
