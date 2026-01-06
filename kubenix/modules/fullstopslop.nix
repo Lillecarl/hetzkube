@@ -4,6 +4,7 @@
   pkgsOff,
   lib,
   eso,
+  subPath,
   ...
 }:
 let
@@ -21,9 +22,14 @@ in
           users ? [ 1000 ],
           groups ? [ 1000 ],
         }:
+        let
+          mapToStr = list: lib.map (x: toString x) list;
+          uids = mapToStr users;
+          gids = mapToStr groups;
+        in
         pkgs.dockerTools.fakeNss.override {
-          extraPasswdLines = lib.map (uid: "${uid}:x:${uid}:${uid}::/home/${uid}:${pkgs.runtimeShell}") users;
-          extraGroupLines = lib.map (gid: "${gid}:x:${gid}:") groups;
+          extraPasswdLines = lib.map (uid: "${uid}:x:${uid}:${uid}::/home/${uid}:${pkgs.runtimeShell}") uids;
+          extraGroupLines = lib.map (gid: "${gid}:x:${gid}:") gids;
         };
 
       root = pkgs.writeShellApplication {
@@ -161,7 +167,7 @@ in
           in
           {
             spec = {
-              schedule = "0 */5 * * 1-5";
+              schedule = "*/15 * * * *"; # Run every 15 minutes, we have checks to don't work unless we should
               concurrencyPolicy = "Forbid";
               jobTemplate.spec = {
                 backoffLimit = 10;
@@ -180,19 +186,28 @@ in
                         image = "quay.io/nix-csi/scratch:1.0.1";
                         env = lib.mkNamedList {
                           # INIT_SLEEP.value = "600";
+                          HOME.value = "/home/1000";
                           GH_PAT.valueFrom.secretKeyRef = {
                             name = "github-pat";
                             key = "token";
                           };
                         };
-                        volumeMounts = lib.mkNamedList {
-                          nix-csi.mountPath = "/nix";
-                          home.mountPath = "/home/1000";
-                          # claude-secret = {
-                          #   mountPath = "/var/run/secrets/claude";
-                          #   readOnly = true;
-                          # };
-                        };
+                        volumeMounts = [
+                          {
+                            name = "nix-csi";
+                            mountPath = "/nix";
+                            subPath = "nix";
+                          }
+                          {
+                            name = "nix-csi";
+                            mountPath = "/etc/ssl/certificates";
+                            subPath = subPath "${env}/etc/ssl/certificates";
+                          }
+                          {
+                            name = "home";
+                            mountPath = "/home/1000";
+                          }
+                        ];
                       };
                     };
                     volumes = lib.mkNamedList {
