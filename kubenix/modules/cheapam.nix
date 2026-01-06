@@ -97,9 +97,8 @@ in
             metadata.labels.app = moduleName;
             spec = {
               serviceAccountName = moduleName;
-              containers = [
-                {
-                  name = moduleName;
+              containers = lib.mkNamedList {
+                ${moduleName} = {
                   command = [ moduleName ];
                   image = "quay.io/nix-csi/scratch:1.0.0";
                   env = lib.mkNamedList {
@@ -116,19 +115,16 @@ in
                       mountPath = "/nix";
                     }
                   ];
-                }
-              ];
-              volumes = [
-                {
-                  name = "nix-csi";
-                  csi = {
-                    driver = "nix.csi.store";
-                    readOnly = true;
-                    volumeAttributes.${pkgs.stdenv.hostPlatform.system} = pkgs.cheapam;
-                    volumeAttributes.${pkgsOff.stdenv.hostPlatform.system} = pkgsOff.cheapam;
-                  };
-                }
-              ];
+                };
+              };
+              volumes = lib.mkNamedList {
+                nix-csi.csi = {
+                  driver = "nix.csi.store";
+                  readOnly = true;
+                  volumeAttributes.${pkgs.stdenv.hostPlatform.system} = pkgs.cheapam;
+                  volumeAttributes.${pkgsOff.stdenv.hostPlatform.system} = pkgsOff.cheapam;
+                };
+              };
             };
           };
         };
