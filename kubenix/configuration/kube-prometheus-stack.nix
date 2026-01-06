@@ -17,7 +17,7 @@
         ExternalSecret.grafana-admin = eso.mkBasic "name:grafana-admin";
         ExternalSecret.grafana-oidc = eso.mkOpaque "name:keycloak-grafana" "client-secret";
       };
-      kubernetes.resources.cnpg-user = {
+      kubernetes.resources.database = {
         ExternalSecret.pg0-grafana = eso.mkBasic "name:grafana-db";
         Cluster.pg0.spec.managed.roles.grafana = {
           login = true;
@@ -135,7 +135,7 @@
               };
               database = {
                 type = "postgres";
-                host = "pb0-cluster.cnpg-user.svc.cluster.local:5432";
+                host = "pb0-cluster.database.svc.cluster.local:5432";
                 name = "grafana";
                 user = "$__file{/etc/secrets/db/username}";
                 password = "$__file{/etc/secrets/db/password}";

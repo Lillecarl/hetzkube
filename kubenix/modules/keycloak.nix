@@ -30,7 +30,7 @@ in
     # Enable CNPG
     cnpg.enable = true;
     # Database configuration
-    kubernetes.resources.cnpg-user = {
+    kubernetes.resources.database = {
       ExternalSecret."pg0-keycloak" = eso.mkBasic "name:keycloak-db";
       Cluster.pg0.spec.managed.roles.keycloak = {
         login = true;
@@ -102,7 +102,7 @@ in
                     KC_CACHE_EMBEDDED_NETWORK_BIND_ADDRESS.valueFrom.fieldRef.fieldPath = "status.podIP";
                     # DB
                     KC_DB.value = "postgres"; # Database type
-                    KC_DB_URL_HOST.value = "pb0-cluster.cnpg-user";
+                    KC_DB_URL_HOST.value = "pb0-cluster.database";
                     KC_DB_URL_DATABASE.value = "keycloak"; # dbname
                     # Credentials
                     KC_BOOTSTRAP_ADMIN_USERNAME.valueFrom.secretKeyRef = {

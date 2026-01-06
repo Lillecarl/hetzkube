@@ -21,19 +21,19 @@ in
       src = cfg.url;
     };
     kubernetes = {
-      resources.none.Namespace.cnpg-user = { };
-      resources.cnpg-user = {
+      resources.none.Namespace.database = { };
+      resources.database = {
         ExternalSecret.pg0-lillecarl = eso.mkBasic "name:lillecarl-db";
         # Configure podmonitoring from CNPG docs
         Cluster.pg0.spec = {
           # Required to manage roles properly
           enableSuperuserAccess = true;
           instances = 2;
-          storage.size = "1Gi";
-          storage.storageClass = "local-path";
+          storage.size = "10Gi";
+          storage.storageClass = "hcloud-volumes";
           enablePDB = true;
-          # Create new pods and stream database to replicas
-          nodeMaintenanceWindow = {
+          nodeMaintenanceWindow = lib.mkIf false {
+            # Use this config if using local volumes
             inProgress = true;
             reusePVC = false;
           };
