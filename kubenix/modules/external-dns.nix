@@ -28,71 +28,62 @@ in
       resources.none = {
         Namespace.${cfg.namespace} = { };
         ClusterRole.external-dns = {
-          rules = [
-            {
-              apiGroups = [ "" ];
-              resources = [
-                "services"
-                "pods"
-              ];
+          rules =
+            let
               verbs = [
                 "get"
-                "watch"
-                "list"
-              ];
-            }
-            {
-              apiGroups = [ "discovery.k8s.io" ];
-              resources = [ "endpointslices" ];
-              verbs = [
-                "get"
-                "watch"
-                "list"
-              ];
-            }
-            {
-              apiGroups = [
-                "extensions"
-                "networking.k8s.io"
-              ];
-              resources = [ "ingresses" ];
-              verbs = [
-                "get"
-                "watch"
-                "list"
-              ];
-            }
-            {
-              apiGroups = [ "" ];
-              resources = [ "nodes" ];
-              verbs = [
                 "list"
                 "watch"
               ];
-            }
-            {
-              apiGroups = [ "externaldns.k8s.io" ];
-              resources = [ "dnsendpoints" ];
-              verbs = [
-                "get"
-                "watch"
-                "list"
-              ];
-            }
-            {
-              apiGroups = [ "externaldns.k8s.io" ];
-              resources = [ "dnsendpoints/status" ];
-              verbs = [ "*" ];
-            }
-            {
-              apiGroups = [ "gateway.networking.k8s.io" ];
-              resources = [
-                "*"
-                "*/status"
-              ];
-              verbs = [ "*" ];
-            }
-          ];
+            in
+            [
+              {
+                apiGroups = [ "" ];
+                resources = [
+                  "services"
+                  "pods"
+                ];
+                inherit verbs;
+              }
+              {
+                apiGroups = [ "discovery.k8s.io" ];
+                resources = [ "endpointslices" ];
+                inherit verbs;
+              }
+              {
+                apiGroups = [ "networking.k8s.io" ];
+                resources = [ "ingresses" ];
+                inherit verbs;
+              }
+              {
+                apiGroups = [ "" ];
+                resources = [ "nodes" ];
+                inherit verbs;
+              }
+              {
+                apiGroups = [ "externaldns.k8s.io" ];
+                resources = [ "dnsendpoints" ];
+                inherit verbs;
+              }
+              {
+                apiGroups = [ "externaldns.k8s.io" ];
+                resources = [ "dnsendpoints/status" ];
+                verbs = [ "*" ];
+              }
+              {
+                apiGroups = [ "" ];
+                resources = [ "namespaces" ];
+                inherit verbs;
+              }
+              {
+                apiGroups = [ "gateway.networking.k8s.io" ];
+                resources = [
+                  "gateways"
+                  "httproutes"
+                ];
+                inherit verbs;
+              }
+            ];
         };
         ClusterRoleBinding.external-dns-viewer = {
           roleRef = {
