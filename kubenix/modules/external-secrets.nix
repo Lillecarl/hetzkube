@@ -64,50 +64,48 @@ in
       importyaml.${moduleName} = {
         src = "${src}/deploy/crds/bundle.yaml";
       };
-      _module.args = {
-        eso = rec {
-          mkBasic = swIdentifier: {
-            spec = {
-              refreshInterval = cfg.refreshInterval;
-              secretStoreRef = {
-                kind = "ClusterSecretStore";
-                name = "scaleway";
-              };
-              target.template.type = "kubernetes.io/basic-auth";
-              data = [
-                {
-                  secretKey = "username";
-                  remoteRef = {
-                    key = swIdentifier;
-                    property = "username";
-                  };
-                }
-                {
-                  secretKey = "password";
-                  remoteRef = {
-                    key = swIdentifier;
-                    property = "password";
-                  };
-                }
-              ];
+      hlib.eso = rec {
+        mkBasic = swIdentifier: {
+          spec = {
+            refreshInterval = cfg.refreshInterval;
+            secretStoreRef = {
+              kind = "ClusterSecretStore";
+              name = "scaleway";
             };
+            target.template.type = "kubernetes.io/basic-auth";
+            data = [
+              {
+                secretKey = "username";
+                remoteRef = {
+                  key = swIdentifier;
+                  property = "username";
+                };
+              }
+              {
+                secretKey = "password";
+                remoteRef = {
+                  key = swIdentifier;
+                  property = "password";
+                };
+              }
+            ];
           };
-          mkToken = swIdentifier: mkOpaque swIdentifier "token";
-          mkOpaque = swIdentifier: secretKey: {
-            spec = {
-              refreshInterval = cfg.refreshInterval;
-              secretStoreRef = {
-                kind = "ClusterSecretStore";
-                name = "scaleway";
-              };
-              target.template.type = "Opaque";
-              data = [
-                {
-                  inherit secretKey;
-                  remoteRef.key = swIdentifier;
-                }
-              ];
+        };
+        mkToken = swIdentifier: mkOpaque swIdentifier "token";
+        mkOpaque = swIdentifier: secretKey: {
+          spec = {
+            refreshInterval = cfg.refreshInterval;
+            secretStoreRef = {
+              kind = "ClusterSecretStore";
+              name = "scaleway";
             };
+            target.template.type = "Opaque";
+            data = [
+              {
+                inherit secretKey;
+                remoteRef.key = swIdentifier;
+              }
+            ];
           };
         };
       };

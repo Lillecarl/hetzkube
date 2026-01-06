@@ -2,7 +2,7 @@
   config,
   pkgs,
   lib,
-  eso,
+  hlib,
   ...
 }:
 let
@@ -77,7 +77,7 @@ in
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${clusterName} = { };
     kubernetes.resources.${clusterName} = {
-      ExternalSecret.hcloud = eso.mkToken "name:hcloud-token";
+      ExternalSecret.hcloud = hlib.eso.mkToken "name:hcloud-token";
 
       # Contol plane
       KubeadmControlPlane."${clusterName}-control-plane".spec = {

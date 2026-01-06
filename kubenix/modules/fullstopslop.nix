@@ -3,7 +3,7 @@
   pkgs,
   pkgsOff,
   lib,
-  eso,
+  hlib,
   subPath,
   ...
 }:
@@ -153,7 +153,7 @@ in
     lib.mkIf cfg.enable {
       kubernetes.resources.none.Namespace.${moduleName} = { };
       kubernetes.resources.${moduleName} = {
-        ExternalSecret.github-pat = eso.mkToken "name:github-fullstopslop";
+        ExternalSecret.github-pat = hlib.eso.mkToken "name:github-fullstopslop";
         CronJob.${moduleName} =
           let
             secondUtils = rec {

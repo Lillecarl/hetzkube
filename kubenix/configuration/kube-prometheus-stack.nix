@@ -2,7 +2,7 @@
   config,
   pkgs,
   lib,
-  eso,
+  hlib,
   ...
 }:
 {
@@ -13,13 +13,13 @@
     lib.mkIf (config.stage == "full") {
       kubernetes.resources.none.Namespace.observability = { };
       kubernetes.resources.observability = {
-        ExternalSecret.pg0-grafana = eso.mkBasic "name:grafana-db";
-        ExternalSecret.grafana-admin = eso.mkBasic "name:grafana-admin";
-        ExternalSecret.grafana-oidc = eso.mkOpaque "name:keycloak-grafana" "client-secret";
-        ExternalSecret.mailgun = eso.mkBasic "name:mailgun-system";
+        ExternalSecret.pg0-grafana = hlib.eso.mkBasic "name:grafana-db";
+        ExternalSecret.grafana-admin = hlib.eso.mkBasic "name:grafana-admin";
+        ExternalSecret.grafana-oidc = hlib.eso.mkOpaque "name:keycloak-grafana" "client-secret";
+        ExternalSecret.mailgun = hlib.eso.mkBasic "name:mailgun-system";
       };
       kubernetes.resources.database = {
-        ExternalSecret.pg0-grafana = eso.mkBasic "name:grafana-db";
+        ExternalSecret.pg0-grafana = hlib.eso.mkBasic "name:grafana-db";
         Cluster.pg0.spec.managed.roles.grafana = {
           login = true;
           passwordSecret.name = "pg0-grafana";

@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  eso,
+  hlib,
   ...
 }:
 let
@@ -102,7 +102,7 @@ in
       };
       resources.${cfg.namespace} = {
         ServiceAccount.external-dns = { };
-        ExternalSecret.cloudflare = eso.mkToken "name:cloudflare-token";
+        ExternalSecret.cloudflare = hlib.eso.mkToken "name:cloudflare-token";
         Deployment.external-dns = {
           spec = {
             strategy.type = "Recreate";

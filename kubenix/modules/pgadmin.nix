@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  eso,
+  hlib,
   ...
 }:
 let
@@ -27,7 +27,7 @@ in
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
     # pgadmin configuration
     kubernetes.resources.${cfg.namespace} = {
-      ExternalSecret."admin" = eso.mkBasic "name:pgadmin-admin";
+      ExternalSecret."admin" = hlib.eso.mkBasic "name:pgadmin-admin";
       ConfigMap.pgadmin4.data."config_local.py" = # python
         ''
           AUTHENTICATION_SOURCES = ['oauth2', 'internal']

@@ -3,7 +3,7 @@
   pkgs,
   pkgsOff,
   lib,
-  eso,
+  hlib,
   ...
 }:
 let
@@ -78,7 +78,7 @@ in
         ];
       };
 
-      kube-system.ExternalSecret.hcloud-cheapam = eso.mkToken "name:hcloud-token";
+      kube-system.ExternalSecret.hcloud-cheapam = hlib.eso.mkToken "name:hcloud-token";
       kube-system.Deployment.cheapam = {
         spec = {
           replicas = 1;

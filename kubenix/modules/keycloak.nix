@@ -2,7 +2,7 @@
 {
   config,
   lib,
-  eso,
+  hlib,
   ...
 }:
 let
@@ -31,7 +31,7 @@ in
     cnpg.enable = true;
     # Database configuration
     kubernetes.resources.database = {
-      ExternalSecret."pg0-keycloak" = eso.mkBasic "name:keycloak-db";
+      ExternalSecret."pg0-keycloak" = hlib.eso.mkBasic "name:keycloak-db";
       Cluster.pg0.spec.managed.roles.keycloak = {
         login = true;
         passwordSecret.name = "pg0-keycloak";
@@ -65,8 +65,8 @@ in
     };
     # Keycloak configuration
     kubernetes.resources.${cfg.namespace} = {
-      ExternalSecret.admin = eso.mkBasic "name:keycloak-admin";
-      ExternalSecret.db = eso.mkBasic "name:keycloak-db";
+      ExternalSecret.admin = hlib.eso.mkBasic "name:keycloak-admin";
+      ExternalSecret.db = hlib.eso.mkBasic "name:keycloak-db";
       StatefulSet.keycloak = {
         metadata.labels = {
           "app.kubernetes.io/name" = "keycloak";

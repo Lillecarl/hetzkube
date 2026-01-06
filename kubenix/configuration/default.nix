@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  eso,
+  hlib,
   ...
 }:
 {
@@ -153,7 +153,7 @@
         nix-cache.spec.template.metadata.labels."cilium.io/ingress" = "true";
       };
 
-      kube-system.ExternalSecret.hcloud = eso.mkToken "name:hcloud-token";
+      kube-system.ExternalSecret.hcloud = hlib.eso.mkToken "name:hcloud-token";
     };
   };
 }

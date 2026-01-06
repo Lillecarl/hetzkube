@@ -2,7 +2,7 @@
   config,
   pkgs,
   lib,
-  eso,
+  hlib,
   ...
 }:
 let
@@ -12,7 +12,7 @@ in
   config = lib.mkIf (config.stage == "full") {
     cert-manager.enable = true;
     kubernetes.resources.cert-manager = {
-      ExternalSecret.cloudflare = eso.mkToken "name:cloudflare-token";
+      ExternalSecret.cloudflare = hlib.eso.mkToken "name:cloudflare-token";
     };
     kubernetes.resources.none.ClusterIssuer.le-staging.spec = {
       acme = {

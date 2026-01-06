@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  eso,
+  hlib,
   ...
 }:
 let
@@ -23,7 +23,7 @@ in
     kubernetes = {
       resources.none.Namespace.database = { };
       resources.database = {
-        ExternalSecret.pg0-lillecarl = eso.mkBasic "name:lillecarl-db";
+        ExternalSecret.pg0-lillecarl = hlib.eso.mkBasic "name:lillecarl-db";
         # Configure podmonitoring from CNPG docs
         Cluster.pg0.spec = {
           # Required to manage roles properly
