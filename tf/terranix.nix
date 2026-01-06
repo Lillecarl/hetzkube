@@ -11,6 +11,10 @@ let
     // {
       realm_id = lib.tfRef "local.realm_id";
     };
+
+  data = config.data;
+  resource = config.resource;
+  variable = config.variable;
 in
 {
   config = {
@@ -32,13 +36,24 @@ in
       url = "https://keycloak.lillecarl.com";
     };
 
-    locals.realm_id = config.resource.keycloak_realm.this "id";
-    resource.keycloak_realm.this = {
+    variable.KUBECONFIG.type = "string";
+    provider.kubernetes = {
+      config_path = lib.tfRef "var.KUBECONFIG";
+    };
+
+    data.kubernetes_secret_v1.mailgun = {
+      metadata = {
+        name = "mailgun";
+        namespace = "observability";
+      };
+    };
+
+    locals.realm_id = config.resource.keycloak_realm.auth "id";
+    resource.keycloak_realm.auth = {
       realm = "auth";
       enabled = true;
       display_name = "Auth";
       display_name_html = "<b>Auth</b>";
-      login_theme = "base";
 
       registration_allowed = true;
       registration_email_as_username = true;
@@ -65,6 +80,92 @@ in
         };
       };
     };
+
+    resource.keycloak_realm_user_profile.auth =
+      let
+        permissions = {
+          view = [
+            "admin"
+            "user"
+          ];
+          edit = [
+            "admin"
+            "user"
+          ];
+        };
+      in
+      mkKC {
+        attribute = [
+          {
+            name = "username";
+            display_name = "$${username}";
+            inherit permissions;
+            required_for_roles = [ "user" ];
+            validator = [
+              {
+                name = "length";
+                config = {
+                  min = 3;
+                  max = 255;
+                };
+              }
+              { name = "username-prohibited-characters"; }
+              { name = "up-username-not-idn-homograph"; }
+            ];
+          }
+          {
+            name = "email";
+            display_name = "$${email}";
+            inherit permissions;
+            required_for_roles = [ "user" ];
+            validator = [
+              { name = "email"; }
+              {
+                name = "length";
+                config = {
+                  max = 255;
+                };
+              }
+            ];
+          }
+          {
+            name = "firstName";
+            display_name = "$${firstName}";
+            inherit permissions;
+            validator = [
+              {
+                name = "length";
+                config = {
+                  max = 255;
+                };
+              }
+              { name = "person-name-prohibited-characters"; }
+            ];
+          }
+          {
+            name = "lastName";
+            display_name = "$${lastName}";
+            inherit permissions;
+            validator = [
+              {
+                name = "length";
+                config = {
+                  max = 255;
+                };
+              }
+              { name = "person-name-prohibited-characters"; }
+            ];
+          }
+        ];
+
+        group = [
+          {
+            name = "user-metadata";
+            display_header = "User metadata";
+            display_description = "Attributes, which refer to user metadata";
+          }
+        ];
+      };
 
     resource.keycloak_openid_client.kubernetes = mkKC {
       client_id = "kubernetes";
@@ -116,7 +217,7 @@ in
     resource.keycloak_openid_audience_protocol_mapper.headlamp_kubernetes_audience = mkKC {
       client_id = config.resource.keycloak_openid_client.headlamp "id";
       name = "Kubernetes Audience";
-      included_client_audience = config.resource.keycloak_openid_client.kubernetes.client_id;
+      included_client_audience = resource.keycloak_openid_client.kubernetes.client_id;
       add_to_id_token = true;
     };
 
@@ -136,7 +237,7 @@ in
     };
 
     resource.keycloak_openid_group_membership_protocol_mapper.grafana = mkKC {
-      client_id = config.resource.keycloak_openid_client.grafana "id";
+      client_id = resource.keycloak_openid_client.grafana "id";
       name = "Group Membership";
 
       claim_name = "groups";
