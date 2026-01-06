@@ -61,7 +61,6 @@ in
           ingressClassName = "nginx";
           annotations = {
             "cert-manager.io/cluster-issuer" = "le-prod";
-            "external-dns.alpha.kubernetes.io/ttl" = "60";
           };
           hosts = [
             {

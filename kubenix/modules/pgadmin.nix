@@ -112,7 +112,6 @@ in
       Ingress.${moduleName} = {
         metadata.annotations = {
           "cert-manager.io/cluster-issuer" = "le-prod";
-          "external-dns.alpha.kubernetes.io/ttl" = "60";
         };
         spec = {
           tls = [

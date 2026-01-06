@@ -45,22 +45,34 @@
     pgadmin.hostname = "pgadmin.lillecarl.com";
     headlamp.hostname = "headlamp.lillecarl.com";
 
-    # Apply IP sharing annotations to all Service resources
     kubernetes.transformers = [
       (
-        resourceAttrs:
-        if resourceAttrs.kind == "Service" && resourceAttrs.spec.type or "" == "LoadBalancer" then
-          lib.recursiveUpdate resourceAttrs {
+        resource:
+        # Apply annotations to all LoadBalancers
+        if resource.kind == "Service" && resource.spec.type or null == "LoadBalancer" then
+          lib.recursiveUpdate resource {
             # IPv4 is scarce, share!
             metadata.annotations."metallb.io/allow-shared-ip" = "true";
+            # Lowest TTL cloudflare allows
+            metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
           }
-        else if resourceAttrs.kind == "Service" then
-          lib.recursiveUpdate resourceAttrs {
-            # Enforce DualStack
+        # Make all services require dualstack
+        else if resource.kind == "Service" then
+          lib.recursiveUpdate resource {
             spec.ipFamilyPolicy = "RequireDualStack";
           }
+        # Set lowest cloudflare TTL for ingress and gapi routes
+        else if
+          lib.elem resource.kind [
+            "Ingress"
+            "HTTPRoute"
+          ]
+        then
+          lib.recursiveUpdate resource {
+            metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
+          }
         else
-          resourceAttrs
+          resource
       )
     ];
 
@@ -131,10 +143,8 @@
       ];
     };
     kubernetes.resources = lib.mkIf (config.stage == "full") {
-      nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixcache.lillecarl.com";
-      nix-csi.Service.nix-proxy.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
       nix-csi.Service.nix-proxy.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixbuild.lillecarl.com";
       kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
