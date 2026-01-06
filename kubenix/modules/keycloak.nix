@@ -171,37 +171,70 @@ in
           };
         };
       };
-      Ingress.keycloak = {
-        metadata.annotations = {
-          "cert-manager.io/cluster-issuer" = "le-prod";
-          "external-dns.alpha.kubernetes.io/ttl" = "60";
-        };
+      HTTPRoute.keycloak = {
         spec = {
-          tls = [
+          parentRefs = [
             {
-              hosts = cfg.hostnames;
-              secretName = "keycloak-cert";
+              name = "default";
+              namespace = "kube-system";
             }
           ];
-          rules = lib.map (hostname: {
-            host = hostname;
-            http = {
-              paths = [
+          hostnames = cfg.hostnames;
+          rules = [
+            {
+              matches = [
                 {
-                  path = "/";
-                  pathType = "Prefix";
-                  backend = {
-                    service = {
-                      name = "keycloak";
-                      port = {
-                        number = 8080;
-                      };
-                    };
+                  path = {
+                    type = "PathPrefix";
+                    value = "/";
                   };
                 }
               ];
-            };
-          }) cfg.hostnames;
+              backendRefs = [
+                {
+                  name = "keycloak";
+                  port = 8080;
+                }
+              ];
+            }
+          ];
+        };
+      };
+      HTTPRoute.keycloak-redir = {
+        spec = {
+          parentRefs = [
+            {
+              name = "default";
+              namespace = "kube-system";
+            }
+          ];
+          hostnames = [
+            (lib.head cfg.hostnames)
+          ];
+          rules = [
+            {
+              matches = [
+                {
+                  path = {
+                    type = "Exact";
+                    value = "/";
+                  };
+                }
+              ];
+              filters = [
+                {
+                  type = "RequestRedirect";
+                  requestRedirect = {
+                    path = {
+                      type = "ReplaceFullPath";
+                      replaceFullPath = "/realms/auth/account";
+                    };
+                    statusCode = 302;
+                  };
+                }
+              ];
+            }
+          ];
         };
       };
       Service.keycloak = {
