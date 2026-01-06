@@ -60,8 +60,8 @@ in
         from = "auth@mg.lillecarl.com";
 
         auth = {
-          username = "data...";
-          password = "data...";
+          username = data.kubernetes_secret_v1.mailgun "data.username";
+          password = data.kubernetes_secret_v1.mailgun "data.password";
         };
       };
     };

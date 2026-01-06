@@ -16,6 +16,7 @@
         ExternalSecret.pg0-grafana = eso.mkBasic "name:grafana-db";
         ExternalSecret.grafana-admin = eso.mkBasic "name:grafana-admin";
         ExternalSecret.grafana-oidc = eso.mkOpaque "name:keycloak-grafana" "client-secret";
+        ExternalSecret.mailgun = eso.mkBasic "name:mailgun-system";
       };
       kubernetes.resources.database = {
         ExternalSecret.pg0-grafana = eso.mkBasic "name:grafana-db";
