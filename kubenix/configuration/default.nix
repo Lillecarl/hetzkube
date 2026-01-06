@@ -52,6 +52,10 @@
       metadata.labels = {
         "cilium.io/ingress" = "true";
       };
+      authorizedKeys = [
+        (builtins.readFile ../../pubkeys/carl.pub)
+        (builtins.readFile ../../pubkeys/lillecarlworld.pub)
+      ];
       loggingConfig = {
         version = 1;
         formatters = {
