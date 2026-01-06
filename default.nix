@@ -11,6 +11,7 @@ let
     flake-compatish ./.;
 
   pkgs = import flake.inputs.nixpkgs {
+    config.allowUnfree = true;
     overlays = [
       (import ./pkgs)
     ];
@@ -20,6 +21,7 @@ let
     "aarch64-linux" = "x86_64-linux";
   };
   pkgsOff = import flake.inputs.nixpkgs {
+    config.allowUnfree = true;
     system = crossAttrs.${builtins.currentSystem};
     overlays = [
       (import ./pkgs)
