@@ -47,29 +47,70 @@ in
         name = "init";
         runtimeInputs = [
           pkgs.claude-code
-          pkgs.git
-          pkgs.kubectl
           pkgs.coreutils
+          pkgs.curl
+          pkgs.git
+          pkgs.jq
+          pkgs.kubectl
         ];
         text = # bash
           ''
             set -x
             cd "$HOME"
             # cp /var/run/secrets/claude/.claude.json "$HOME/.claude.json"
-            rm --recursive --force fullstopslop "$HOME/error"
-            set +x
-            echo git clone
-            git clone "https://lillecarl:$GH_PAT@github.com/lillecarl/fullstopslop.git"
-            set -x
-            cd fullstopslop
-            git config user.name "AICarl"
-            git config user.email "github@lillecarl.com"
+
+            # Configureable init sleep so we can login interactively
             INIT_SLEEP="''${INIT_SLEEP:-""}"
             if test -n "$INIT_SLEEP"; then
               echo "Sleeping for $INIT_SLEEP"
               sleep "$INIT_SLEEP"
             fi
-            cat README.md | claude --print --dangerously-skip-permissions --model haiku
+
+            echo "Checking if access token is expired"
+            if test "$(date +%s)" -ge "$(("$(cat ~/.claude/.credentials.json | jq .claudeAiOauth.expiresAt)" / 1000))"; then
+              echo "Access token is expired, send bullshit to haiku"
+              echo "Write a new haiku to \$HOME/haiku or improve this one: $(cat "$HOME/haiku" || echo "")" | claude --print --dangerously-skip-permissions --model haiku
+            fi
+
+            CREDENTIALS_FILE="$HOME/.claude/.credentials.json"
+
+            if [[ ! -f "$CREDENTIALS_FILE" ]]; then
+              echo "Error: Credentials file not found at $CREDENTIALS_FILE" >&2
+              echo "Run 'claude login' first" >&2
+              exit 1
+            fi
+
+            ACCESS_TOKEN=$(jq -r '.claudeAiOauth.accessToken' "$CREDENTIALS_FILE")
+
+            if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
+              echo "Error: No access token found in credentials" >&2
+              exit 1
+            fi
+
+            echo "Fetch usage from secret evil endpoint"
+            usage=$(curl --silent --fail \
+              --header "Authorization: Bearer $ACCESS_TOKEN" \
+              --header "anthropic-beta: oauth-2025-04-20" \
+              "https://api.anthropic.com/api/oauth/usage" | jq .)
+
+            echo "$usage"
+            fiveuse=$(printf "%.f" "$(echo "$usage" | jq -r '.five_hour.utilization')")
+            echo "$fiveuse"
+            echo "Checking if 5h usage is less than 1"
+            if test "$fiveuse" -le 1; then
+              rm --recursive --force fullstopslop "$HOME/error"
+              set +x
+              echo git clone "https://lillecarl:********@github.com/lillecarl/fullstopslop.git"
+              git clone "https://lillecarl:$GH_PAT@github.com/lillecarl/fullstopslop.git"
+              set -x
+              cd fullstopslop
+              git config user.name "AICarl"
+              git config user.email "github@lillecarl.com"
+              cat README.md | claude --print --dangerously-skip-permissions --model haiku
+            else
+              echo "Nope!"
+            fi
+
             if test -f "$HOME/error"; then
               sleep 300
               exit 1
