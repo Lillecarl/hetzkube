@@ -160,20 +160,19 @@
               }
             ];
 
-            # Ingress
-            ingress = {
-              enabled = true;
-              ingressClassName = "cilium";
-              annotations = {
-                "cert-manager.io/cluster-issuer" = "le-prod";
+            route = lib.mkIf true {
+              main = {
+                enabled = true;
+                apiVersion = "gateway.networking.k8s.io/v1";
+                kind = "HTTPRoute";
+                hostnames = [ grafanaHostname ];
+                parentRefs = [
+                  {
+                    name = "default";
+                    namespace = "kube-system";
+                  }
+                ];
               };
-              hosts = [ grafanaHostname ];
-              tls = [
-                {
-                  secretName = "grafana-tls";
-                  hosts = [ grafanaHostname ];
-                }
-              ];
             };
 
             # Datasources
