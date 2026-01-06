@@ -162,10 +162,10 @@ in
           {
             spec = {
               schedule = "0 */5 * * 1-5";
+              concurrencyPolicy = "Forbid";
               jobTemplate.spec = {
                 backoffLimit = 10;
                 ttlSecondsAfterFinished = secondUtils.weeks 1;
-                concurrencyPolicy = "Forbid";
                 template = {
                   metadata.labels.app = moduleName;
                   spec = {
