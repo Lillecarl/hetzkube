@@ -49,6 +49,9 @@
       cache.enable = true;
       builders.enable = true;
       cache.storageClassName = "hcloud-volumes";
+      metadata.labels = {
+        "cilium.io/ingress" = "true";
+      };
       loggingConfig = {
         version = 1;
         formatters = {
