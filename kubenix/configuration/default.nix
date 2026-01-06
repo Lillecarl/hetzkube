@@ -53,6 +53,9 @@
           lib.recursiveUpdate resourceAttrs {
             # IPv4 is scarce, share!
             metadata.annotations."metallb.io/allow-shared-ip" = "true";
+          }
+        else if resourceAttrs.kind == "Service" then
+          lib.recursiveUpdate resourceAttrs {
             # Enforce DualStack
             spec.ipFamilyPolicy = "RequireDualStack";
           }
