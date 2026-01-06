@@ -9,6 +9,7 @@
     ./cert-manager.nix
     ./chaoskube.nix
     ./cilium.nix
+    ./csi-driver-smb.nix
     ./external-secrets.nix
     ./kluctl.nix
     ./kube-prometheus-stack.nix

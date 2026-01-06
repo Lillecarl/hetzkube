@@ -5,7 +5,6 @@
     cheapam.enable = true;
     cnpg.enable = true;
     coredns.enable = true;
-    csi-driver-smb.enable = true;
     external-dns.enable = true;
     external-secrets.enable = true;
     fullstopslop.enable = true;
