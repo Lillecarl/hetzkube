@@ -62,6 +62,7 @@ flake.impure
       openssh
       cachix
       yamlfmt
+      fluxcd
     ];
   };
 }
