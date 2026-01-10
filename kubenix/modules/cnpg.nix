@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  eso,
   ...
 }:
 let
@@ -22,35 +23,7 @@ in
     kubernetes = {
       resources.none.Namespace.cnpg-user = { };
       resources.cnpg-user = {
-        # Secret.pg0-lillecarl = {
-        #   type = "kubernetes.io/basic-auth";
-        #   metadata.labels."cnpg.io/reload" = "true";
-        #   stringData = {
-        #     username = "lillecarl";
-        #     password = "{{ lillepass }}";
-        #   };
-        # };
-        BitwardenSecret.pg0-lillecarl = {
-          metadata.labels."cnpg.io/reload" = "true";
-          spec = {
-            organizationId = "a5c85a84-042e-44b8-a07e-b16f00119301";
-            secretName = "pg0-lillecarl";
-            map = [
-              {
-                bwSecretId = "4d589af9-c1ea-4e7d-9fca-b3b100b4b4df";
-                secretKeyName = "username";
-              }
-              {
-                bwSecretId = "a0a05822-f6f7-451f-b740-b3b100ae0705";
-                secretKeyName = "password";
-              }
-            ];
-            authToken = {
-              secretName = "bw-auth-token";
-              secretKey = "token";
-            };
-          };
-        };
+        ExternalSecret.pg0-lillecarl = eso.mkBasic "name:lillecarl-db";
         # Configure podmonitoring from CNPG docs
         Cluster.pg0.spec = {
           # Required to manage roles properly

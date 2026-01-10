@@ -1,7 +1,6 @@
 { config, lib, ... }:
 {
   config = lib.mkIf (config.stage == "full") {
-    bitwarden.enable = true;
     capi.enable = true;
     cheapam.enable = true;
     cnpg.enable = true;
@@ -12,7 +11,6 @@
     headlamp.enable = false;
     keycloak.enable = true;
     kro.enable = false;
-    # kube-prometheus-stack.enable = true;
     local-path-provisioner.enable = true;
     metrics-server.enable = true;
     nix-csi.enable = true;

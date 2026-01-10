@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  eso,
   ...
 }:
 let
@@ -102,24 +103,7 @@ in
       };
       resources.${cfg.namespace} = {
         ServiceAccount.external-dns = { };
-        # Secret.cloudflare.stringData.token = "{{ cftoken }}";
-        Secret.bw-auth-token.stringData.token = "{{ bwtoken }}";
-        BitwardenSecret.cloudflare = {
-          spec = {
-            organizationId = "a5c85a84-042e-44b8-a07e-b16f00119301";
-            secretName = "cloudflare";
-            map = [
-              {
-                bwSecretId = "92277b8d-37e0-434f-b30f-b3b100adcc03";
-                secretKeyName = "token";
-              }
-            ];
-            authToken = {
-              secretName = "bw-auth-token";
-              secretKey = "token";
-            };
-          };
-        };
+        ExternalSecret.cloudflare = eso.mkToken "name:cloudflare-token";
         Deployment.external-dns = {
           spec = {
             strategy.type = "Recreate";

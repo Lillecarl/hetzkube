@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  eso,
   ...
 }:
 let
@@ -21,84 +22,12 @@ in
   config = lib.mkIf cfg.enable {
     # Enable CNPG
     cnpg.enable = true;
-    # Database configuration
-    kubernetes.resources.cnpg-user =
-      let
-        user = "pgadmin";
-      in
-      {
-        # Secret."pg0-${user}" = {
-        #   type = "kubernetes.io/basic-auth";
-        #   metadata.labels."cnpg.io/reload" = "true";
-        #   stringData = {
-        #     username = user;
-        #     password = "{{ lillepass }}";
-        #   };
-        # };
-        Secret.bw-auth-token.stringData.token = "{{ bwtoken }}";
-        BitwardenSecret."pg0-${user}" = {
-          metadata.labels."cnpg.io/reload" = "true";
-          spec = {
-            organizationId = "a5c85a84-042e-44b8-a07e-b16f00119301";
-            secretName = "pg0-${user}";
-            map = [
-              {
-                bwSecretId = "4d589af9-c1ea-4e7d-9fca-b3b100b4b4df";
-                secretKeyName = "username";
-              }
-              {
-                bwSecretId = "a0a05822-f6f7-451f-b740-b3b100ae0705";
-                secretKeyName = "password";
-              }
-            ];
-            authToken = {
-              secretName = "bw-auth-token";
-              secretKey = "token";
-            };
-          };
-        };
-        Cluster.pg0.spec.managed.roles.${user} = {
-          login = true;
-          passwordSecret.name = "pg0-${user}";
-        };
-        Database.${user}.spec = {
-          name = user;
-          owner = user;
-          cluster.name = "pg0";
-          databaseReclaimPolicy = "delete";
-        };
-      };
 
     # pgadmin namespace
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
     # pgadmin configuration
     kubernetes.resources.${cfg.namespace} = {
-      # Secret.secrets.stringData = {
-      #   PGADMIN_DEFAULT_EMAIL = "admin@lillecarl.com";
-      #   PGADMIN_DEFAULT_PASSWORD = "{{ lillepass }}";
-      # };
-      Secret.bw-auth-token.stringData.token = "{{ bwtoken }}";
-      BitwardenSecret."secrets" = {
-        metadata.labels."cnpg.io/reload" = "true";
-        spec = {
-          organizationId = "a5c85a84-042e-44b8-a07e-b16f00119301";
-          secretName = "secrets";
-          map = [
-            {
-              bwSecretId = "98a4d482-6340-4d5a-9860-b3b100b63cad";
-              secretKeyName = "PGADMIN_DEFAULT_EMAIL";
-            }
-            {
-              bwSecretId = "a0a05822-f6f7-451f-b740-b3b100ae0705";
-              secretKeyName = "password";
-            }
-          ];
-          authToken = {
-            secretName = "bw-auth-token";
-            secretKey = "token";
-          };
-        };
-      };
+      ExternalSecret."admin" = eso.mkBasic "name:pgadmin-admin";
       ConfigMap.pgadmin4.data."config_local.py" = # python
         ''
           AUTHENTICATION_SOURCES = ['oauth2', 'internal']
@@ -145,10 +74,16 @@ in
               containers = lib.mkNamedList {
                 ${moduleName} = {
                   image = "docker.io/dpage/pgadmin4:latest";
-                  envFrom = [
-                    { secretRef.name = "secrets"; }
-                    # { secretRef.name = "tf-secrets"; }
-                  ];
+                  env = lib.mkNamedList {
+                    PGADMIN_DEFAULT_EMAIL.valueFrom.secretKeyRef = {
+                      name = "admin";
+                      key = "username";
+                    };
+                    PGADMIN_DEFAULT_PASSWORD.valueFrom.secretKeyRef = {
+                      name = "admin";
+                      key = "password";
+                    };
+                  };
                   volumeMounts = lib.mkNamedList {
                     "data".mountPath = "/var/lib/pgadmin";
                     pgadmin4 = {

@@ -11,6 +11,11 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
+    refreshInterval = lib.mkOption {
+      description = "Interval between secrets refreshing";
+      type = lib.types.str;
+      default = "30m0s";
+    };
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
       default = "1.1.1";
@@ -49,6 +54,53 @@ in
       };
       importyaml.${moduleName} = {
         src = "${src}/deploy/crds/bundle.yaml";
+      };
+      _module.args = {
+        eso = rec {
+          mkBasic = swIdentifier: {
+            spec = {
+              refreshInterval = cfg.refreshInterval;
+              secretStoreRef = {
+                kind = "ClusterSecretStore";
+                name = "scaleway";
+              };
+              target.template.type = "kubernetes.io/basic-auth";
+              data = [
+                {
+                  secretKey = "username";
+                  remoteRef = {
+                    key = swIdentifier;
+                    property = "username";
+                  };
+                }
+                {
+                  secretKey = "password";
+                  remoteRef = {
+                    key = swIdentifier;
+                    property = "password";
+                  };
+                }
+              ];
+            };
+          };
+          mkToken = swIdentifier: mkOpaque swIdentifier "token";
+          mkOpaque = swIdentifier: secretKey: {
+            spec = {
+              refreshInterval = cfg.refreshInterval;
+              secretStoreRef = {
+                kind = "ClusterSecretStore";
+                name = "scaleway";
+              };
+              target.template.type = "Opaque";
+              data = [
+                {
+                  inherit secretKey;
+                  remoteRef.key = swIdentifier;
+                }
+              ];
+            };
+          };
+        };
       };
       kubernetes.apiMappings = {
         ACRAccessToken = "generators.external-secrets.io/v1alpha1";
