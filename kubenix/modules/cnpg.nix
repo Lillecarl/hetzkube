@@ -77,12 +77,6 @@ in
           cluster.name = "pg0";
           databaseReclaimPolicy = "delete";
         };
-        Database.grafana.spec = {
-          name = "grafana";
-          owner = "lillecarl";
-          cluster.name = "pg0";
-          databaseReclaimPolicy = "delete";
-        };
       };
       apiMappings = {
         "Backup" = "postgresql.cnpg.io/v1";

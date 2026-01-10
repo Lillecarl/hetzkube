@@ -88,7 +88,7 @@ in
       name = "Grafana";
 
       valid_redirect_uris = [
-        "https://grafana.e.lillecarl.com/login/generic_oauth"
+        "https://grafana.lillecarl.com/login/generic_oauth"
       ];
 
       standard_flow_enabled = true;

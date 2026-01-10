@@ -11,6 +11,7 @@
     ./cilium.nix
     ./external-secrets.nix
     ./kluctl.nix
+    ./kube-prometheus-stack.nix
   ];
   options.stage = lib.mkOption {
     type = lib.types.enum [

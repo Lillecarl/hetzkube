@@ -13,15 +13,15 @@ in
     enable = lib.mkEnableOption moduleName;
     namespace = lib.mkOption {
       type = lib.types.str;
-      default = moduleName;
+      default = "observability";
     };
     version = lib.mkOption {
       type = lib.types.str;
-      default = "80.2.2";
+      default = "80.13.3";
     };
     sha256 = lib.mkOption {
       type = lib.types.str;
-      default = "sha256-L1ylQ55+WIyVbfv5mF3JBjZ6FfwkFFg7YazEHB6LsNU=";
+      default = lib.fakeHash;
     };
     hostname = lib.mkOption {
       type = lib.types.str;
