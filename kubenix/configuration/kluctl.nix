@@ -1,5 +1,13 @@
-{ config, lib, ... }:
 {
+  x86Pkgs,
+  config,
+  lib,
+  ...
+}:
+{
+  copyDerivations = [
+    x86Pkgs.nix-csi-builder-env
+  ];
   kluctl = {
     # Add SOPS secrets
     deployment.vars = [ { file = "secrets/all.yaml"; } ];
@@ -18,7 +26,7 @@
           --substitute-on-destination \
           --no-check-sigs \
           --from local?read-only=true \
-          --to ssh-ng://nix@nixbuild.lillecarl.com?port=2222 \
+          --to ssh-ng://nix@nixcache.lillecarl.com?port=2222 \
           ${lib.join " " config.copyDerivations} \
           -vvvvv || true
       '';
