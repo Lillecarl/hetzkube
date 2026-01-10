@@ -17,7 +17,7 @@ in
     };
     version = lib.mkOption {
       type = lib.types.str;
-      default = "1.13.1";
+      default = "1.14.0";
     };
     replicas = lib.mkOption {
       type = lib.types.numbers.positive;
