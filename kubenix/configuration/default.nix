@@ -20,7 +20,7 @@
   };
   options.copyDerivations = lib.mkOption {
     type = lib.types.listOf lib.types.package;
-    default = [];
+    default = [ ];
   };
   config = {
     clusterName = "hetzkube";
@@ -51,7 +51,12 @@
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
       cache.enable = true;
-      builders.enable = true;
+      builders = {
+        enable = true;
+        deployments.builder-amd64 = {
+          enable = true;
+        };
+      };
       cache.storageClassName = "hcloud-volumes";
       metadata.labels = {
         "cilium.io/ingress" = "true";
