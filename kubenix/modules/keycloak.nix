@@ -22,7 +22,7 @@ in
     version = lib.mkOption {
       type = lib.types.str;
       description = "${moduleName} version";
-      default = "26.4";
+      default = "26.5";
     };
   };
   config =
