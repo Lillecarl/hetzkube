@@ -43,6 +43,10 @@
 
     coredns.replicas = 2;
 
+    stremio = {
+      enable = false;
+      hostname = "stremio.lillecarl.com";
+    };
     nix-csi = {
       namespace = "nix-csi";
       internalServiceName = "hetzkube";
@@ -103,6 +107,9 @@
       nix-csi.Service.nix-cache-lb.metadata.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
+        "nixcache.lillecarl.com";
+      nix-csi.Service.nix-proxy.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
+      nix-csi.Service.nix-proxy.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixbuild.lillecarl.com";
       kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
       nix-csi.StatefulSet = lib.mkIf config.nix-csi.cache.enable {

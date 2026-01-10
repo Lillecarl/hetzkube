@@ -16,6 +16,7 @@
     ./hcsi.nix
     ./headlamp.nix
     ./keycloak.nix
+    ./stremio.nix
     ./kro.nix
     ./kube-prometheus-stack.nix
     ./local-path-provisioner.nix
