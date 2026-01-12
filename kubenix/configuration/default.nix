@@ -54,6 +54,7 @@
             metadata.annotations = {
               "lbipam.cilium.io/sharing-key" = "*";
               "lbipam.cilium.io/sharing-cross-namespace" = "*";
+              "metallb.io/allow-shared-ip" = "true";
             };
           }
         else

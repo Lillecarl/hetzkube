@@ -1,5 +1,12 @@
 from kr8s.asyncio.objects import new_class
 
+IPAddressPool = new_class(
+    kind="IPAddressPool",
+    version="metallb.io/v1beta1",
+    namespaced=True,
+    plural="ipaddresspools",
+)
+
 CiliumLoadBalancerIPPool = new_class(
     kind="CiliumLoadBalancerIPPool",
     version="cilium.io/v2",

@@ -20,6 +20,7 @@
     ./kro.nix
     ./kube-prometheus-stack.nix
     ./local-path-provisioner.nix
+    ./metallb.nix
     ./metrics-server.nix
     ./pgadmin.nix
     ./sealed-secrets.nix

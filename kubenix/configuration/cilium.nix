@@ -41,8 +41,8 @@
         cluster.name = config.clusterName;
         # Enable IPv6 masquerading until we have a better solution
         enableIPv6Masquerade = false;
-        # Use LB IPAM, managed by cheapam
-        enableLBIPAM = true;
+        # Disable LB IPAM, we use MetalLB for this
+        enableLBIPAM = false;
         # Use cheapam to configure
         ipam.mode = "kubernetes";
         # Enable IPv6
