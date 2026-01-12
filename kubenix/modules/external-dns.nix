@@ -84,6 +84,14 @@ in
               resources = [ "dnsendpoints/status" ];
               verbs = [ "*" ];
             }
+            {
+              apiGroups = [ "gateway.networking.k8s.io" ];
+              resources = [
+                "*"
+                "*/status"
+              ];
+              verbs = [ "*" ];
+            }
           ];
         };
         ClusterRoleBinding.external-dns-viewer = {
