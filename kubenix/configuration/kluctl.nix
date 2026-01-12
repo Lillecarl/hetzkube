@@ -28,7 +28,7 @@
           --from local?read-only=true \
           --to ssh-ng://nix@nixcache.lillecarl.com?port=2222 \
           ${lib.join " " config.copyDerivations} \
-          -vvvvv || true
+          -v || true
       '';
 
   };
