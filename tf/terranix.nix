@@ -20,14 +20,51 @@ in
           source = "keycloak/keycloak";
           version = "5.5.0";
         };
+        kubernetes = {
+          source = "hashicorp/kubernetes";
+          version = "3.0.1";
+        };
       };
     };
+
     provider.keycloak = {
       client_id = "admin-cli";
       url = "https://keycloak.lillecarl.com";
     };
-    data.keycloak_realm.this.realm = "master";
-    locals.realm_id = config.data.keycloak_realm.this "id";
+
+    locals.realm_id = config.resource.keycloak_realm.this "id";
+    resource.keycloak_realm.this = {
+      realm = "auth";
+      enabled = true;
+      display_name = "Auth";
+      display_name_html = "<b>Auth</b>";
+      login_theme = "base";
+
+      registration_allowed = true;
+      registration_email_as_username = true;
+      edit_username_allowed = true;
+      reset_password_allowed = true;
+      remember_me = true;
+      verify_email = true;
+      login_with_email_allowed = true;
+
+      attributes = {
+        frontendUrl = "https://auth.lillecarl.com";
+      };
+
+      smtp_server = {
+        host = "smtp.eu.mailgun.org";
+        port = 587;
+        starttls = true;
+
+        from = "auth@mg.lillecarl.com";
+
+        auth = {
+          username = "data...";
+          password = "data...";
+        };
+      };
+    };
 
     resource.keycloak_openid_client.kubernetes = mkKC {
       client_id = "kubernetes";

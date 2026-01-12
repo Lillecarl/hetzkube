@@ -38,8 +38,10 @@
     clusterServiceCIDR6 = "fdce:9c4d:dcba::/112"; # 65536
 
     capi.keyName = "lillecarl@lillecarl.com";
-    # Must match with OIDC
-    keycloak.hostname = "keycloak.lillecarl.com";
+    keycloak.hostnames = [
+      "auth.lillecarl.com" # Auth realm?
+      "keycloak.lillecarl.com" # Keycloak admin
+    ];
     pgadmin.hostname = "pgadmin.lillecarl.com";
     headlamp.hostname = "headlamp.lillecarl.com";
 

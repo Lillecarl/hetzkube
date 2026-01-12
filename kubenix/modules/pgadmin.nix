@@ -38,11 +38,11 @@ in
                   'OAUTH2_ICON': 'fa-openid',
                   'OAUTH2_CLIENT_ID': 'pgadmin',
                   'OAUTH2_CLIENT_SECRET': "", # we use PKCE/public but this must be set anyways
-                  'OAUTH2_TOKEN_URL': 'https://${config.keycloak.hostname}/realms/master/protocol/openid-connect/token',
-                  'OAUTH2_AUTHORIZATION_URL': 'https://${config.keycloak.hostname}/realms/master/protocol/openid-connect/auth',
-                  'OAUTH2_API_BASE_URL': 'https://${config.keycloak.hostname}/realms/master/protocol/openid-connect',
-                  'OAUTH2_USERINFO_ENDPOINT': 'https://${config.keycloak.hostname}/realms/master/protocol/openid-connect/userinfo',
-                  'OAUTH2_SERVER_METADATA_URL': 'https://${config.keycloak.hostname}/realms/master/.well-known/openid-configuration',
+                  'OAUTH2_TOKEN_URL': 'https://${lib.head config.keycloak.hostnames}/realms/master/protocol/openid-connect/token',
+                  'OAUTH2_AUTHORIZATION_URL': 'https://${lib.head config.keycloak.hostnames}/realms/master/protocol/openid-connect/auth',
+                  'OAUTH2_API_BASE_URL': 'https://${lib.head config.keycloak.hostnames}/realms/master/protocol/openid-connect',
+                  'OAUTH2_USERINFO_ENDPOINT': 'https://${lib.head config.keycloak.hostnames}/realms/master/protocol/openid-connect/userinfo',
+                  'OAUTH2_SERVER_METADATA_URL': 'https://${lib.head config.keycloak.hostnames}/realms/master/.well-known/openid-configuration',
                   'OAUTH2_SCOPE': 'openid email profile',
                   'OAUTH2_ICON': 'fa-key',
                   # Claims mapping

@@ -16,9 +16,9 @@ in
       type = lib.types.nullOr lib.types.str;
       default = "keycloak";
     };
-    hostname = lib.mkOption {
-      type = lib.types.str;
-      description = "hostname for ${moduleName}";
+    hostnames = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      description = "hostnames for ${moduleName}";
     };
     version = lib.mkOption {
       type = lib.types.str;
@@ -94,8 +94,8 @@ in
                     KC_METRICS_ENABLED.value = "true";
                     KC_PROXY_HEADERS.value = "xforwarded";
                     KC_HTTP_ENABLED.value = "true";
-                    KC_HOSTNAME_STRICT.value = "true";
-                    KC_HOSTNAME.value = cfg.hostname;
+                    KC_HOSTNAME_STRICT.value = "false";
+                    # KC_HOSTNAME.value = cfg.hostname;
                     KC_HEALTH_ENABLED.value = "true";
                     # Cache
                     KC_CACHE.value = "ispn";
@@ -179,31 +179,29 @@ in
         spec = {
           tls = [
             {
-              hosts = [ cfg.hostname ];
+              hosts = cfg.hostnames;
               secretName = "keycloak-cert";
             }
           ];
-          rules = [
-            {
-              host = cfg.hostname;
-              http = {
-                paths = [
-                  {
-                    path = "/";
-                    pathType = "Prefix";
-                    backend = {
-                      service = {
-                        name = "keycloak";
-                        port = {
-                          number = 8080;
-                        };
+          rules = lib.map (hostname: {
+            host = hostname;
+            http = {
+              paths = [
+                {
+                  path = "/";
+                  pathType = "Prefix";
+                  backend = {
+                    service = {
+                      name = "keycloak";
+                      port = {
+                        number = 8080;
                       };
                     };
-                  }
-                ];
-              };
-            }
-          ];
+                  };
+                }
+              ];
+            };
+          }) cfg.hostnames;
         };
       };
       Service.keycloak = {
