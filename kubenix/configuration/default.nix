@@ -51,11 +51,10 @@
         resourceAttrs:
         if resourceAttrs.kind == "Service" && resourceAttrs.spec.type or "" == "LoadBalancer" then
           lib.recursiveUpdate resourceAttrs {
-            metadata.annotations = {
-              "lbipam.cilium.io/sharing-key" = "*";
-              "lbipam.cilium.io/sharing-cross-namespace" = "*";
-              "metallb.io/allow-shared-ip" = "true";
-            };
+            # IPv4 is scarce, share!
+            metadata.annotations."metallb.io/allow-shared-ip" = "true";
+            # Enforce DualStack
+            spec.ipFamilyPolicy = "RequireDualStack";
           }
         else
           resourceAttrs
