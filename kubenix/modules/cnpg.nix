@@ -53,7 +53,10 @@ in
             serviceTemplate = {
               metadata.labels.app = "pooler";
               metadata.labels."cilium.io/ingress" = "true";
-              spec.type = "LoadBalancer";
+              spec = {
+                type = "LoadBalancer";
+                ipFamilyPolicy = "RequireDualStack";
+              };
             };
             pgbouncer = {
               poolMode = "session";
