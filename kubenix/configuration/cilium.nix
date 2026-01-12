@@ -8,10 +8,29 @@
   config = lib.mkIf (config.stage == "full") {
     cilium = {
       enable = true;
+
+      gatewayAPI = {
+        enable = true;
+        defaultListener = {
+          enable = true;
+          issuerRef = {
+            name = "le-prod";
+            kind = "ClusterIssuer";
+          };
+          dnsNames = [
+            "lillecarl.com"
+            "*.lillecarl.com"
+          ];
+          annotations = {
+            "io.cilium/lb-ipam-ips" = "ipv4,ipv6";
+          };
+        };
+      };
+
       helmValues = {
         # Probably don't change this, we apply catch-all rules instead.
         # Cilium developers say it can cause bootstrapping issues to set
-        # this to always.
+        # this to always(?).
         policyEnforcementMode = "default";
         # Hubble
         hubble.relay.enabled = true;
@@ -61,15 +80,8 @@
           default = true;
           # Only one LB service since we don't have unlimited IP port combos
           loadbalancerMode = "shared";
-          # Allow sharing IP with other LB services
-          service.annotations."lbipam.cilium.io/sharing-key" = "*";
-          service.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
           # Policy stuff
           service.labels.ingress = "all";
-        };
-        # Enable gateway API
-        gatewayAPI = {
-          enabled = true;
         };
         # Cilium is quite important
         operator.replicas = 2;

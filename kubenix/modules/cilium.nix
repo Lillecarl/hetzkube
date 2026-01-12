@@ -16,8 +16,32 @@ in
       type = lib.types.str;
       default = "1.18.4";
     };
-    gatewayAPI = (lib.mkEnableOption "gateway api") // {
-      default = true;
+    gatewayAPI = {
+      enable = (lib.mkEnableOption "gateway api") // {
+        default = true;
+      };
+      defaultListener = {
+        enable = (lib.mkEnableOption "default listener") // {
+          default = true;
+        };
+        issuerRef = {
+          name = lib.mkOption {
+            type = lib.types.nonEmptyStr;
+          };
+          kind = lib.mkOption {
+            type = lib.types.nonEmptyStr;
+            default = "ClusterIssuer";
+          };
+        };
+        dnsNames = lib.mkOption {
+          description = "Domains configured for default listener";
+          type = lib.types.listOf lib.types.nonEmptyStr;
+        };
+        annotations = lib.mkOption {
+          type = lib.types.attrsOf lib.types.str;
+          default = { };
+        };
+      };
     };
     helmValues = lib.mkOption {
       type = lib.types.anything;
@@ -34,7 +58,8 @@ in
       };
     in
     lib.mkMerge [
-      (lib.mkIf (cfg.enable && cfg.gatewayAPI) {
+      (lib.mkIf (cfg.enable && cfg.gatewayAPI.enable) {
+        cert-manager.enable = true;
         # Configure GatewayAPI version
         gateway-api.enable = true;
         gateway-api.version =
@@ -46,6 +71,71 @@ in
               "1.19" = "1.3.0";
             }
             .${lib.versions.majorMinor cfg.version};
+        # Create the GatewayClass for Cilium
+        kubernetes.resources.kube-system =
+          lib.mkIf (cfg.gatewayAPI.enable && cfg.gatewayAPI.defaultListener.enable)
+            {
+              Gateway.default = {
+                metadata.annotations = cfg.gatewayAPI.defaultListener.annotations;
+                spec = {
+                  gatewayClassName = "cilium";
+                  infrastructure.annotations = cfg.gatewayAPI.defaultListener.annotations;
+                  listeners = [
+                    {
+                      name = "https";
+                      protocol = "HTTPS";
+                      port = 443;
+                      allowedRoutes.namespaces.from = "All";
+                      tls = {
+                        mode = "Terminate";
+                        certificateRefs = [
+                          {
+                            name = "default-cert";
+                            kind = "Secret";
+                          }
+                        ];
+                      };
+                    }
+                    {
+                      name = "http";
+                      protocol = "HTTP";
+                      port = 80;
+                      allowedRoutes.namespaces.from = "All";
+                    }
+                  ];
+                };
+              };
+              Certificate.default-cert = {
+                spec = {
+                  secretName = "default-cert";
+                  inherit (cfg.gatewayAPI.defaultListener) dnsNames issuerRef;
+                };
+              };
+              HTTPRoute.http-redirect = {
+                spec = {
+                  parentRefs = [
+                    {
+                      name = "cilium";
+                      namespace = "kube-system";
+                      sectionName = "http";
+                    }
+                  ];
+                  rules = [
+                    {
+                      filters = [
+                        {
+                          type = "RequestRedirect";
+                          requestRedirect = {
+                            scheme = "https";
+                            statusCode = 301;
+                          };
+                        }
+                      ];
+                    }
+                  ];
+                };
+              };
+            };
       })
       (lib.mkIf cfg.enable {
         # Disables enforcing policies
@@ -62,6 +152,10 @@ in
           chart = "${src}/install/kubernetes/cilium";
 
           values = lib.recursiveUpdate {
+            gatewayAPI = {
+              enabled = cfg.gatewayAPI.enable;
+              gatewayClass.create = lib.boolToString cfg.gatewayAPI.enable;
+            };
           } cfg.helmValues;
         };
         # Install Cilium CRDs with easykubenix, required so we can install network policies before
@@ -87,6 +181,12 @@ in
           CiliumNode = "cilium.io/v2";
           CiliumNodeConfig = "cilium.io/v2";
           CiliumPodIPPool = "cilium.io/v2alpha1";
+
+          GatewayClass = "gateway.networking.k8s.io/v1";
+          Gateway = "gateway.networking.k8s.io/v1";
+          GRPCRoute = "gateway.networking.k8s.io/v1";
+          HTTPRoute = "gateway.networking.k8s.io/v1";
+          ReferenceGrant = "gateway.networking.k8s.io/v1beta1";
         };
         kubernetes.namespacedMappings = {
           CiliumCIDRGroup = false;
@@ -99,6 +199,12 @@ in
           CiliumNode = false;
           CiliumNodeConfig = true;
           CiliumPodIPPool = false;
+
+          GatewayClass = false;
+          Gateway = true;
+          GRPCRoute = true;
+          HTTPRoute = true;
+          ReferenceGrant = true;
         };
       }
     ];

@@ -128,8 +128,6 @@
       ];
     };
     kubernetes.resources = lib.mkIf (config.stage == "full") {
-      nix-csi.Service.nix-cache-lb.metadata.annotations."lbipam.cilium.io/sharing-key" = "*";
-      nix-csi.Service.nix-cache-lb.metadata.annotations."lbipam.cilium.io/sharing-cross-namespace" = "*";
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixcache.lillecarl.com";
