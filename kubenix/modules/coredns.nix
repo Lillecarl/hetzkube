@@ -98,9 +98,9 @@ in
         metadata.labels = {
           "app.kubernetes.io/instance" = "coredns";
           "app.kubernetes.io/name" = "coredns";
-          k8s-app = "coredns";
           "kubernetes.io/cluster-service" = "true";
           "kubernetes.io/name" = "CoreDNS";
+          k8s-app = "kube-dns";
         };
         spec = {
           clusterIP = lib.head config.clusterDNS;
