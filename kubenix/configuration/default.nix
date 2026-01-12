@@ -45,6 +45,22 @@
     pgadmin.hostname = "pgadmin.lillecarl.com";
     headlamp.hostname = "headlamp.lillecarl.com";
 
+    # Apply IP sharing annotations to all Service resources
+    kubernetes.transformers = [
+      (
+        resourceAttrs:
+        if resourceAttrs.kind == "Service" && resourceAttrs.spec.type or "" == "LoadBalancer" then
+          lib.recursiveUpdate resourceAttrs {
+            metadata.annotations = {
+              "lbipam.cilium.io/sharing-key" = "*";
+              "lbipam.cilium.io/sharing-cross-namespace" = "*";
+            };
+          }
+        else
+          resourceAttrs
+      )
+    ];
+
     coredns.replicas = 2;
 
     stremio = {
