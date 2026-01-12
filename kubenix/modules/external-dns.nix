@@ -116,9 +116,10 @@ in
                   external-dns = {
                     image = "registry.k8s.io/external-dns/external-dns:v${cfg.version}";
                     args = [
-                      "--source=service"
                       "--source=crd"
+                      "--source=gateway-httproute"
                       "--source=ingress"
+                      "--source=service"
                       "--provider=cloudflare"
                       "--txt-owner-id=${config.clusterName}"
                     ];
