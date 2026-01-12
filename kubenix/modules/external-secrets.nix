@@ -39,6 +39,15 @@ in
       };
     in
     lib.mkIf cfg.enable {
+      kubernetes.resources.none.ClusterGenerator.crappy-pw = {
+        spec = {
+          kind = "Password";
+          generator.passwordSpec = {
+            length = 16;
+            symbols = 0;
+          };
+        };
+      };
       helm.releases.${moduleName} = {
         namespace = "kube-system";
         chart = pkgs.fetchHelm {
