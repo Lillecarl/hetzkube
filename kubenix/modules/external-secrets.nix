@@ -18,11 +18,11 @@ in
     };
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
-      default = "1.1.1";
+      default = "1.2.1";
     };
     sha256 = lib.mkOption {
       type = lib.types.str;
-      default = "sha256-yZ/3KiplxxHVVnuX4+kFXZ+Nd4Jq2oe+HZgeMqVp43Q=";
+      default = "sha256-7NMQ/2qMoxUhBhkTt+qb7zQJmBwV6KE7QfU2ACm6tRU=";
     };
     helmValues = lib.mkOption {
       type = lib.types.anything;
