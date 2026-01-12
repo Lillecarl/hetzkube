@@ -25,10 +25,10 @@
         nix copy \
           --substitute-on-destination \
           --no-check-sigs \
-          --from local?read-only=true \
           --to ssh-ng://nix@nixcache.lillecarl.com?port=2222 \
           ${lib.join " " config.copyDerivations} \
           -v || true
+          # --from local?read-only=true \
       '';
 
   };
