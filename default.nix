@@ -10,6 +10,7 @@ let
       overrides = {
         self = ./.;
         nixpkgs = <nixpkgs>;
+        nix-csi = /home/lillecarl/Code/nix-csi;
       };
     };
 
