@@ -2,13 +2,16 @@
 let
   flake =
     let
-      lockFile = builtins.readFile ./flake.lock;
-      lockAttrs = builtins.fromJSON lockFile;
-      fcLockInfo = lockAttrs.nodes.flake-compatish.locked;
-      fcSrc = builtins.fetchTree fcLockInfo;
-      flake-compatish = import fcSrc;
+      lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+      flake-compatish = import (builtins.fetchTree lock.nodes.flake-compatish.locked);
     in
-    flake-compatish ./.;
+    flake-compatish {
+      source = ./.;
+      overrides = {
+        self = ./.;
+        nixpkgs = <nixpkgs>;
+      };
+    };
 
   pkgs = import flake.inputs.nixpkgs {
     config.allowUnfree = true;
