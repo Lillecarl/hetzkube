@@ -44,6 +44,10 @@
       "xhci_pci"
     ];
 
+    environment.systemPackages = [
+      pkgs.e2fsprogs
+    ];
+
     # Get impure hostname
     networking.hostName =
       let
