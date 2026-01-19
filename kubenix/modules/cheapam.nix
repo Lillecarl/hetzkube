@@ -103,6 +103,7 @@ in
                     {
                       name = "nix-csi";
                       mountPath = "/nix";
+                      subPath = "nix";
                     }
                   ];
                 };
