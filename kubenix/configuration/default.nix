@@ -8,6 +8,7 @@
   imports = [
     ./cert-manager.nix
     ./chaoskube.nix
+    ./cifsmount.nix
     ./cilium.nix
     ./csi-driver-smb.nix
     ./external-secrets.nix
@@ -49,23 +50,20 @@
     headlamp.hostname = "headlamp.lillecarl.com";
 
     kubernetes.transformers = [
+      # make all Service dualstack
       (
         resource:
-        # Apply annotations to all LoadBalancers
-        if resource.kind == "Service" && resource.spec.type or null == "LoadBalancer" then
-          lib.recursiveUpdate resource {
-            # IPv4 is scarce, share!
-            metadata.annotations."metallb.io/allow-shared-ip" = "true";
-            # Lowest TTL cloudflare allows
-            metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
-          }
-        # Make all services require dualstack
-        else if resource.kind == "Service" then
+        if resource.kind == "Service" then
           lib.recursiveUpdate resource {
             spec.ipFamilyPolicy = "RequireDualStack";
           }
-        # Set lowest cloudflare TTL for ingress and gapi routes
-        else if
+        else
+          resource
+      )
+      # apply DNS TTL to all Ingress and HTTPRoute
+      (
+        resource:
+        if
           lib.elem resource.kind [
             "Ingress"
             "HTTPRoute"
@@ -76,6 +74,40 @@
           }
         else
           resource
+      )
+      # DNS TTL and IP sharing for LoadBalancer Service
+      (
+        resource:
+        if resource.kind == "Service" && resource.spec.type or null == "LoadBalancer" then
+          lib.recursiveUpdate resource {
+            # IPv4 is scarce, share!
+            metadata.annotations."metallb.io/allow-shared-ip" = "true";
+            # Lowest TTL cloudflare allows
+            metadata.annotations."external-dns.alpha.kubernetes.io/ttl" = "60";
+          }
+        else
+          resource
+      )
+      # Drop CPU limits, CPU limits are mostly dumb. Especially if VPA sets them to 0m
+      (
+        object:
+        if
+          lib.elem (object.kind or "") [
+            "Deployment"
+            "StatefulSet"
+            "DaemonSet "
+          ]
+        then
+          lib.mapAttrsRecursiveCond (as: !(as ? "cpu")) (
+            path: value:
+            if (lib.last path) == "limits" && lib.isAttrs value && value ? "cpu" then
+              # value // { cpu = null; }
+              lib.removeAttrs value [ "cpu" ]
+            else
+              value
+          ) object
+        else
+          object
       )
     ];
 
