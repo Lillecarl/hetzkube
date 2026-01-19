@@ -40,9 +40,8 @@
           --substitute-on-destination \
           --no-check-sigs \
           --to ssh-ng://nix@nixcache.lillecarl.com?port=2222 \
-          ${lib.join " " config.copyDerivations} ${config.internal.manifestJSONFile} \
+          ${config.kluctl.projectDir} \
           -v || true
-          # --from local?read-only=true \
       '';
 
   };
