@@ -120,17 +120,6 @@
     bitwarden.helmValues = {
       settings.bwSecretsManagerRefreshInterval = 180;
     };
-    vertical-pod-autoscaler.helmValues = {
-      admissionController.certManager.enabled = config.cert-manager.enable;
-      updater.extraArgs = [
-        "--min-replicas=1"
-        "--eviction-tolerance=1.0"
-      ];
-      recommender.extraArgs = [
-        "--pod-recommendation-min-memory-mb=0"
-        "--pod-recommendation-min-cpu-millicores=0"
-      ];
-    };
     kubernetes.resources = lib.mkIf (config.stage == "full") {
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixcache.lillecarl.com";
