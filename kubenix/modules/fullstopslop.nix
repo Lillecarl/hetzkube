@@ -1,10 +1,8 @@
 {
   config,
   pkgs,
-  pkgsOff,
   lib,
   hlib,
-  subPath,
   ...
 }:
 let
@@ -32,25 +30,8 @@ in
           extraGroupLines = lib.map (gid: "${gid}:x:${gid}:") gids;
         };
 
-      root = pkgs.writeShellApplication {
-        name = "init";
-        runtimeInputs = [
-          pkgs.rsync
-          pkgs.coreutils
-        ];
-        text = # bash
-          ''
-            rsync --archive ${pkgs.dockerTools.binSh}/ /
-            rsync --archive ${pkgs.dockerTools.caCertificates}/ /
-            rsync --archive ${pkgs.dockerTools.usrBinEnv}/ /
-            rsync --archive ${mkFakeNss { }}/ /
-            mkdir --parents "$HOME"
-            chown --recursive 1000:1000 "$HOME"
-
-          '';
-      };
-      user = pkgs.writeShellApplication {
-        name = "init";
+      runclaude = pkgs.writeShellApplication {
+        name = "runclaude";
         runtimeInputs = [
           pkgs.claude-code
           pkgs.coreutils
@@ -62,6 +43,7 @@ in
         text = # bash
           ''
             set -x
+            mkdir --parents "$HOME"
             cd "$HOME"
             # cp /var/run/secrets/claude/.claude.json "$HOME/.claude.json"
 
@@ -123,30 +105,13 @@ in
             fi
           '';
       };
-      run = pkgs.writeShellApplication {
-        name = "run";
-        runtimeInputs = [
-          pkgs.util-linux
-        ];
-        text = # bash
-          ''
-            set -x
-            export SHELL=${pkgs.runtimeShell}
-            ${lib.getExe root}
-            exec setpriv \
-              --clear-groups \
-              --reuid=1000 \
-              --regid=1000 \
-              --inh-caps=-all \
-              ${lib.getExe user}
-          '';
-      };
       env = pkgs.buildEnv {
         name = moduleName;
         paths = [
           pkgs.bash # Used when logging into CC first time
           pkgs.tini
-          run
+          (mkFakeNss { })
+          runclaude
         ];
       };
     in
@@ -175,13 +140,19 @@ in
                 template = {
                   metadata.labels.app = moduleName;
                   spec = {
+                    securityContext = {
+                      runAsUser = 1000;
+                      runAsGroup = 1000;
+                      fsGroup = 1000;
+                    };
+                    nodeSelector."kubernetes.io/arch" = "amd64";
                     restartPolicy = "OnFailure";
                     serviceAccountName = moduleName;
                     containers = lib.mkNamedList {
                       ${moduleName} = {
                         command = [
                           "tini"
-                          "run"
+                          "runclaude"
                         ];
                         image = "quay.io/nix-csi/scratch:1.0.1";
                         env = lib.mkNamedList {
@@ -192,26 +163,43 @@ in
                             key = "token";
                           };
                         };
-                        volumeMounts = [
-                          {
-                            name = "nix-csi";
-                            mountPath = "/nix";
-                            subPath = "nix";
-                          }
-                          {
-                            name = "nix-csi";
-                            mountPath = "/etc/ssl/certificates";
-                            subPath = subPath "${env}/etc/ssl/certificates";
-                          }
-                          {
-                            name = "home";
-                            mountPath = "/home/1000";
-                          }
-                        ];
+                        volumeMounts =
+                          let
+                            makeMounts =
+                              name: paths:
+                              lib.map (
+                                inPath:
+                                let
+                                  noSuffix = if lib.hasSuffix "/" inPath then lib.removeSuffix "/" inPath else inPath;
+                                  mountPath = if lib.hasPrefix "/" noSuffix then noSuffix else "/${noSuffix}";
+                                  subPath = lib.removePrefix "/" mountPath;
+                                in
+                                {
+                                  name = name;
+                                  inherit mountPath subPath;
+                                  readOnly = true;
+                                }
+                              ) paths;
+                          in
+                          makeMounts "nix-store" [
+                            "/nix"
+                            "/bin"
+                            "/etc/group"
+                            "/etc/passwd"
+                            "/etc/nsswitch.conf"
+                            "/etc/ssl"
+                            "/etc/pki"
+                          ]
+                          ++ [
+                            {
+                              name = "home";
+                              mountPath = "/home/1000";
+                            }
+                          ];
                       };
                     };
                     volumes = lib.mkNamedList {
-                      nix-csi.csi = {
+                      nix-store.csi = {
                         driver = "nix.csi.store";
                         readOnly = true;
                         volumeAttributes.${pkgs.stdenv.hostPlatform.system} = env;
