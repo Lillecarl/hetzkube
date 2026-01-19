@@ -110,6 +110,22 @@
       };
 
       kube-system.ExternalSecret.hcloud = hlib.eso.mkToken "name:hcloud-token";
+
+      # Don't allow VPA to scale limits below what's actually usable
+      none.LimitRange = {
+        global-limit-floor = {
+          spec.limits = [
+            {
+              type = "Container";
+              min = {
+                cpu = "250m";
+                memory = "256Mi";
+              };
+            }
+          ];
+        };
+      };
+
     };
   };
 }
