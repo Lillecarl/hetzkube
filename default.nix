@@ -11,6 +11,7 @@ let
         self = ./.;
         nixpkgs = /etc/nixpkgs;
         nix-csi = /home/lillecarl/Code/nix-csi;
+        easykubenix = /home/lillecarl/Code/easykubenix;
       };
     };
 
