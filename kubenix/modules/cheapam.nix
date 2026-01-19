@@ -90,9 +90,8 @@ in
               containers = lib.mkNamedList {
                 ${moduleName} = {
                   command = [ moduleName ];
-                  image = "quay.io/nix-csi/scratch:1.0.0";
+                  image = "quay.io/nix-csi/scratch:1.0.1";
                   env = lib.mkNamedList {
-                    PATH.value = "/nix/var/result/bin";
                     PYTHONUNBUFFERED.value = "1";
                     HCLOUD_TOKEN.valueFrom.secretKeyRef = {
                       name = "hcloud-cheapam";
