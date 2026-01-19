@@ -18,10 +18,12 @@ let
 in
 import easykubenix {
   inherit pkgs;
-  specialArgs = {
-    inherit pkgsOff;
-  };
   modules = [
+    {
+      _module.args = {
+        inherit pkgsOff;
+      };
+    }
     ./modules
     ./capi
     ./full
