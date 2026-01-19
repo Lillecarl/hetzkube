@@ -36,8 +36,8 @@
         enable = true;
 
         namespace = "observability";
-        version = "80.13.3";
-        sha256 = "sha256-49y/S3Awbv9wDZhovJYO42xt3qj83j+29skx5xF6VVQ=";
+        version = "81.1.0";
+        sha256 = "sha256-xqGt3cqsuVFQFllvGYLiw043hq8iwaV2AIqgSGTrG/s=";
 
         helmValues = {
           prometheusOperator = {
