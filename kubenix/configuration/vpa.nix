@@ -5,7 +5,7 @@
       # Deploy VPA objects for all long-lived resource types
       (
         resource:
-        lib.optionals
+        lib.optionalAttrs
           (
             (lib.elem resource.kind [
               "Deployment"
@@ -21,20 +21,18 @@
               resource.metadata.name
             ] config.kubernetes.resources
           )
-          [
-            {
-              apiVersion = "autoscaling.k8s.io/v1";
-              kind = "VerticalPodAutoscaler";
-              metadata = { inherit (resource.metadata) name namespace; };
-              spec = {
-                targetRef = {
-                  inherit (resource) apiVersion kind;
-                  inherit (resource.metadata) name;
-                };
-                updatePolicy.updateMode = "InPlaceOrRecreate";
+          {
+            apiVersion = "autoscaling.k8s.io/v1";
+            kind = "VerticalPodAutoscaler";
+            metadata = { inherit (resource.metadata) name namespace; };
+            spec = {
+              targetRef = {
+                inherit (resource) apiVersion kind;
+                inherit (resource.metadata) name;
               };
-            }
-          ]
+              updatePolicy.updateMode = "InPlaceOrRecreate";
+            };
+          }
       )
     ];
   };
