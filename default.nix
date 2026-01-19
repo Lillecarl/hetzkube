@@ -9,7 +9,7 @@ let
       source = ./.;
       overrides = {
         self = ./.;
-        nixpkgs = <nixpkgs>;
+        nixpkgs = /etc/nixpkgs;
         nix-csi = /home/lillecarl/Code/nix-csi;
       };
     };
