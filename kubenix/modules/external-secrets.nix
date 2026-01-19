@@ -61,9 +61,6 @@ in
           certManager.enabled = lib.mkDefault config.cert-manager.enable;
         } cfg.helmValues;
       };
-      importyaml.${moduleName} = {
-        src = "${src}/deploy/crds/bundle.yaml";
-      };
       hlib.eso = rec {
         mkBasic = swIdentifier: {
           spec = {
