@@ -14,10 +14,12 @@
     files."secrets/all.yaml" = builtins.readFile ../../secrets/all.yaml;
     # Disable templating for default resource project
     files."default/.templateignore" = "*";
+    files."prio-10/.templateignore" = "*";
+    files."prio-15/.templateignore" = "*";
     # Put priorities on resources, this also excludes the from the templateignore above
     resourcePriority = {
       Namespace = 10;
-      CustomResourceDefinition = 10;
+      CustomResourceDefinition = 15;
       Secret = 20;
     };
     preDeployScript = # bash
