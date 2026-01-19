@@ -13,7 +13,7 @@
               "DaemonSet"
             ])
             # Allow disabling generated VPA by setting annotations.genvpa to not "true"
-            && resource.metadata.annotations.genvpa or "true" == "true"
+            && resource.metadata.annotations."vpa/generate" or "true" == "true"
             # Also check that there isn't already a VPA with the same name configured
             && !lib.hasAttrByPath [
               resource.metadata.namespace
