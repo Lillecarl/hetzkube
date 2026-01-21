@@ -1,13 +1,8 @@
 {
-  x86Pkgs,
   config,
-  lib,
   ...
 }:
 {
-  copyDerivations = [
-    x86Pkgs.nix-csi-builder-env
-  ];
   kluctl = {
     # Add SOPS secrets
     deployment.vars = [ { file = "secrets/all.yaml"; } ];
