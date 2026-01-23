@@ -187,7 +187,7 @@ in
       name = "Headlamp";
 
       valid_redirect_uris = [
-        "https://headlamp.e.lillecarl.com/oidc-callback"
+        "https://headlamp.lillecarl.com/oidc-callback"
       ];
 
       standard_flow_enabled = true;
