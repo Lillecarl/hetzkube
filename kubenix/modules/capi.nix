@@ -91,7 +91,7 @@ in
               ];
               extraArgs = {
                 feature-gates = featureGates;
-                oidc-issuer-url = "https://${lib.head config.keycloak.hostnames}/realms/master";
+                oidc-issuer-url = "https://${lib.head config.keycloak.hostnames}/realms/auth";
                 oidc-client-id = "kubernetes";
                 oidc-username-claim = "sub";
                 oidc-groups-claim = "groups";

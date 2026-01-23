@@ -84,7 +84,7 @@ in
           oidc = {
             clientID = "headlamp";
             clientSecret = "x8C0dJr0SnyJnZfBFrnhg43qdkuxxDaT";
-            issuerURL = "https://keycloak.lillecarl.com/realms/master";
+            issuerURL = "https://keycloak.lillecarl.com/realms/auth";
             scopes = "openid,email,profile,offline_access";
           };
         };

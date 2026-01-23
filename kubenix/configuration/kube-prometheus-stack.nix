@@ -129,9 +129,9 @@
                 client_id = "grafana";
                 client_secret = "$__file{/etc/secrets/oidc/client-secret}";
                 scopes = "openid profile email";
-                auth_url = "https://${lib.head config.keycloak.hostnames}/realms/master/protocol/openid-connect/auth";
-                token_url = "https://${lib.head config.keycloak.hostnames}/realms/master/protocol/openid-connect/token";
-                api_url = "https://${lib.head config.keycloak.hostnames}/realms/master/protocol/openid-connect/userinfo";
+                auth_url = "https://${lib.head config.keycloak.hostnames}/realms/auth/protocol/openid-connect/auth";
+                token_url = "https://${lib.head config.keycloak.hostnames}/realms/auth/protocol/openid-connect/token";
+                api_url = "https://${lib.head config.keycloak.hostnames}/realms/auth/protocol/openid-connect/userinfo";
                 role_attribute_path = "contains(realm_access.roles[*], 'admin') && 'Admin' || contains(realm_access.roles[*], 'editor') && 'Editor' || 'Viewer'";
               };
               database = {
