@@ -17,7 +17,7 @@ in
     };
     version = lib.mkOption {
       type = lib.types.str;
-      default = "0.38.0";
+      default = "0.39.0";
     };
     hostname = lib.mkOption {
       type = lib.types.str;
