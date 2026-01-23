@@ -16,6 +16,7 @@
     ./kube-prometheus-stack.nix
     ./nix-csi.nix
     ./vpa.nix
+    ./ncps.nix
   ];
   options.stage = lib.mkOption {
     type = lib.types.enum [
