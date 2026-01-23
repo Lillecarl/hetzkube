@@ -18,19 +18,6 @@ let
 in
 {
   config = {
-    terraform = {
-      required_providers = {
-        keycloak = {
-          source = "keycloak/keycloak";
-          version = "5.5.0";
-        };
-        kubernetes = {
-          source = "hashicorp/kubernetes";
-          version = "3.0.1";
-        };
-      };
-    };
-
     provider.keycloak = {
       client_id = "admin-cli";
       url = "https://keycloak.lillecarl.com";
