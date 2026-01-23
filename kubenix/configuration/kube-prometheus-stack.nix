@@ -127,7 +127,8 @@
                 name = "Keycloak";
                 allow_sign_up = true;
                 client_id = "grafana";
-                client_secret = "$__file{/etc/secrets/oidc/client-secret}";
+                # client_secret = "$__file{/etc/secrets/oidc/client-secret}";
+                use_pkce = true;
                 scopes = "openid profile email";
                 auth_url = "https://${lib.head config.keycloak.hostnames}/realms/auth/protocol/openid-connect/auth";
                 token_url = "https://${lib.head config.keycloak.hostnames}/realms/auth/protocol/openid-connect/token";

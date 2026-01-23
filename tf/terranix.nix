@@ -154,6 +154,11 @@ in
         ];
       };
 
+    resource.keycloak_role.admin = mkKC {
+      name = "admin";
+      description = "$${role_admin}";
+    };
+
     resource.keycloak_openid_client.kubernetes = mkKC {
       client_id = "kubernetes";
       name = "Kubernetes";
@@ -219,7 +224,7 @@ in
       standard_flow_enabled = true;
       direct_access_grants_enabled = true;
       service_accounts_enabled = false;
-      access_type = "CONFIDENTIAL";
+      access_type = "PUBLIC";
       access_token_lifespan = "28800"; # 8 hour tokens
     };
 
