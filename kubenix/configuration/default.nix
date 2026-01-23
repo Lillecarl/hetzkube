@@ -10,6 +10,7 @@
     ./chaoskube.nix
     ./cifsmount.nix
     ./cilium.nix
+    ./cnpg-primaryswap.nix
     ./csi-driver-smb.nix
     ./external-secrets.nix
     ./kluctl.nix
