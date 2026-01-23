@@ -48,13 +48,6 @@ in
             name = "OIDC_VALIDATOR_CLIENT_ID";
             value = "kubernetes";
           }
-          {
-            name = "HEADLAMP_CONFIG_OIDC_CLIENT_SECRET";
-            valueFrom.secretKeyRef = {
-              name = "headlamp-oidc-secret";
-              key = "";
-            };
-          }
         ];
         ingress = {
           enabled = true;
@@ -83,9 +76,9 @@ in
         config = {
           oidc = {
             clientID = "headlamp";
-            clientSecret = "x8C0dJr0SnyJnZfBFrnhg43qdkuxxDaT";
-            issuerURL = "https://keycloak.lillecarl.com/realms/auth";
+            issuerURL = "https://${lib.head config.keycloak.hostnames}/realms/auth";
             scopes = "openid,email,profile,offline_access";
+            usePKCE = true;
           };
         };
       } cfg.helmValues;

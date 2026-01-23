@@ -193,7 +193,7 @@ in
       standard_flow_enabled = true;
       direct_access_grants_enabled = false;
       service_accounts_enabled = false;
-      access_type = "CONFIDENTIAL";
+        access_type = "PUBLIC";
       access_token_lifespan = "28800"; # 8 hour tokens
     };
 
