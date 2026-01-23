@@ -45,7 +45,6 @@ in
             set -x
             mkdir --parents "$HOME"
             cd "$HOME"
-            # cp /var/run/secrets/claude/.claude.json "$HOME/.claude.json"
 
             # Configureable init sleep so we can login interactively
             INIT_SLEEP="''${INIT_SLEEP:-""}"
@@ -159,7 +158,7 @@ in
                         ];
                         image = "quay.io/nix-csi/scratch:1.0.1";
                         env = lib.mkNamedList {
-                          INIT_SLEEP.value = "600";
+                          # INIT_SLEEP.value = "600";
                           HOME.value = "/home/1000";
                           GH_PAT.valueFrom.secretKeyRef = {
                             name = "github-pat";
