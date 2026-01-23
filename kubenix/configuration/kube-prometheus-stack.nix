@@ -137,7 +137,7 @@
               };
               database = {
                 type = "postgres";
-                host = "pb0-cluster.database.svc.cluster.local:5432";
+                host = "pg0-rw.database.svc.cluster.local:5432";
                 name = "grafana";
                 user = "$__file{/etc/secrets/db/username}";
                 password = "$__file{/etc/secrets/db/password}";
