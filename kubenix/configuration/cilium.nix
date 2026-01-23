@@ -22,7 +22,7 @@
             "*.lillecarl.com"
           ];
           annotations = {
-            "io.cilium/lb-ipam-ips" = "ipv4,ipv6";
+            "metallb.io/allow-shared-ip" = "true";
           };
         };
       };
