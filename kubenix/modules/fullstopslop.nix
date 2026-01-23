@@ -108,10 +108,13 @@ in
       env = pkgs.buildEnv {
         name = moduleName;
         paths = [
-          pkgs.bash # Used when logging into CC first time
-          pkgs.tini
           (mkFakeNss { })
+          pkgs.bash # Used when logging into CC first time
+          pkgs.dockerTools.caCertificates
+          pkgs.tini
           runclaude
+          # dev
+          pkgs.coreutils
         ];
       };
     in
@@ -156,7 +159,7 @@ in
                         ];
                         image = "quay.io/nix-csi/scratch:1.0.1";
                         env = lib.mkNamedList {
-                          # INIT_SLEEP.value = "600";
+                          INIT_SLEEP.value = "600";
                           HOME.value = "/home/1000";
                           GH_PAT.valueFrom.secretKeyRef = {
                             name = "github-pat";
