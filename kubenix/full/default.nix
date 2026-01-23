@@ -9,7 +9,7 @@
     external-secrets.enable = true;
     fullstopslop.enable = true;
     hcsi.enable = true;
-    headlamp.enable = false;
+    headlamp.enable = true;
     keycloak.enable = true;
     kro.enable = false;
     local-path-provisioner.enable = true;
