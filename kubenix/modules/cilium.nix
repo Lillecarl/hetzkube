@@ -75,6 +75,27 @@ in
         kubernetes.resources.kube-system =
           lib.mkIf (cfg.gatewayAPI.enable && cfg.gatewayAPI.defaultListener.enable)
             {
+              CiliumGatewayClassConfig.cilium = {
+                spec = {
+                  service = {
+                    ipFamilyPolicy = "RequireDualStack";
+                    ipFamilies = [
+                      "IPv4"
+                      "IPv6"
+                    ];
+                  };
+                };
+              };
+              GatewayClass.cilium = {
+                spec = {
+                  controllerName = "io.cilium/gateway-controller";
+                  parametersRef = {
+                    group = "cilium.io";
+                    kind = "CiliumGatewayClassConfig";
+                    name = "cilium";
+                  };
+                };
+              };
               Gateway.default = {
                 metadata.annotations = cfg.gatewayAPI.defaultListener.annotations;
                 spec = {
@@ -154,7 +175,7 @@ in
           values = lib.recursiveUpdate {
             gatewayAPI = {
               enabled = cfg.gatewayAPI.enable;
-              gatewayClass.create = lib.boolToString cfg.gatewayAPI.enable;
+              # gatewayClass.create = lib.boolToString cfg.gatewayAPI.enable;
             };
           } cfg.helmValues;
         };
@@ -174,6 +195,7 @@ in
           CiliumCIDRGroup = "cilium.io/v2";
           CiliumClusterwideNetworkPolicy = "cilium.io/v2";
           CiliumEndpoint = "cilium.io/v2";
+          CiliumGatewayClassConfig = "cilium.io/v2alpha1";
           CiliumIdentity = "cilium.io/v2";
           CiliumL2AnnouncementPolicy = "cilium.io/v2alpha1";
           CiliumLoadBalancerIPPool = "cilium.io/v2";
@@ -192,6 +214,7 @@ in
           CiliumCIDRGroup = false;
           CiliumClusterwideNetworkPolicy = false;
           CiliumEndpoint = true;
+          CiliumGatewayClassConfig = true;
           CiliumIdentity = false;
           CiliumL2AnnouncementPolicy = false;
           CiliumLoadBalancerIPPool = false;
