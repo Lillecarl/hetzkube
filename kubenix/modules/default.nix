@@ -9,8 +9,8 @@
     ./cilium.nix
     ./clusteroptions.nix
     ./cnpg.nix
-    ./csi-driver-smb.nix
     ./coredns.nix
+    ./csi-driver-smb.nix
     ./external-dns.nix
     ./external-secrets.nix
     ./fullstopslop.nix
@@ -18,14 +18,15 @@
     ./hcsi.nix
     ./headlamp.nix
     ./keycloak.nix
-    ./stremio.nix
     ./kro.nix
     ./kube-prometheus-stack.nix
+    ./kyverno.nix
     ./local-path-provisioner.nix
     ./metallb.nix
     ./metrics-server.nix
     ./pgadmin.nix
     ./sealed-secrets.nix
+    ./stremio.nix
     ./vertical-pod-autoscaler.nix
   ];
   options.hlib = lib.mkOption {

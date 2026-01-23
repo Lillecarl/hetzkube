@@ -14,6 +14,7 @@
     ./external-secrets.nix
     ./kluctl.nix
     ./kube-prometheus-stack.nix
+    ./kyverno.nix
     ./nix-csi.nix
     ./vpa.nix
     ./ncps.nix
