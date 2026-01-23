@@ -58,7 +58,7 @@ in
         ];
         ingress = {
           enabled = true;
-          ingressClassName = "nginx";
+          ingressClassName = "cilium";
           annotations = {
             "cert-manager.io/cluster-issuer" = "le-prod";
           };
