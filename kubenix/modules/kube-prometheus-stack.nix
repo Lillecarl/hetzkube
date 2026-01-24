@@ -17,11 +17,7 @@ in
     };
     version = lib.mkOption {
       type = lib.types.str;
-      default = "80.13.3";
-    };
-    sha256 = lib.mkOption {
-      type = lib.types.str;
-      default = lib.fakeHash;
+      default = "81.2.2";
     };
     hostname = lib.mkOption {
       type = lib.types.str;
@@ -38,10 +34,9 @@ in
       includeCRDs = true;
       noHooks = true;
 
-      chart = pkgs.fetchHelm {
-        chart = "kube-prometheus-stack";
-        repo = "https://prometheus-community.github.io/helm-charts";
-        inherit (cfg) version sha256;
+      chart = builtins.fetchTree {
+        type = "tarball";
+        url = "https://github.com/prometheus-community/helm-charts/releases/download/kube-prometheus-stack-${cfg.version}/kube-prometheus-stack-${cfg.version}.tgz";
       };
 
       values = lib.recursiveUpdate {
