@@ -45,6 +45,12 @@ in
             };
           };
         };
+        PodMonitor.pg0 = {
+          spec = {
+            selector.matchLabels."cnpg.io/cluster" = "pg0";
+            podMetricsEndpoints = [ { port = "metrics"; } ];
+          };
+        };
         Pooler.pb0-lb = {
           spec = {
             cluster.name = "pg0";
