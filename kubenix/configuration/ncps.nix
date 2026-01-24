@@ -153,6 +153,7 @@
                       CACHE_ALLOW_DELETE_VERB.value = "true";
                       CACHE_ALLOW_PUT_VERB.value = "true";
                       CACHE_SECRET_KEY_PATH.value = "/etc/secrets/nix-key/nix_ed25519";
+                      SERVER_ADDR.value = ":8591";
                     };
                     volumeMounts =
                       makeMounts "nix-store" [
