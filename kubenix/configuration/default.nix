@@ -48,6 +48,8 @@
     pgadmin.hostname = "pgadmin.lillecarl.com";
     headlamp.hostname = "headlamp.lillecarl.com";
 
+    metrics-server.helmValues.replicas = 2;
+
     kubernetes.transformers = [
       # make all Service dualstack
       (

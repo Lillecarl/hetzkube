@@ -35,7 +35,7 @@ in
         chart = "${src}/charts/metrics-server";
 
         values = lib.recursiveUpdate {
-          args = [ "--kubelet-insecure-tls" ];
+          args = lib.mkDefault [ "--kubelet-insecure-tls" ];
         } cfg.helmValues;
       };
     };
