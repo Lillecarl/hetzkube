@@ -36,6 +36,10 @@ in
 
         values = lib.recursiveUpdate {
           args = lib.mkDefault [ "--kubelet-insecure-tls" ];
+          service.labels = {
+            "kubernetes.io/cluster-service" = "true";
+            "kubernetes.io/name" = "Metrics-server";
+          };
         } cfg.helmValues;
       };
     };
