@@ -100,6 +100,10 @@ in
           "app.kubernetes.io/name" = "coredns";
           "kubernetes.io/cluster-service" = "true";
           "kubernetes.io/name" = "CoreDNS";
+          "prometheus.io/scrape" = "true";
+          "prometheus.io/port" = "9153";
+          "app" = "kube-prometheus-stack-coredns";
+          "release" = "kube-prometheus-stack";
           k8s-app = "kube-dns";
         };
         spec = {
@@ -118,6 +122,12 @@ in
               port = 53;
               protocol = "TCP";
               targetPort = 53;
+            }
+            {
+              name = "http-metrics";
+              port = 9153;
+              protocol = "TCP";
+              targetPort = 9153;
             }
           ];
           selector.k8s-app = "coredns";
