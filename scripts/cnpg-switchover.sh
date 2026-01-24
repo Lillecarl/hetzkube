@@ -60,6 +60,13 @@ set -x
 # Fetch cluster status as JSON for reliable parsing
 status=$(kubectl-cnpg status "$CLUSTER" -n "$NAMESPACE" -o json)
 
+# Verify cluster is healthy before attempting switchover
+cluster_phase=$(echo "$status" | jq -r '.cluster.status.phase')
+if [[ "$cluster_phase" != "Cluster in healthy state" ]]; then
+  echo "ERROR: Cluster is not healthy. Current phase: $cluster_phase" >&2
+  exit 1
+fi
+
 # Extract current primary from cluster status
 current_primary=$(echo "$status" | jq -r '.cluster.status.currentPrimary')
 
@@ -67,9 +74,9 @@ current_primary=$(echo "$status" | jq -r '.cluster.status.currentPrimary')
 instances=$(echo "$status" | jq -r '[.instanceStatus.items[] | {name: .pod.metadata.name, isPrimary, isPodReady}]')
 
 # Select the first replica that is ready to be promoted
-# Filters for: not currently primary AND pod is ready to serve traffic
-new_primary=$(echo "$instances" | jq -r '
-  map(select(.isPrimary == false and .isPodReady == true))
+# Filters for: not the current primary AND pod is ready to serve traffic
+new_primary=$(echo "$instances" | jq -r --arg primary "$current_primary" '
+  map(select(.name != $primary and .isPodReady == true))
   | .[0].name // empty
 ')
 
