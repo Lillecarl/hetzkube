@@ -4,7 +4,6 @@
     kyverno = {
       enable = true;
       version = "3.6.2";
-      sha256 = "sha256-5nKKKWAg1JFfsUxo120SMBqKDkd9VmNzE/bB+ty1gjI=";
     };
     kubernetes.resources.none = {
       ClusterPolicy = {

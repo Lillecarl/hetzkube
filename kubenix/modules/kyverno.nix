@@ -18,10 +18,6 @@ in
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
     };
-    sha256 = lib.mkOption {
-      type = lib.types.nonEmptyStr;
-      default = lib.fakeHash;
-    };
     helmValues = lib.mkOption {
       type = lib.types.anything;
       default = { };
@@ -30,10 +26,10 @@ in
   config = lib.mkIf cfg.enable {
     helm.releases.${moduleName} = {
       inherit (cfg) namespace;
-      chart = pkgs.fetchHelm {
-        chart = "kyverno";
-        repo = "https://kyverno.github.io/kyverno/";
-        inherit (cfg) version sha256;
+
+      chart = builtins.fetchTree {
+        type = "tarball";
+        url = "https://kyverno.github.io/kyverno/kyverno-${cfg.version}.tgz";
       };
 
       values = lib.recursiveUpdate { } cfg.helmValues;
