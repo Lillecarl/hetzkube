@@ -15,6 +15,7 @@
         };
       };
     in
+    lib.mkIf (config.stage == "full")
     {
       vertical-pod-autoscaler.helmValues = {
         admissionController.certManager.enabled = config.cert-manager.enable;
