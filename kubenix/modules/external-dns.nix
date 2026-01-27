@@ -5,7 +5,6 @@
   ...
 }:
 let
-  rootConfig = config;
   moduleName = "external-dns";
   cfg = config.${moduleName};
 
@@ -21,15 +20,14 @@ let
     [
       {
         apiGroups = [ "" ];
-        resources =
-          [
-            "services"
-            "pods"
-          ]
-          ++ lib.optionals isClusterScope [
-            "nodes"
-            "namespaces"
-          ];
+        resources = [
+          "services"
+          "pods"
+        ]
+        ++ lib.optionals isClusterScope [
+          "nodes"
+          "namespaces"
+        ];
         inherit verbs;
       }
       {
@@ -64,9 +62,14 @@ let
 
   externalDnsSubmodule =
     { name, config, ... }:
+    let
+      subCfg = config;
+    in
     {
       options = {
-        enable = lib.mkEnableOption "external-dns instance";
+        enable = lib.mkEnableOption "external-dns instance" // {
+          default = true;
+        };
 
         namespace = lib.mkOption {
           type = lib.types.str;
@@ -74,112 +77,68 @@ let
           description = "Namespace to deploy into. If kube-system, uses ClusterRole.";
         };
 
+        clusterScope = lib.mkEnableOption "cluster scoped permissions";
+
         version = lib.mkOption {
           type = lib.types.str;
-          default = "0.20.0";
-        };
-
-        image = lib.mkOption {
-          type = lib.types.str;
-          default = "registry.k8s.io/external-dns/external-dns:v${config.version}";
-        };
-
-        secretName = lib.mkOption {
-          type = lib.types.str;
-          default = "cloudflare";
-          description = "Name of the secret containing the API token";
+          default = cfg.version;
         };
 
         args = lib.mkOption {
           type = lib.types.listOf lib.types.str;
-          default = [
-            "--source=crd"
-            "--source=gateway-httproute"
-            "--source=ingress"
-            "--source=service"
-            "--provider=cloudflare"
-            "--txt-owner-id=${rootConfig.clusterName}"
-          ];
+          default = [ ];
           description = "Arguments passed to the external-dns container.";
         };
 
         env = lib.mkOption {
           type = lib.types.listOf lib.types.attrs;
-          default = [
-            {
-              name = "CF_API_TOKEN";
-              valueFrom = {
-                secretKeyRef = {
-                  name = config.secretName;
-                  key = "token";
-                };
-              };
-            }
-          ];
+          default = [ ];
           description = "Environment variables for the container.";
         };
 
-        kubernetes.resources = lib.mkOption {
+        objects = lib.mkOption {
           type = lib.types.attrs;
-          description = "Generated Kubernetes resources for this instance.";
+          description = "Generated Kubernetes objects for this instance.";
         };
       };
 
       config = {
-        kubernetes.resources =
+        clusterScope = lib.mkDefault (subCfg.namespace == "kube-system");
+        objects =
           let
-            isGlobal = config.namespace == "kube-system";
-            roleName = "external-dns-${name}";
-            saName = "external-dns-${name}";
+            identifier = "external-dns-${name}";
 
             rbac =
-              if isGlobal then
-                {
-                  ClusterRole.${roleName} = {
-                    rules = mkRules true;
+              let
+                roleNs = if subCfg.clusterScope then "none" else subCfg.namespace;
+                roleType = if subCfg.clusterScope then "ClusterRole" else "Role";
+                bindType = if subCfg.clusterScope then "ClusterRoleBinding" else "RoleBinding";
+              in
+              {
+                ${roleNs} = {
+                  ${roleType}.${identifier} = {
+                    rules = mkRules subCfg.clusterScope;
                   };
-                  ClusterRoleBinding.${roleName} = {
+                  ${bindType}.${identifier} = {
                     roleRef = {
                       apiGroup = "rbac.authorization.k8s.io";
-                      kind = "ClusterRole";
-                      name = roleName;
+                      kind = roleType;
+                      name = identifier;
                     };
                     subjects = [
                       {
                         kind = "ServiceAccount";
-                        name = saName;
-                        namespace = config.namespace;
+                        name = identifier;
+                        namespace = subCfg.namespace;
                       }
                     ];
                   };
-                }
-              else
-                {
-                  resources.${config.namespace} = {
-                    Role.${roleName} = {
-                      rules = mkRules false;
-                    };
-                    RoleBinding.${roleName} = {
-                      roleRef = {
-                        apiGroup = "rbac.authorization.k8s.io";
-                        kind = "Role";
-                        name = roleName;
-                      };
-                      subjects = [
-                        {
-                          kind = "ServiceAccount";
-                          name = saName;
-                          namespace = config.namespace;
-                        }
-                      ];
-                    };
-                  };
                 };
+              };
 
             deployment = {
-              resources.${config.namespace} = {
-                ServiceAccount.${saName} = { };
-                ExternalSecret.${config.secretName} = hlib.eso.mkToken "name:cloudflare-token";
+              ${config.namespace} = {
+                ServiceAccount.${identifier} = { };
                 Deployment."external-dns-${name}" = {
                   spec = {
                     strategy.type = "Recreate";
@@ -187,10 +146,10 @@ let
                     template = {
                       metadata.labels.app = "external-dns-${name}";
                       spec = {
-                        serviceAccountName = saName;
+                        serviceAccountName = identifier;
                         containers = lib.mkNamedList {
                           external-dns = {
-                            image = config.image;
+                            image = "registry.k8s.io/external-dns/external-dns:v${subCfg.version}";
                             inherit (config) args env;
                           };
                         };
@@ -209,34 +168,32 @@ let
     };
 in
 {
-  options.${moduleName} = lib.mkOption {
-    default = { };
-    type = lib.types.attrsOf (lib.types.submodule externalDnsSubmodule);
+  options.${moduleName} = {
+    enable = lib.mkEnableOption "external-dns";
+    version = lib.mkOption {
+      type = lib.types.str;
+      default = "0.20.0";
+    };
+    instances = lib.mkOption {
+      default = { };
+      type = lib.types.attrsOf (lib.types.submodule externalDnsSubmodule);
+    };
   };
 
-  config = lib.mkIf (cfg != { }) {
-    # We assume all instances use the same CRD version, or at least compatible ones.
-    # We pick the version from the first enabled instance or default to 0.20.0 if none enabled (though config is mkIf cfg != {})
-    importyaml.${moduleName} =
-      let
-        # Fallback version if needed, though cfg is not empty here
-        version =
-          if (lib.attrNames cfg) != [ ] then
-            (lib.head (lib.attrValues cfg)).version
-          else
-            "0.20.0";
-      in
-      {
-        src = "https://raw.githubusercontent.com/kubernetes-sigs/external-dns/v${version}/config/crd/standard/dnsendpoints.externaldns.k8s.io.yaml";
-      };
+  config = lib.mkIf cfg.enable {
+    importyaml.${moduleName}.src =
+      "https://raw.githubusercontent.com/kubernetes-sigs/external-dns/v${cfg.version}/config/crd/standard/dnsendpoints.externaldns.k8s.io.yaml";
 
     kubernetes = {
-      apiMappings = {
-        DNSEndpoint = "externaldns.k8s.io/v1alpha1";
-      };
-      resources = lib.mkMerge (
-        lib.mapAttrsToList (n: v: v.kubernetes.resources) (lib.filterAttrs (n: v: v.enable) cfg)
-      );
+      apiMappings.DNSEndpoint = "externaldns.k8s.io/v1alpha1";
+      namespacedMappings.DNSEndpoint = true;
+
+      objects = lib.pipe cfg.instances [
+        (lib.mapAttrsToList (_: instance: instance))
+        (lib.filter (instance: instance.enable))
+        (lib.map (instance: instance.objects))
+        lib.mkMerge
+      ];
     };
   };
 }
