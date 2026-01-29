@@ -4,6 +4,25 @@
     kyverno = {
       enable = true;
       version = "3.6.2";
+      helmValues = {
+        reportsController = {
+          rbac = {
+            clusterRole = {
+              extraResources = [
+                {
+                  apiGroups = [ "gateway.networking.k8s.io" ];
+                  resources = [ "httproutes" ];
+                  verbs = [
+                    "get"
+                    "list"
+                    "watch"
+                  ];
+                }
+              ];
+            };
+          };
+        };
+      };
     };
     kubernetes.resources.none = {
       ClusterPolicy = {
