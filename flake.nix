@@ -26,7 +26,7 @@
       flake = false;
     };
     nix-csi = {
-      url = "github:lillecarl/nix-csi";
+      url = "github:lillecarl/nix-csi/develop";
       flake = false;
     };
   };
