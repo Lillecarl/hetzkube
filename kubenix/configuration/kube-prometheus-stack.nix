@@ -36,7 +36,7 @@
         enable = true;
 
         namespace = "observability";
-        version = "81.2.2";
+        version = "81.3.0";
 
         helmValues = {
           prometheusOperator = {
