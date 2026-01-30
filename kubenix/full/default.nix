@@ -6,7 +6,6 @@
     cnpg.enable = true;
     coredns.enable = true;
     external-secrets.enable = true;
-    fullstopslop.enable = true;
     hcsi.enable = true;
     headlamp.enable = true;
     keycloak.enable = true;

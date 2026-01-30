@@ -13,7 +13,6 @@
     ./csi-driver-smb.nix
     ./external-dns.nix
     ./external-secrets.nix
-    ./fullstopslop.nix
     ./gateway-api.nix
     ./hcsi.nix
     ./headlamp.nix
