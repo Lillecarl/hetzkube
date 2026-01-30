@@ -1,4 +1,4 @@
-let
+rec {
   root = import ../. { };
   inherit (root) pkgs;
   inherit (pkgs) lib;
@@ -55,22 +55,19 @@ let
         mkdir $out
         cd $out
         jq < ${terranix-config} >> config.tf.json
-        # hide init warnings, if we error we just run again
-        tofu init -backend=false &>/dev/null || tofu init -backend=false
+        tofu init -backend=false
       '';
-in
-{
-  inherit pkgs registry terranix;
+
   run = pkgs.writeShellApplication {
     name = "terranix";
-    runtimeInputs = [ pkgs.opentofu ];
-    text = # bash
-      ''
-        set -x
-        state="$PWD/terraform.tfstate"
-        export TF_CLI_ARGS="-state=$state"
-        export TF_VAR_PWD="$PWD"
-        ${lib.getExe tofu} -chdir=${module} "$@"
-      '';
+    runtimeInputs = [
+      pkgs.opentofu
+      pkgs.rsync
+    ];
+    text = ''
+      set -x
+      rsync --archive --chmod=u+w ${module}/ .
+      exec tofu "$@"
+    '';
   };
 }

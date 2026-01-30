@@ -18,6 +18,11 @@ let
 in
 {
   config = {
+    terraform.backend.kubernetes = {
+      namespace = "kube-system";
+      config_path = "/home/lillecarl/.kube/config";
+      secret_suffix = "tf0";
+    };
     provider.keycloak = {
       client_id = "admin-cli";
       url = "https://keycloak.lillecarl.com";
