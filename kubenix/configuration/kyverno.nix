@@ -1,9 +1,9 @@
-{ lib, ... }:
+{ ... }:
 {
   config = {
     kyverno = {
       enable = true;
-      version = "3.6.2";
+      version = "*";
       helmValues = {
         reportsController = {
           rbac = {

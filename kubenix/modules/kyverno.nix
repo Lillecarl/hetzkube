@@ -24,16 +24,50 @@ in
     };
   };
   config = lib.mkIf cfg.enable {
-    helm.releases.${moduleName} = {
-      inherit (cfg) namespace;
+    kubernetes.resources.none.Namespace.${cfg.namespace} = { };
 
-      chart = builtins.fetchTree {
-        type = "tarball";
-        url = "https://kyverno.github.io/kyverno/kyverno-${cfg.version}.tgz";
+    kubernetes.resources.flux-system = {
+      HelmRepository.kyverno = {
+        spec = {
+          interval = "1h";
+          url = "https://kyverno.github.io/kyverno";
+        };
       };
-
-      values = lib.recursiveUpdate { } cfg.helmValues;
+      HelmRelease.kyverno = {
+        spec = {
+          chart = {
+            spec = {
+              chart = "kyverno";
+              version = cfg.version;
+              sourceRef = {
+                kind = "HelmRepository";
+                name = "kyverno";
+                namespace = "flux-system";
+              };
+            };
+          };
+          values = cfg.helmValues;
+          targetNamespace = cfg.namespace;
+          install.remediation.retries = 3;
+          interval = "1h";
+          driftDetection = {
+            mode = "enabled";
+            ignore = [
+              {
+                target = {
+                  kind = "Deployment";
+                };
+                paths = [
+                  "/spec/template/spec/resources/requests"
+                  "/spec/template/spec/containers/*/resources/requests"
+                ];
+              }
+            ];
+          };
+        };
+      };
     };
+
     kubernetes = {
       apiMappings = {
         CleanupPolicy = "kyverno.io/v2";
