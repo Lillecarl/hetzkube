@@ -122,6 +122,35 @@
     bitwarden.helmValues = {
       settings.bwSecretsManagerRefreshInterval = 180;
     };
+
+    # FluxCD, TODO move this to where we deploy Flux pls
+    kubernetes.apiMappings = {
+      HelmRelease = "helm.toolkit.fluxcd.io/v2";
+      Kustomization = "kustomize.toolkit.fluxcd.io/v1";
+      Alert = "notification.toolkit.fluxcd.io/v1beta3";
+      Provider = "notification.toolkit.fluxcd.io/v1beta3";
+      Receiver = "notification.toolkit.fluxcd.io/v1";
+      Bucket = "source.toolkit.fluxcd.io/v1";
+      ExternalArtifact = "source.toolkit.fluxcd.io/v1";
+      GitRepository = "source.toolkit.fluxcd.io/v1";
+      HelmChart = "source.toolkit.fluxcd.io/v1";
+      HelmRepository = "source.toolkit.fluxcd.io/v1";
+      OCIRepositoryk = "source.toolkit.fluxcd.io/v1";
+    };
+    kubernetes.namespacedMappings = {
+      HelmRelease = true;
+      Kustomization = true;
+      Alert = true;
+      Provider = true;
+      Receiver = true;
+      Bucket = true;
+      ExternalArtifact = true;
+      GitRepository = true;
+      HelmChart = true;
+      HelmRepository = true;
+      OCIRepositoryk = true;
+    };
+
     kubernetes.resources = lib.mkIf (config.stage == "full") {
       nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixcache.lillecarl.com";
