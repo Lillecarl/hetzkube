@@ -158,7 +158,7 @@ in
                         ];
                         image = "quay.io/nix-csi/scratch:1.0.1";
                         env = lib.mkNamedList {
-                          # INIT_SLEEP.value = "600";
+                          INIT_SLEEP.value = "300";
                           HOME.value = "/home/1000";
                           GH_PAT.valueFrom.secretKeyRef = {
                             name = "github-pat";
