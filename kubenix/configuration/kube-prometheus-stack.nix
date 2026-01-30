@@ -120,19 +120,7 @@
         enable = true;
 
         namespace = "observability";
-        version =
-          let
-            prefix = "kube-prometheus-stack-";
-          in
-          lib.pipe "https://api.github.com/repos/prometheus-community/helm-charts/releases" [
-            builtins.fetchurl
-            builtins.readFile
-            builtins.fromJSON
-            (lib.filter (release: lib.hasPrefix prefix release.name))
-            (lib.map (release: lib.removePrefix prefix release.name))
-            (lib.sort (a: b: lib.versionAtLeast a b))
-            lib.head
-          ];
+        version = "*";
 
         helmValues = {
           prometheusOperator = {

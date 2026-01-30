@@ -29,20 +29,40 @@ in
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
-    helm.releases.${moduleName} = {
-      namespace = cfg.namespace;
-      includeCRDs = true;
-      noHooks = true;
-
-      chart = builtins.fetchTree {
-        type = "tarball";
-        url = "https://github.com/prometheus-community/helm-charts/releases/download/kube-prometheus-stack-${cfg.version}/kube-prometheus-stack-${cfg.version}.tgz";
+    kubernetes.resources.flux-system = {
+      HelmRepository.prometheus-community = {
+        spec = {
+          interval = "1h";
+          url = "https://prometheus-community.github.io/helm-charts";
+        };
       };
+      HelmRelease.kube-prometheus-stack = {
+        spec = {
+          chart = {
+            spec = {
+              chart = "kube-prometheus-stack";
+              version = cfg.version;
+              sourceRef = {
+                kind = "HelmRepository";
+                name = "prometheus-community";
+                namespace = "flux-system";
+              };
+            };
+          };
+          values = lib.recursiveUpdate {
+            crds.enabled = true;
+            prometheusOperator.admissionWebhooks.certManager.enabled = config.cert-manager.enable;
+          } cfg.helmValues;
 
-      values = lib.recursiveUpdate {
-        crds.enabled = true;
-        prometheusOperator.admissionWebhooks.certManager.enabled = config.cert-manager.enable;
-      } cfg.helmValues;
+          targetNamespace = cfg.namespace;
+          install.remediation.retries = 3;
+          interval = "1h";
+          driftDetection = {
+            mode = "enabled";
+            ignore = [ ];
+          };
+        };
+      };
     };
     kubernetes = {
       apiMappings = {
