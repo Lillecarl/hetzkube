@@ -32,6 +32,90 @@
         };
       };
 
+      loki = {
+        enable = false;
+        version = "6.51.0";
+
+        helmValues = {
+          deploymentMode = "SingleBinary";
+          loki = {
+            commonConfig = {
+              replication_factor = 1;
+            };
+            storage = {
+              type = "filesystem";
+            };
+            schemaConfig = {
+              configs = [
+                {
+                  from = "2024-01-01";
+                  store = "tsdb";
+                  object_store = "filesystem";
+                  schema = "v13";
+                  index = {
+                    prefix = "index_";
+                    period = "24h";
+                  };
+                }
+              ];
+            };
+          };
+          singleBinary = {
+            replicas = 1;
+            persistence = {
+              enabled = true;
+              size = "10Gi";
+            };
+          };
+          # Zero out the scalable components to fix the validation error
+          read = {
+            replicas = 0;
+          };
+          write = {
+            replicas = 0;
+          };
+          backend = {
+            replicas = 0;
+          };
+          # Ensure MinIO is disabled as requested
+          minio = {
+            enabled = false;
+          };
+        };
+      };
+
+      alloy = {
+        enable = false;
+        version = "1.5.3";
+        helmValues = {
+          alloy = {
+            config = ''
+              // Discover Kubernetes pods on the local node
+              discovery.kubernetes "pods" {
+                role = "pod"
+              }
+
+              // Scrape logs from the discovered pods
+              loki.source.kubernetes "pod_logs" {
+                targets    = discovery.kubernetes.pods.targets
+                forward_to = [loki.write.local_loki.receiver]
+              }
+
+              // Send the logs to your Loki service
+              loki.write "local_loki" {
+                endpoint {
+                  url = "http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push"
+                }
+              }
+            '';
+          };
+          controller = {
+            # DaemonSet ensures it runs on every node to collect logs
+            type = "daemonset";
+          };
+        };
+      };
+
       kube-prometheus-stack = {
         enable = true;
 

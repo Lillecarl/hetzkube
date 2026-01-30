@@ -1,6 +1,7 @@
 { config, lib, ... }:
 {
   imports = [
+    ./alloy.nix
     ./bitwarden.nix
     ./capi.nix
     ./cert-manager.nix
@@ -21,6 +22,7 @@
     ./kube-prometheus-stack.nix
     ./kyverno.nix
     ./local-path-provisioner.nix
+    ./loki.nix
     ./metallb.nix
     ./metrics-server.nix
     ./pgadmin.nix
