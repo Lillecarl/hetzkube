@@ -15,21 +15,23 @@
         };
       };
     in
-    lib.mkIf (config.stage == "full")
-    {
-      vertical-pod-autoscaler.helmValues = {
-        admissionController.certManager.enabled = config.cert-manager.enable;
-        updater.extraArgs = [
-          "--feature-gates=AllAlpha=true,AllBeta=true"
-          "--min-replicas=1"
-          "--eviction-tolerance=1.0"
-          # "--in-place-skip-disruption-budget"
-          "--in-recommendation-bounds-eviction-lifetime-threshold=3h"
-        ];
-        recommender.extraArgs = [
-          "--pod-recommendation-min-memory-mb=20"
-          "--pod-recommendation-min-cpu-millicores=25"
-        ];
+    lib.mkIf (config.stage == "full") {
+      vertical-pod-autoscaler = {
+        enable = true;
+        version = "*";
+        helmValues = {
+          admissionController.certManager.enabled = config.cert-manager.enable;
+          updater.extraArgs = [
+            "--min-replicas=1"
+            "--eviction-tolerance=1.0"
+            # "--in-place-skip-disruption-budget"
+            "--in-recommendation-bounds-eviction-lifetime-threshold=3h"
+          ];
+          recommender.extraArgs = [
+            "--pod-recommendation-min-memory-mb=20"
+            "--pod-recommendation-min-cpu-millicores=25"
+          ];
+        };
       };
       kubernetes.resources.caph-system.VerticalPodAutoscaler = mkVPA "caph-controller-manager" "Deployment";
       kubernetes.resources.capi-kubeadm-bootstrap-system.VerticalPodAutoscaler = mkVPA "capi-kubeadm-bootstrap-controller-manager" "Deployment";

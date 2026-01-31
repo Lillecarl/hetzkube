@@ -16,8 +16,7 @@ in
       default = "kube-system";
     };
     version = lib.mkOption {
-      type = lib.types.str;
-      default = "1.5";
+      type = lib.types.nonEmptyStr;
     };
     helmValues = lib.mkOption {
       type = lib.types.anything;
@@ -26,21 +25,43 @@ in
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
-    helm.releases.${moduleName} = {
-      namespace = cfg.namespace;
-      includeCRDs = true;
 
-      chart = "${
-        builtins.fetchTree {
-          type = "github";
-          owner = "stevehipwell";
-          repo = "helm-charts";
-          ref = "main";
-        }
-      }/charts/vertical-pod-autoscaler";
-
-      values = lib.recursiveUpdate {
-      } cfg.helmValues;
+    kubernetes.resources.${cfg.namespace} = {
+      HelmRepository.stevehipwell = {
+        spec = {
+          interval = "1h";
+          url = "https://stevehipwell.github.io/helm-charts";
+        };
+      };
+      HelmRelease.vertical-pod-autoscaler = {
+        spec = {
+          chart = {
+            spec = {
+              chart = "vertical-pod-autoscaler";
+              version = cfg.version;
+              sourceRef = {
+                kind = "HelmRepository";
+                name = "stevehipwell";
+                namespace = cfg.namespace;
+              };
+            };
+          };
+          install = {
+            crds = "CreateReplace";
+            remediation.retries = 3;
+          };
+          upgrade = {
+            crds = "CreateReplace";
+            remediation.retries = 3;
+          };
+          values = lib.recursiveUpdate { } cfg.helmValues;
+          interval = "1h";
+          driftDetection = {
+            mode = "enabled";
+            ignore = [ ];
+          };
+        };
+      };
     };
     kubernetes.apiMappings.VerticalPodAutoscaler = "autoscaling.k8s.io/v1";
     kubernetes.namespacedMappings.VerticalPodAutoscaler = true;
