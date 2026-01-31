@@ -19,6 +19,55 @@ in
     importyaml.${moduleName} = {
       src = "https://github.com/cert-manager/cert-manager/releases/download/v${cfg.version}/cert-manager.yaml";
     };
+    kubernetes.objects.cert-manager.VMServiceScrape = {
+      cert-manager = {
+        spec = {
+          selector.matchLabels = {
+            "app.kubernetes.io/instance" = "cert-manager";
+            "app.kubernetes.io/name" = "cert-manager";
+          };
+          endpoints = [
+            {
+              port = "tcp-prometheus-serv";
+              path = "/metrics";
+              interval = "30s";
+            }
+          ];
+        };
+      };
+
+      cert-manager-cainjector = {
+        spec = {
+          selector.matchLabels = {
+            "app.kubernetes.io/instance" = "cert-manager";
+            "app.kubernetes.io/name" = "cainjector";
+          };
+          endpoints = [
+            {
+              port = "tcp-prometheus-serv";
+              path = "/metrics";
+              interval = "30s";
+            }
+          ];
+        };
+      };
+
+      cert-manager-webhook = {
+        spec = {
+          selector.matchLabels = {
+            "app.kubernetes.io/instance" = "cert-manager";
+            "app.kubernetes.io/name" = "webhook";
+          };
+          endpoints = [
+            {
+              port = "https"; # Port 9402 on the webhook service
+              path = "/metrics";
+              interval = "30s";
+            }
+          ];
+        };
+      };
+    };
     kubernetes.apiMappings = {
       Certificate = "cert-manager.io/v1";
       CertificateRequest = "cert-manager.io/v1";
