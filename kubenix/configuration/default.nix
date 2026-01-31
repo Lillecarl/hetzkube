@@ -14,6 +14,7 @@
     ./csi-driver-smb.nix
     ./external-secrets.nix
     ./external-dns.nix
+    ./flux.nix
     ./kluctl.nix
     ./kube-prometheus-stack.nix
     ./kyverno.nix

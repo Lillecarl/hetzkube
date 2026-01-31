@@ -14,6 +14,7 @@
     ./csi-driver-smb.nix
     ./external-dns.nix
     ./external-secrets.nix
+    ./flux.nix
     ./gateway-api.nix
     ./hcsi.nix
     ./headlamp.nix
