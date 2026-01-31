@@ -53,6 +53,22 @@ in
             };
           };
         };
+        VMPodScrape = lib.mkIf (config.kubernetes.apiMappings.VMPodScrape or false != false) {
+          pg0 = {
+            spec = {
+              podMetricsEndpoints = [
+                {
+                  port = "metrics";
+                  scheme = "http";
+                }
+              ];
+              selector.matchLabels = {
+                "cnpg.io/cluster" = "pg0";
+              };
+              namespaceSelector.any = true;
+            };
+          };
+        };
         Pooler.pb0-lb = {
           spec = {
             cluster.name = "pg0";
