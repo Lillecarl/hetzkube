@@ -37,6 +37,7 @@ rec {
   plugins = [
     (registry.keycloak.keycloak.latestWhere (v: pkgs.lib.versionOlder v "6.0.0"))
     (registry.hashicorp.kubernetes.latestWhere (v: pkgs.lib.versionOlder v "4.0.0"))
+    (registry.scaleway.scaleway.latestWhere (v: pkgs.lib.versionOlder v "3.0.0"))
   ];
   tofu = pkgs.opentofu.withPlugins (_: plugins);
 

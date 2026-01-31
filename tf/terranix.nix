@@ -17,6 +17,9 @@ let
   variable = config.variable;
 in
 {
+  imports = [
+    ./dns.nix
+  ];
   config = {
     terraform.backend.kubernetes = {
       namespace = "kube-system";
@@ -26,6 +29,16 @@ in
     provider.keycloak = {
       client_id = "admin-cli";
       url = "https://keycloak.lillecarl.com";
+    };
+    data.kubernetes_secret_v1.scaleway = {
+      metadata = {
+        name = "scaleway-dns-key";
+        namespace = "kube-system";
+      };
+    };
+    provider.scaleway = {
+      access_key = lib.tfRef "data.kubernetes_secret_v1.scaleway.data.username";
+      secret_key = lib.tfRef "data.kubernetes_secret_v1.scaleway.data.password";
     };
 
     variable.KUBECONFIG.type = "string";
@@ -198,7 +211,7 @@ in
       standard_flow_enabled = true;
       direct_access_grants_enabled = false;
       service_accounts_enabled = false;
-        access_type = "PUBLIC";
+      access_type = "PUBLIC";
       access_token_lifespan = "28800"; # 8 hour tokens
     };
 

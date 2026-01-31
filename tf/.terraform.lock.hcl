@@ -16,3 +16,11 @@ provider "registry.opentofu.org/keycloak/keycloak" {
     "h1:YYgmSVHDBconKgiahE6kD/bct43nF5gSak7fD0740WI=",
   ]
 }
+
+provider "registry.opentofu.org/scaleway/scaleway" {
+  version     = "2.68.0"
+  constraints = "2.68.0"
+  hashes = [
+    "h1:3rHmwrZrjq4USqZvMD3MwxOb8Iu8HHVm/+Vv0VcKkwU=",
+  ]
+}
