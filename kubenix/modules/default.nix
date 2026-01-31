@@ -27,6 +27,7 @@
     ./loki.nix
     ./metallb.nix
     ./metrics-server.nix
+    ./node-exporter.nix
     ./pgadmin.nix
     ./sealed-secrets.nix
     ./stremio.nix
