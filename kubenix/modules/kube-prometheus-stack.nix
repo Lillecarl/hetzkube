@@ -53,8 +53,6 @@ in
             crds.enabled = true;
             prometheusOperator.admissionWebhooks.certManager.enabled = config.cert-manager.enable;
           } cfg.helmValues;
-
-          install.remediation.retries = 3;
           interval = "1h";
           driftDetection = {
             mode = "enabled";

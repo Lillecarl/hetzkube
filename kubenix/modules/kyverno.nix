@@ -47,7 +47,6 @@ in
             };
           };
           values = lib.recursiveUpdate { } cfg.helmValues;
-          install.remediation.retries = 3;
           interval = "1h";
           driftDetection = {
             mode = "enabled";

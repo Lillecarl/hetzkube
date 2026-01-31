@@ -46,14 +46,6 @@ in
               };
             };
           };
-          install = {
-            crds = "CreateReplace";
-            remediation.retries = 3;
-          };
-          upgrade = {
-            crds = "CreateReplace";
-            remediation.retries = 3;
-          };
           values = lib.recursiveUpdate { } cfg.helmValues;
           interval = "1h";
           driftDetection = {
