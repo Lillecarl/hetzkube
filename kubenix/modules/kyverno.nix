@@ -26,7 +26,7 @@ in
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
 
-    kubernetes.resources.flux-system = {
+    kubernetes.resources.${cfg.namespace} = {
       HelmRepository.kyverno = {
         spec = {
           interval = "1h";
@@ -42,12 +42,11 @@ in
               sourceRef = {
                 kind = "HelmRepository";
                 name = "kyverno";
-                namespace = "flux-system";
+                namespace = cfg.namespace;
               };
             };
           };
-          values = cfg.helmValues;
-          targetNamespace = cfg.namespace;
+          values = lib.recursiveUpdate { } cfg.helmValues;
           install.remediation.retries = 3;
           interval = "1h";
           driftDetection = {
