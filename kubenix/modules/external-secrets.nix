@@ -106,7 +106,7 @@ in
       GCRAccessToken = "generators.external-secrets.io/v1alpha1";
       GeneratorState = "generators.external-secrets.io/v1alpha1";
       GithubAccessToken = "generators.external-secrets.io/v1alpha1";
-      Grafana = "generators.external-secrets.io/v1alpha1";
+      # Grafana = "generators.external-secrets.io/v1alpha1";
       MFA = "generators.external-secrets.io/v1alpha1";
       Password = "generators.external-secrets.io/v1alpha1";
       PushSecret = "external-secrets.io/v1alpha1";
