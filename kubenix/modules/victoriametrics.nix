@@ -37,7 +37,7 @@ in
   };
   config = lib.mkIf cfg.enable {
     importyaml = lib.mkMerge [
-      ({
+      (lib.mkIf cfg.operator.enable {
         vm-operator = lib.mkIf cfg.operator.enable {
           src = "https://github.com/VictoriaMetrics/operator/releases/download/v${cfg.operator.version}/install-with-webhook.yaml";
           convertLists = false;
@@ -95,10 +95,16 @@ in
                 }
               ];
               selectAllByDefault = true;
+
               serviceScrapeSelector = { };
               podScrapeSelector = { };
               nodeScrapeSelector = { };
               staticScrapeSelector = { };
+              podScrapeNamespaceSelector = { };
+              serviceScrapeNamespaceSelector = { };
+              nodeScrapeNamespaceSelector = { };
+              staticScrapeNamespaceSelector = { };
+
               resources = {
                 requests = {
                   cpu = "250m";
@@ -107,6 +113,29 @@ in
               };
             };
           };
+          VMAlert.metrics = {
+            spec = {
+              # The address of your VictoriaMetrics storage (e.g., vmselect or single-node)
+              datasource.url = "http://vmsingle-metrics:8429";
+
+              # Where to write the calculated recording rules back to
+              remoteWrite.url = "http://vmsingle-metrics:8429/api/v1/write";
+
+              # This selector must match the labels on your VMRule objects
+              ruleSelector = {
+                matchLabels = {
+                  role = "metrics";
+                };
+              };
+
+              evaluationInterval = "30s";
+
+              # notifier = {
+              #   url = "http://vmalertmanager-main.monitoring.svc:9093";
+              # };
+            };
+          };
+
           VMServiceScrape = {
             kubernetes = {
               spec = {
@@ -152,6 +181,25 @@ in
               };
             };
           };
+          VMNodeScrape.cadvisor = {
+            spec = {
+              scheme = "https";
+              tlsConfig = {
+                insecureSkipVerify = true;
+              };
+              bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+              path = "/metrics/cadvisor";
+              port = "10250";
+              interval = "30s";
+              relabelConfigs = [
+                {
+                  action = "replace";
+                  sourceLabels = [ "__meta_kubernetes_node_name" ];
+                  targetLabel = "node";
+                }
+              ];
+            };
+          };
         };
       })
 
@@ -193,6 +241,25 @@ in
                   memory = "128Mi";
                 };
               };
+            };
+          };
+          VMAlert.logs = {
+            spec = {
+              datasource.url = "http://vlsingle-logs:9428/select/logsql/query";
+
+              remoteWrite.url = "http://vmsingle-metrics:8429/api/v1/write";
+
+              ruleSelector = {
+                matchLabels = {
+                  role = "logs";
+                };
+              };
+
+              evaluationInterval = "30s";
+
+              # notifier = {
+              #   url = "http://vmalertmanager-main.monitoring.svc:9093";
+              # };
             };
           };
         };
