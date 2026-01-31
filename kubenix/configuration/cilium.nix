@@ -8,6 +8,7 @@
   config = lib.mkIf (config.stage == "full") {
     cilium = {
       enable = true;
+      version = "1.18.6";
 
       gatewayAPI = {
         enable = true;

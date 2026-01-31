@@ -14,7 +14,6 @@ in
     policyAuditMode = lib.mkEnableOption "policy-audit-mode";
     version = lib.mkOption {
       type = lib.types.str;
-      default = "1.18.4";
     };
     gatewayAPI = {
       enable = (lib.mkEnableOption "gateway api") // {
