@@ -19,5 +19,26 @@ in
     importyaml.${moduleName} = {
       src = "https://raw.githubusercontent.com/hetznercloud/csi-driver/v${cfg.version}/deploy/kubernetes/hcloud-csi.yml";
     };
+    kubernetes.objects.kube-system.VMServiceScrape = {
+      hcloud-csi = {
+        spec = {
+          selector = {
+            matchLabels = {
+              app = "hcloud-csi";
+            };
+          };
+          namespaceSelector = {
+            matchNames = [ "kube-system" ];
+          };
+          endpoints = [
+            {
+              port = "9189";
+              path = "/metrics";
+              interval = "30s";
+            }
+          ];
+        };
+      };
+    };
   };
 }
