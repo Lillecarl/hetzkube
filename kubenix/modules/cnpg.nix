@@ -22,6 +22,23 @@ in
     };
     kubernetes = {
       resources.none.Namespace.database = { };
+      resources.cnpg-system.VMPodScrape.cnpg-operator = {
+        spec = {
+          podMetricsEndpoints = [
+            {
+              port = "metrics";
+              path = "/metrics";
+              interval = "30s";
+            }
+          ];
+          selector = {
+            matchLabels = {
+              "app.kubernetes.io/name" = "cloudnative-pg";
+            };
+          };
+        };
+      };
+
       resources.database = {
         ExternalSecret.pg0-lillecarl = hlib.eso.mkBasic "name:lillecarl-db";
         # Configure podmonitoring from CNPG docs
@@ -45,19 +62,12 @@ in
             };
           };
         };
-        PodMonitor = lib.mkIf (config.kubernetes.apiMappings.PodMonitor or false != false) {
-          pg0 = {
-            spec = {
-              selector.matchLabels."cnpg.io/cluster" = "pg0";
-              podMetricsEndpoints = [ { port = "metrics"; } ];
-            };
-          };
-        };
         VMPodScrape = lib.mkIf (config.kubernetes.apiMappings.VMPodScrape or false != false) {
           pg0 = {
             spec = {
               podMetricsEndpoints = [
                 {
+                  path = "/metrics";
                   port = "metrics";
                   scheme = "http";
                 }
@@ -65,7 +75,7 @@ in
               selector.matchLabels = {
                 "cnpg.io/cluster" = "pg0";
               };
-              namespaceSelector.any = true;
+              namespaceSelector = { };
             };
           };
         };
