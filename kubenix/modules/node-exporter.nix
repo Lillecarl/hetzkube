@@ -47,6 +47,8 @@ in
                     "--path.procfs=/host/proc"
                     "--path.sysfs=/host/sys"
                     "--path.rootfs=/host/root"
+                    "--collector.systemd"
+                    "--collector.processes"
                   ];
                   ports = [
                     {
@@ -72,6 +74,11 @@ in
                       mountPropagation = "HostToContainer";
                       readOnly = true;
                     }
+                    {
+                      name = "dbus";
+                      mountPath = "/var/run/dbus/system_bus_socket";
+                      readOnly = true;
+                    }
                   ];
                 }
               ];
@@ -92,6 +99,12 @@ in
                   name = "root";
                   hostPath = {
                     path = "/";
+                  };
+                }
+                {
+                  name = "dbus";
+                  hostPath = {
+                    path = "/var/run/dbus/system_bus_socket";
                   };
                 }
               ];
