@@ -33,7 +33,7 @@
   ];
   options.hlib = lib.mkOption {
     type = lib.types.anything;
-    default = {};
+    default = { };
   };
   config = {
     _module.args.hlib = config.hlib;
