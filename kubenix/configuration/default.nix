@@ -16,7 +16,6 @@
     ./external-dns.nix
     ./flux.nix
     ./kluctl.nix
-    ./kube-prometheus-stack.nix
     ./kyverno.nix
     ./ncps.nix
     ./nix-csi.nix

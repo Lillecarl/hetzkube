@@ -102,8 +102,6 @@ in
           "kubernetes.io/name" = "CoreDNS";
           "prometheus.io/scrape" = "true";
           "prometheus.io/port" = "9153";
-          "app" = "kube-prometheus-stack-coredns";
-          "release" = "kube-prometheus-stack";
           k8s-app = "kube-dns";
         };
         spec = {

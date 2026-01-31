@@ -20,7 +20,6 @@
     ./headlamp.nix
     ./keycloak.nix
     ./kro.nix
-    ./kube-prometheus-stack.nix
     ./kube-state-metrics.nix
     ./kyverno.nix
     ./local-path-provisioner.nix
