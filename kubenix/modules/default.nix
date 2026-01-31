@@ -22,6 +22,7 @@
     ./keycloak.nix
     ./kro.nix
     ./kube-state-metrics.nix
+    ./kubernetes-mixins.nix
     ./kyverno.nix
     ./local-path-provisioner.nix
     ./loki.nix

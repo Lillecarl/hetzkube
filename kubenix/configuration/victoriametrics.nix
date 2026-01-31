@@ -32,5 +32,8 @@
       grafana-operator = {
         enable = true;
       };
+      kubernetes-mixins = {
+        enable = true;
+      };
     };
 }
