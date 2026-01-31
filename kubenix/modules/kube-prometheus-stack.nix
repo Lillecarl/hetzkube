@@ -29,7 +29,7 @@ in
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
-    kubernetes.resources.flux-system = {
+    kubernetes.resources.${cfg.namespace} = {
       HelmRepository.prometheus-community = {
         spec = {
           interval = "1h";
@@ -45,7 +45,7 @@ in
               sourceRef = {
                 kind = "HelmRepository";
                 name = "prometheus-community";
-                namespace = "flux-system";
+                namespace = cfg.namespace;
               };
             };
           };
@@ -54,7 +54,6 @@ in
             prometheusOperator.admissionWebhooks.certManager.enabled = config.cert-manager.enable;
           } cfg.helmValues;
 
-          targetNamespace = cfg.namespace;
           install.remediation.retries = 3;
           interval = "1h";
           driftDetection = {
