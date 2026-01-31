@@ -40,7 +40,7 @@
         # hubble.tls.auto.certManagerIssuerRef = ""
         # Only required for multi-cluster Cilium but it doesn't hurt.
         cluster.name = config.clusterName;
-        # Enable IPv6 masquerading until we have a better solution
+        # True cluster breaker
         enableIPv6Masquerade = false;
         # Disable LB IPAM, we use MetalLB for this
         enableLBIPAM = false;

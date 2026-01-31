@@ -12,9 +12,10 @@
     ./cilium.nix
     ./cnpg-primaryswap.nix
     ./csi-driver-smb.nix
-    ./external-secrets.nix
     ./external-dns.nix
+    ./external-secrets.nix
     ./flux.nix
+    ./grafana.nix
     ./kluctl.nix
     ./kyverno.nix
     ./ncps.nix

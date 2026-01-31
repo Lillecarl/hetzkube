@@ -16,6 +16,7 @@
     ./external-secrets.nix
     ./flux.nix
     ./gateway-api.nix
+    ./grafana-operator.nix
     ./hcsi.nix
     ./headlamp.nix
     ./keycloak.nix
