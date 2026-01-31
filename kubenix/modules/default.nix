@@ -30,6 +30,7 @@
     ./sealed-secrets.nix
     ./stremio.nix
     ./vertical-pod-autoscaler.nix
+    ./victoriametrics.nix
   ];
   options.hlib = lib.mkOption {
     type = lib.types.anything;

@@ -18,9 +18,10 @@
     ./kluctl.nix
     ./kube-prometheus-stack.nix
     ./kyverno.nix
-    ./nix-csi.nix
-    ./vpa.nix
     ./ncps.nix
+    ./nix-csi.nix
+    ./victoriametrics.nix
+    ./vpa.nix
   ];
   options.stage = lib.mkOption {
     type = lib.types.enum [

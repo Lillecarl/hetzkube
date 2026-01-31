@@ -117,7 +117,7 @@
       };
 
       kube-prometheus-stack = {
-        enable = true;
+        enable = false;
 
         namespace = "observability";
         version = "*";

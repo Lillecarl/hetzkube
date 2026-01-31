@@ -45,10 +45,12 @@ in
             };
           };
         };
-        PodMonitor.pg0 = {
-          spec = {
-            selector.matchLabels."cnpg.io/cluster" = "pg0";
-            podMetricsEndpoints = [ { port = "metrics"; } ];
+        PodMonitor = lib.mkIf (config.kubernetes.apiMappings.PodMonitor or false != false) {
+          pg0 = {
+            spec = {
+              selector.matchLabels."cnpg.io/cluster" = "pg0";
+              podMetricsEndpoints = [ { port = "metrics"; } ];
+            };
           };
         };
         Pooler.pb0-lb = {
