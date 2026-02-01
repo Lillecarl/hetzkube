@@ -80,11 +80,13 @@ in
       kubernetes.resources.none.Namespace.${cfg.namespace} = { };
       kubernetes.resources.${cfg.namespace} = {
         VMRule.kubernetes-mixin-alerts = {
+          metadata.labels.role = "metrics";
           spec = {
             inherit (lib.importJSON "${package}/prometheus_alerts.json") groups;
           };
         };
         VMRule.kubernetes-mixin-rules = {
+          metadata.labels.role = "metrics";
           spec = {
             inherit (lib.importJSON "${package}/prometheus_rules.json") groups;
           };

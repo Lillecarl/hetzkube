@@ -88,6 +88,9 @@ in
           };
           VMAgent.metrics-ingest = {
             spec = {
+              externalLabels = {
+                cluster = config.clusterName;
+              };
               replicaCount = 1;
               remoteWrite = [
                 {
@@ -233,7 +236,7 @@ in
               ];
               k8sCollector = {
                 enabled = true;
-                extraFields = lib.toJSON { cluster = "hetzkube"; };
+                extraFields = lib.toJSON { cluster = config.clusterName; };
               };
               resources = {
                 requests = {
