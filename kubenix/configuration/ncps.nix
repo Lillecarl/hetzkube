@@ -28,7 +28,7 @@
 
       ncps =
         let
-          version = "0.7.1";
+          version = "0.8.0";
         in
         pkgs.ncps.overrideAttrs {
           inherit version;
@@ -38,7 +38,7 @@
             repo = "ncps";
             ref = "v${version}";
           };
-          vendorHash = "sha256-nnt4HIG4Fs7RhHjVb7mYJ39UgvFKc46Cu42cURMmr1s=";
+          vendorHash = "sha256-AcgC+zTS3eVsbcs0jim4zDBGc3lIjwPbdVT7/KQ9Lkc=";
           doCheck = false;
           doInstallCheck = false;
         };
