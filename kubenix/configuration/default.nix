@@ -49,7 +49,10 @@
       "keycloak.lillecarl.com" # Keycloak admin
     ];
     pgadmin.hostname = "pgadmin.lillecarl.com";
-    headlamp.hostname = "headlamp.lillecarl.com";
+    headlamp = {
+      hostname = "headlamp.lillecarl.com";
+      version = "0.40.0";
+    };
 
     metrics-server.helmValues.replicas = 2;
 
