@@ -238,6 +238,13 @@ in
                 enabled = true;
                 extraFields = lib.toJSON { cluster = config.clusterName; };
               };
+              tolerations = [
+                {
+                  key = "node-role.kubernetes.io/control-plane";
+                  operator = "Exists";
+                  effect = "NoSchedule";
+                }
+              ];
               resources = {
                 requests = {
                   cpu = "250m";

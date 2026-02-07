@@ -12,7 +12,6 @@ in
     enable = lib.mkEnableOption moduleName;
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
-      default = "1.19.1";
     };
   };
   config = lib.mkIf cfg.enable {
