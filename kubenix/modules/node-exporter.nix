@@ -117,12 +117,16 @@ in
           port = "9100";
           path = "/metrics";
           interval = "30s";
-          # Optional: relabeling to ensure the node name is captured correctly
           relabelConfigs = [
             {
               action = "replace";
               sourceLabels = [ "__meta_kubernetes_node_name" ];
               targetLabel = "node";
+            }
+            {
+              action = "replace";
+              replacement = "node-exporter";
+              targetLabel = "job";
             }
           ];
         };

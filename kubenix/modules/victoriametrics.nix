@@ -122,7 +122,7 @@ in
               datasource.url = "http://vmsingle-metrics:8429";
 
               # Where to write the calculated recording rules back to
-              remoteWrite.url = "http://vmsingle-metrics:8429/api/v1/write";
+              remoteWrite.url = "http://vmsingle-metrics:8429";
 
               # This selector must match the labels on your VMRule objects
               ruleSelector = {
@@ -200,6 +200,11 @@ in
                   sourceLabels = [ "__meta_kubernetes_node_name" ];
                   targetLabel = "node";
                 }
+                {
+                  action = "replace";
+                  replacement = "cadvisor";
+                  targetLabel = "job";
+                }
               ];
             };
           };
@@ -257,7 +262,7 @@ in
             spec = {
               datasource.url = "http://vlsingle-logs:9428/select/logsql/query";
 
-              remoteWrite.url = "http://vmsingle-metrics:8429/api/v1/write";
+              remoteWrite.url = "http://vmsingle-metrics:8429";
 
               ruleSelector = {
                 matchLabels = {
