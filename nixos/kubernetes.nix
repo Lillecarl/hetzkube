@@ -121,7 +121,26 @@
       "vm.overcommit_memory" = 1;
       "kernel.panic" = 10;
       "kernel.panic_on_oops" = 1;
+
+      # File descriptor and connection limits for etcd and high-connection workloads
+      "fs.file-max" = 2097152;
+      "net.core.somaxconn" = 65535;
+      "net.core.netdev_max_backlog" = 65535;
+      "net.ipv4.tcp_max_syn_backlog" = 65535;
+      "net.ipv4.tcp_tw_reuse" = 1;  # Reuse TIME_WAIT sockets
+      "net.ipv4.ip_local_port_range" = "1024 65535";  # Wider ephemeral port range
+      "net.ipv4.tcp_fin_timeout" = 30;  # Close TIME_WAIT faster
+      "net.ipv4.tcp_max_tw_buckets" = 2000000;  # More TIME_WAIT buckets
+      "vm.max_map_count" = 262144;  # For workloads that need many mmaps
     };
+
+    # Set per-user/per-session file descriptor limits
+    security.pam.loginLimits = [
+      { domain = "*"; type = "soft"; item = "nofile"; value = 65536; }
+      { domain = "*"; type = "hard"; item = "nofile"; value = 65536; }
+      { domain = "*"; type = "soft"; item = "nproc"; value = 65536; }
+      { domain = "*"; type = "hard"; item = "nproc"; value = 65536; }
+    ];
 
     # Workaround for cloud-init sticking 19 DNS servers in for me
     environment.etc."kubernetes/resolv.conf".text = ''
