@@ -102,11 +102,106 @@ in
               serviceScrapeSelector = { };
               podScrapeSelector = { };
               nodeScrapeSelector = { };
-              staticScrapeSelector = { };
+              staticScrapeSelector.matchExpressions = [
+                {
+                  key = "role";
+                  operator = "NotIn";
+                  values = [ "control-plane" ];
+                }
+              ];
               podScrapeNamespaceSelector = { };
               serviceScrapeNamespaceSelector = { };
               nodeScrapeNamespaceSelector = { };
               staticScrapeNamespaceSelector = { };
+
+              resources = {
+                requests = {
+                  cpu = "250m";
+                  memory = "128Mi";
+                };
+              };
+            };
+          };
+
+          VMAgent.metrics-control-plane = {
+            spec = {
+              externalLabels = {
+                cluster = config.clusterName;
+              };
+              replicaCount = 1;
+              remoteWrite = [
+                {
+                  url = "http://vmsingle-metrics:8429/api/v1/write";
+                }
+              ];
+
+              serviceScrapeSelector.matchExpressions = [
+                {
+                  key = "nonexistent";
+                  operator = "Exists";
+                }
+              ];
+              podScrapeSelector.matchExpressions = [
+                {
+                  key = "nonexistent";
+                  operator = "Exists";
+                }
+              ];
+              nodeScrapeSelector.matchExpressions = [
+                {
+                  key = "nonexistent";
+                  operator = "Exists";
+                }
+              ];
+              staticScrapeSelector.matchLabels = {
+                role = "control-plane";
+              };
+              podScrapeNamespaceSelector.matchExpressions = [
+                {
+                  key = "nonexistent";
+                  operator = "Exists";
+                }
+              ];
+              serviceScrapeNamespaceSelector.matchExpressions = [
+                {
+                  key = "nonexistent";
+                  operator = "Exists";
+                }
+              ];
+              nodeScrapeNamespaceSelector.matchExpressions = [
+                {
+                  key = "nonexistent";
+                  operator = "Exists";
+                }
+              ];
+              staticScrapeNamespaceSelector.matchLabels = { };
+
+              tolerations = [
+                {
+                  key = "node-role.kubernetes.io/control-plane";
+                  operator = "Exists";
+                  effect = "NoSchedule";
+                }
+              ];
+
+              affinity = {
+                nodeAffinity = {
+                  requiredDuringSchedulingIgnoredDuringExecution = {
+                    nodeSelectorTerms = [
+                      {
+                        matchExpressions = [
+                          {
+                            key = "node-role.kubernetes.io/control-plane";
+                            operator = "Exists";
+                          }
+                        ];
+                      }
+                    ];
+                  };
+                };
+              };
+
+              hostNetwork = true;
 
               resources = {
                 requests = {
@@ -239,62 +334,40 @@ in
               ];
             };
           };
-          VMNodeScrape.kube-scheduler = {
+          VMStaticScrape.kube-scheduler = {
+            metadata.labels.role = "control-plane";
             spec = {
-              scheme = "https";
-              tlsConfig = {
-                insecureSkipVerify = true;
-              };
-              bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
-              path = "/metrics";
-              port = "10259";
-              interval = "30s";
-              selector = {
-                matchLabels = {
-                  "node-role.kubernetes.io/control-plane" = "";
-                };
-              };
-              relabelConfigs = [
+              targetEndpoints = [
                 {
-                  action = "replace";
-                  sourceLabels = [ "__meta_kubernetes_node_name" ];
-                  targetLabel = "node";
-                }
-                {
-                  action = "replace";
-                  replacement = "kube-scheduler";
-                  targetLabel = "job";
+                  targets = [ "127.0.0.1:10259" ];
+                  scheme = "https";
+                  tlsConfig = {
+                    insecureSkipVerify = true;
+                  };
+                  bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+                  path = "/metrics";
+                  interval = "30s";
                 }
               ];
+              jobName = "kube-scheduler";
             };
           };
-          VMNodeScrape.kube-controller-manager = {
+          VMStaticScrape.kube-controller-manager = {
+            metadata.labels.role = "control-plane";
             spec = {
-              scheme = "https";
-              tlsConfig = {
-                insecureSkipVerify = true;
-              };
-              bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
-              path = "/metrics";
-              port = "10257";
-              interval = "30s";
-              selector = {
-                matchLabels = {
-                  "node-role.kubernetes.io/control-plane" = "";
-                };
-              };
-              relabelConfigs = [
+              targetEndpoints = [
                 {
-                  action = "replace";
-                  sourceLabels = [ "__meta_kubernetes_node_name" ];
-                  targetLabel = "node";
-                }
-                {
-                  action = "replace";
-                  replacement = "kube-controller-manager";
-                  targetLabel = "job";
+                  targets = [ "127.0.0.1:10257" ];
+                  scheme = "https";
+                  tlsConfig = {
+                    insecureSkipVerify = true;
+                  };
+                  bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+                  path = "/metrics";
+                  interval = "30s";
                 }
               ];
+              jobName = "kube-controller-manager";
             };
           };
         };
