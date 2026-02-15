@@ -215,7 +215,7 @@ in
 
               notifiers = [
                 {
-                  url = "http://grafana-alerting.observability.svc:9094";
+                  url = "http://localhost:9093";
                 }
               ];
             };
@@ -387,7 +387,7 @@ in
 
               notifiers = [
                 {
-                  url = "http://grafana-alerting.observability.svc:9094";
+                  url = "http://localhost:9093";
                 }
               ];
             };

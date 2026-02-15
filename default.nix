@@ -69,6 +69,7 @@ flake.impure
       cachix
       yamlfmt
       fluxcd
+      victorialogs
     ];
   };
 }
