@@ -79,36 +79,6 @@ in
             };
           };
         };
-        Pooler.pb0-lb = {
-          spec = {
-            cluster.name = "pg0";
-            instances = 1;
-            type = "rw";
-            serviceTemplate = {
-              metadata = {
-                annotations."metallb.io/allow-shared-ip" = "true";
-                labels.app = "pooler";
-                labels."cilium.io/ingress" = "true";
-              };
-              spec = {
-                type = "LoadBalancer";
-                ipFamilyPolicy = "RequireDualStack";
-              };
-            };
-            pgbouncer = {
-              poolMode = "session";
-              parameters = { };
-            };
-          };
-        };
-        Pooler.pb0-cluster = {
-          spec = {
-            cluster.name = "pg0";
-            instances = 1;
-            type = "rw";
-            pgbouncer.poolMode = "session";
-          };
-        };
         Database.lillecarl.spec = {
           name = "lillecarl";
           owner = "lillecarl";
