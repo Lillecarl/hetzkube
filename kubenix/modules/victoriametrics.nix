@@ -242,6 +242,11 @@ in
               path = "/metrics";
               port = "10259";
               interval = "30s";
+              selector = {
+                matchLabels = {
+                  "node-role.kubernetes.io/control-plane" = "";
+                };
+              };
               relabelConfigs = [
                 {
                   action = "replace";
@@ -266,6 +271,11 @@ in
               path = "/metrics";
               port = "10257";
               interval = "30s";
+              selector = {
+                matchLabels = {
+                  "node-role.kubernetes.io/control-plane" = "";
+                };
+              };
               relabelConfigs = [
                 {
                   action = "replace";
