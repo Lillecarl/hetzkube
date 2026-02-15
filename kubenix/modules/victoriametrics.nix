@@ -213,11 +213,7 @@ in
 
               evaluationInterval = "30s";
 
-              notifiers = [
-                {
-                  url = "http://localhost:9093";
-                }
-              ];
+              notifiers = [ ];
             };
           };
 
@@ -385,11 +381,7 @@ in
 
               evaluationInterval = "30s";
 
-              notifiers = [
-                {
-                  url = "http://localhost:9093";
-                }
-              ];
+              notifiers = [ ];
             };
           };
         };
