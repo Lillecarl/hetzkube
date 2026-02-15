@@ -129,6 +129,7 @@ in
                 cluster = config.clusterName;
               };
               replicaCount = 1;
+              updateStrategy = "Recreate";
               remoteWrite = [
                 {
                   url = "http://vmsingle-metrics:8429/api/v1/write";
@@ -202,6 +203,7 @@ in
               };
 
               hostNetwork = true;
+              dnsPolicy = "ClusterFirstWithHostNet";
 
               resources = {
                 requests = {

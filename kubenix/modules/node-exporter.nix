@@ -39,6 +39,13 @@ in
             spec = {
               hostNetwork = true;
               hostPID = true;
+              tolerations = [
+                {
+                  key = "node-role.kubernetes.io/control-plane";
+                  operator = "Exists";
+                  effect = "NoSchedule";
+                }
+              ];
               containers = [
                 {
                   name = "node-exporter";
