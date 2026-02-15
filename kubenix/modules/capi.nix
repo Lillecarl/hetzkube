@@ -139,7 +139,7 @@ in
           infrastructureRef = {
             apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
             kind = "HCloudMachineTemplate";
-            name = "${clusterName}-control-plane";
+            name = "${clusterName}-control-plane-v2";
           };
         };
         replicas = 1;
@@ -216,10 +216,10 @@ in
           }
         ];
       };
-      HCloudMachineTemplate."${clusterName}-control-plane".spec.template.spec = {
+      HCloudMachineTemplate."${clusterName}-control-plane-v2".spec.template.spec = {
         imageName = "2505-x86";
         placementGroupName = "control-plane";
-        type = "cx23";
+        type = "cx33";
       };
       HCloudRemediationTemplate."control-plane-remediation-request".spec.template.spec = {
         strategy = {
