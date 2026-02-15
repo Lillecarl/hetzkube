@@ -160,6 +160,13 @@ in
                       serverName = "kubernetes";
                     };
                     bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+                    relabelConfigs = [
+                      {
+                        action = "replace";
+                        replacement = "kube-apiserver";
+                        targetLabel = "job";
+                      }
+                    ];
                   }
                 ];
               };
