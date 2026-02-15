@@ -208,6 +208,30 @@ in
               ];
             };
           };
+          VMNodeScrape.kubelet = {
+            spec = {
+              scheme = "https";
+              tlsConfig = {
+                insecureSkipVerify = true;
+              };
+              bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+              path = "/metrics";
+              port = "10250";
+              interval = "30s";
+              relabelConfigs = [
+                {
+                  action = "replace";
+                  sourceLabels = [ "__meta_kubernetes_node_name" ];
+                  targetLabel = "node";
+                }
+                {
+                  action = "replace";
+                  replacement = "kubelet";
+                  targetLabel = "job";
+                }
+              ];
+            };
+          };
         };
       })
 
