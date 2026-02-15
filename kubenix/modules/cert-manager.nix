@@ -59,7 +59,7 @@ in
           };
           endpoints = [
             {
-              port = "https"; # Port 9402 on the webhook service
+              port = "metrics"; # Port 9402 on the webhook service (HTTP)
               path = "/metrics";
               interval = "30s";
             }
