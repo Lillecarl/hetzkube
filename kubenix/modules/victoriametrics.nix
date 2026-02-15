@@ -179,6 +179,13 @@ in
                   bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
                   metrics_path: /metrics
                   scrape_interval: 30s
+
+                - job_name: etcd
+                  static_configs:
+                    - targets: ["127.0.0.1:2381"]
+                  scheme: http
+                  metrics_path: /metrics
+                  scrape_interval: 30s
               '';
 
               resources = {
