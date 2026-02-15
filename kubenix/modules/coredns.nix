@@ -102,7 +102,7 @@ in
           "kubernetes.io/name" = "CoreDNS";
           "prometheus.io/scrape" = "true";
           "prometheus.io/port" = "9153";
-          k8s-app = "kube-dns";
+          k8s-app = "coredns";
         };
         spec = {
           clusterIP = lib.head config.clusterDNS;

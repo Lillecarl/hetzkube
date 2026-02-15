@@ -169,7 +169,7 @@ in
                 jobLabel = "k8s-app";
                 selector = {
                   matchLabels = {
-                    k8s-app = "kube-dns";
+                    k8s-app = "coredns";
                   };
                 };
                 namespaceSelector = {
