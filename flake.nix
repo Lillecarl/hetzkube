@@ -31,6 +31,7 @@
     };
   };
   outputs = inputs: {
+    inherit inputs;
     nixosConfigurations.image-aarch64-linux = inputs.nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       modules = [
@@ -50,7 +51,7 @@
         ./nixos
         {
           lib.hetzkube = {
-            ip = "46.62.244.185";
+            ip = "157.180.37.194";
             configName = "image-x86_64-linux";
           };
         }
