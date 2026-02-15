@@ -102,13 +102,15 @@ in
               serviceScrapeSelector = { };
               podScrapeSelector = { };
               nodeScrapeSelector = { };
-              staticScrapeSelector.matchExpressions = [
-                {
-                  key = "role";
-                  operator = "NotIn";
-                  values = [ "control-plane" ];
-                }
-              ];
+              # Exclude static scrapes - they're handled by metrics-control-plane with daemonSetMode
+              staticScrapeSelector = {
+                matchExpressions = [
+                  {
+                    key = "role";
+                    operator = "DoesNotExist";
+                  }
+                ];
+              };
               podScrapeNamespaceSelector = { };
               serviceScrapeNamespaceSelector = { };
               nodeScrapeNamespaceSelector = { };
@@ -128,54 +130,23 @@ in
               externalLabels = {
                 cluster = config.clusterName;
               };
-              replicaCount = 1;
-              updateStrategy = "Recreate";
+              daemonSetMode = true;
               remoteWrite = [
                 {
                   url = "http://vmsingle-metrics:8429/api/v1/write";
                 }
               ];
 
-              serviceScrapeSelector.matchExpressions = [
-                {
-                  key = "nonexistent";
-                  operator = "Exists";
-                }
-              ];
-              podScrapeSelector.matchExpressions = [
-                {
-                  key = "nonexistent";
-                  operator = "Exists";
-                }
-              ];
-              nodeScrapeSelector.matchExpressions = [
-                {
-                  key = "nonexistent";
-                  operator = "Exists";
-                }
-              ];
-              staticScrapeSelector.matchLabels = {
-                role = "control-plane";
+              serviceScrapeSelector = { };
+              podScrapeSelector = { };
+              nodeScrapeSelector = { };
+              podScrapeNamespaceSelector = { };
+              serviceScrapeNamespaceSelector = { };
+              nodeScrapeNamespaceSelector = { };
+
+              nodeSelector = {
+                "node-role.kubernetes.io/control-plane" = "";
               };
-              podScrapeNamespaceSelector.matchExpressions = [
-                {
-                  key = "nonexistent";
-                  operator = "Exists";
-                }
-              ];
-              serviceScrapeNamespaceSelector.matchExpressions = [
-                {
-                  key = "nonexistent";
-                  operator = "Exists";
-                }
-              ];
-              nodeScrapeNamespaceSelector.matchExpressions = [
-                {
-                  key = "nonexistent";
-                  operator = "Exists";
-                }
-              ];
-              staticScrapeNamespaceSelector.matchLabels = { };
 
               tolerations = [
                 {
@@ -185,25 +156,30 @@ in
                 }
               ];
 
-              affinity = {
-                nodeAffinity = {
-                  requiredDuringSchedulingIgnoredDuringExecution = {
-                    nodeSelectorTerms = [
-                      {
-                        matchExpressions = [
-                          {
-                            key = "node-role.kubernetes.io/control-plane";
-                            operator = "Exists";
-                          }
-                        ];
-                      }
-                    ];
-                  };
-                };
-              };
-
               hostNetwork = true;
               dnsPolicy = "ClusterFirstWithHostNet";
+
+              inlineScrapeConfig = ''
+                - job_name: kube-scheduler
+                  static_configs:
+                    - targets: ["127.0.0.1:10259"]
+                  scheme: https
+                  tls_config:
+                    insecure_skip_verify: true
+                  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+                  metrics_path: /metrics
+                  scrape_interval: 30s
+
+                - job_name: kube-controller-manager
+                  static_configs:
+                    - targets: ["127.0.0.1:10257"]
+                  scheme: https
+                  tls_config:
+                    insecure_skip_verify: true
+                  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+                  metrics_path: /metrics
+                  scrape_interval: 30s
+              '';
 
               resources = {
                 requests = {
@@ -334,42 +310,6 @@ in
                   targetLabel = "job";
                 }
               ];
-            };
-          };
-          VMStaticScrape.kube-scheduler = {
-            metadata.labels.role = "control-plane";
-            spec = {
-              targetEndpoints = [
-                {
-                  targets = [ "127.0.0.1:10259" ];
-                  scheme = "https";
-                  tlsConfig = {
-                    insecureSkipVerify = true;
-                  };
-                  bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
-                  path = "/metrics";
-                  interval = "30s";
-                }
-              ];
-              jobName = "kube-scheduler";
-            };
-          };
-          VMStaticScrape.kube-controller-manager = {
-            metadata.labels.role = "control-plane";
-            spec = {
-              targetEndpoints = [
-                {
-                  targets = [ "127.0.0.1:10257" ];
-                  scheme = "https";
-                  tlsConfig = {
-                    insecureSkipVerify = true;
-                  };
-                  bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
-                  path = "/metrics";
-                  interval = "30s";
-                }
-              ];
-              jobName = "kube-controller-manager";
             };
           };
         };
