@@ -213,9 +213,11 @@ in
 
               evaluationInterval = "30s";
 
-              # notifier = {
-              #   url = "http://vmalertmanager-main.monitoring.svc:9093";
-              # };
+              notifiers = [
+                {
+                  url = "http://grafana-alerting.observability.svc:9094";
+                }
+              ];
             };
           };
 
@@ -383,9 +385,11 @@ in
 
               evaluationInterval = "30s";
 
-              # notifier = {
-              #   url = "http://vmalertmanager-main.monitoring.svc:9093";
-              # };
+              notifiers = [
+                {
+                  url = "http://grafana-alerting.observability.svc:9094";
+                }
+              ];
             };
           };
         };
