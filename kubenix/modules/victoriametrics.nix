@@ -232,6 +232,54 @@ in
               ];
             };
           };
+          VMNodeScrape.kube-scheduler = {
+            spec = {
+              scheme = "https";
+              tlsConfig = {
+                insecureSkipVerify = true;
+              };
+              bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+              path = "/metrics";
+              port = "10259";
+              interval = "30s";
+              relabelConfigs = [
+                {
+                  action = "replace";
+                  sourceLabels = [ "__meta_kubernetes_node_name" ];
+                  targetLabel = "node";
+                }
+                {
+                  action = "replace";
+                  replacement = "kube-scheduler";
+                  targetLabel = "job";
+                }
+              ];
+            };
+          };
+          VMNodeScrape.kube-controller-manager = {
+            spec = {
+              scheme = "https";
+              tlsConfig = {
+                insecureSkipVerify = true;
+              };
+              bearerTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+              path = "/metrics";
+              port = "10257";
+              interval = "30s";
+              relabelConfigs = [
+                {
+                  action = "replace";
+                  sourceLabels = [ "__meta_kubernetes_node_name" ];
+                  targetLabel = "node";
+                }
+                {
+                  action = "replace";
+                  replacement = "kube-controller-manager";
+                  targetLabel = "job";
+                }
+              ];
+            };
+          };
         };
       })
 
