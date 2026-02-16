@@ -18,6 +18,7 @@
       container-env = pkgs.buildEnv {
         name = "otel-collector-env";
         paths = [
+          pkgs.bash
           pkgs.fishMinimal
           pkgs.coreutils
         ];
@@ -98,6 +99,15 @@
                 "watch"
               ];
             }
+            {
+              apiGroups = [ "events.k8s.io" ];
+              resources = [ "events" ];
+              verbs = [
+                "get"
+                "list"
+                "watch"
+              ];
+            }
           ];
         };
 
@@ -128,10 +138,52 @@
           data."config.yaml" = # yaml
             ''
               receivers:
-                k8s_events:
+                k8sobjects:
                   auth_type: serviceAccount
+                  objects:
+                    - name: events
+                      mode: "watch"
+                      group: "events.k8s.io"
+                      exclude_watch_type:
+                        - "DELETED"
+
+              processors:
+                k8sattributes:
+                  passthrough: false
+                  pod_association:
+                    - sources:
+                        - from: resource_attribute
+                          name: k8s.pod.ip
+                    - sources:
+                        - from: resource_attribute
+                          name: k8s.pod.uid
+                    - sources:
+                        - from: connection
+                  extract:
+                    otel_annotations: true
+                    metadata:
+                      - k8s.namespace.name
+                      - k8s.pod.name
+                      - k8s.pod.uid
+                      - k8s.node.name
+                      - k8s.pod.start_time
+                      - k8s.deployment.name
+                      - k8s.replicaset.name
+                      - k8s.replicaset.uid
+                      - k8s.daemonset.name
+                      - k8s.daemonset.uid
+                      - k8s.job.name
+                      - k8s.job.uid
+                      - k8s.container.name
+                      - k8s.cronjob.name
+                      - k8s.statefulset.name
+                      - k8s.statefulset.uid
+                      - container.image.tag
+                      - container.image.name
 
               exporters:
+                debug:
+                  verbosity: detailed
                 otlphttp:
                   logs_endpoint: http://vlsingle-logs:9428/insert/opentelemetry/v1/logs
 
@@ -140,11 +192,15 @@
                   endpoint: :13133
 
               service:
+                telemetry:
+                  logs:
+                    level: debug
                 extensions: [health_check]
                 pipelines:
                   logs:
-                    receivers: [k8s_events]
-                    exporters: [otlphttp]
+                    receivers: [k8sobjects]
+                    processors: [k8sattributes]
+                    exporters: [debug, otlphttp]
             '';
         };
 
@@ -168,7 +224,14 @@
                       (lib.getExe pkgs.opentelemetry-collector-releases.otelcol-k8s)
                     ];
                     args = [
-                      "--config=/etc/otel-collector/config.yaml"
+                      "--config=file:/etc/otel-collector/config.yaml"
+                    ];
+
+                    env = [
+                      {
+                        name = "PATH";
+                        value = "/nix/var/result/bin";
+                      }
                     ];
 
                     ports = lib.mkNamedList {
