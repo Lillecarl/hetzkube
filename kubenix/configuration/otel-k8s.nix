@@ -180,6 +180,11 @@
                       - k8s.statefulset.uid
                       - container.image.tag
                       - container.image.name
+                transform:
+                  log_statements:
+                    - context: log
+                      statements:
+                        - set(body["_msg"], body["object"]["note"])
 
               exporters:
                 debug:
@@ -199,7 +204,7 @@
                 pipelines:
                   logs:
                     receivers: [k8sobjects]
-                    processors: [k8sattributes]
+                    processors: [k8sattributes, transform]
                     exporters: [debug, otlphttp]
             '';
         };
