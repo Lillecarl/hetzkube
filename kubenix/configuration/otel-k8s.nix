@@ -132,7 +132,7 @@
 
               exporters:
                 otlphttp:
-                  endpoint: http://vlsingle-logs:9428/insert/opentelemetry
+                  logs_endpoint: http://vlsingle-logs:9428/insert/opentelemetry/v1/logs
 
               processors:
                 batch:
