@@ -129,15 +129,11 @@
             ''
               receivers:
                 k8s_events:
+                  auth_type: serviceAccount
 
               exporters:
                 otlphttp:
                   logs_endpoint: http://vlsingle-logs:9428/insert/opentelemetry/v1/logs
-
-              processors:
-                batch:
-                  timeout: 10s
-                  send_batch_size: 100
 
               extensions:
                 health_check:
@@ -148,7 +144,6 @@
                 pipelines:
                   logs:
                     receivers: [k8s_events]
-                    processors: [batch]
                     exporters: [otlphttp]
             '';
         };
@@ -221,20 +216,12 @@
 
                     resources = {
                       requests = {
-                        cpu = "100m";
-                        memory = "128Mi";
+                        cpu = "50m";
+                        memory = "32Mi";
                       };
                       limits = {
-                        cpu = "500m";
                         memory = "512Mi";
                       };
-                    };
-
-                    securityContext = {
-                      runAsNonRoot = true;
-                      runAsUser = 1000;
-                      allowPrivilegeEscalation = false;
-                      capabilities.drop = [ "ALL" ];
                     };
                   };
                 };
