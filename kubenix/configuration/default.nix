@@ -20,6 +20,7 @@
     ./kyverno.nix
     ./ncps.nix
     ./nix-csi.nix
+    ./otel-k8s.nix
     ./victoriametrics.nix
     ./vpa.nix
   ];
