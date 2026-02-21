@@ -10,6 +10,7 @@
     ./chaoskube.nix
     ./cilium.nix
     ./cnpg-primaryswap.nix
+    ./etcd-defrag.nix
     ./csi-driver-smb.nix
     ./external-dns.nix
     ./external-secrets.nix
