@@ -13,6 +13,7 @@
   httpx,
   httpx-ws,
   python-box,
+  sniffio,
   # build-system
   hatchling,
   hatch-vcs,
@@ -40,11 +41,12 @@ buildPythonPackage rec {
     exceptiongroup
     packaging
     pyyaml
-    python-jsonpath
     anyio
     httpx
     httpx-ws
     python-box
+    python-jsonpath
+    sniffio
   ];
 
   pythonImportsCheck = [ "kr8s" ];
