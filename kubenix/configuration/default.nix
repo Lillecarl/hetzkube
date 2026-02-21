@@ -8,7 +8,6 @@
   imports = [
     ./cert-manager.nix
     ./chaoskube.nix
-    ./cifsmount.nix
     ./cilium.nix
     ./cnpg-primaryswap.nix
     ./csi-driver-smb.nix
