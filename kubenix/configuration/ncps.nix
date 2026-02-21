@@ -26,27 +26,10 @@
           }
         ) paths;
 
-      ncps =
-        let
-          version = "0.8.0";
-        in
-        pkgs.ncps.overrideAttrs {
-          inherit version;
-          src = builtins.fetchTree {
-            type = "github";
-            owner = "kalbasit";
-            repo = "ncps";
-            ref = "v${version}";
-          };
-          vendorHash = "sha256-AcgC+zTS3eVsbcs0jim4zDBGc3lIjwPbdVT7/KQ9Lkc=";
-          doCheck = false;
-          doInstallCheck = false;
-        };
-
       ncps-start = pkgs.writeShellApplication {
         name = "ncps-start";
         excludeShellChecks = [ "SC2154" ]; # Disable unassigned variable checking
-        runtimeInputs = [ ncps ];
+        runtimeInputs = [ pkgs.ncps ];
         text = ''
           set -x
 
