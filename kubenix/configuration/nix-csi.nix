@@ -3,8 +3,10 @@
   config = {
     nix-csi = {
       namespace = "nix-csi";
+      node.compat = false; # only needed to transition from old nixkube to new hetzkube csi driver name
       internalServiceName = "hetzkube";
       cache.enable = true;
+      push = true;
       builders = {
         enable = true;
         deployments.builder-amd64 = {
@@ -20,34 +22,9 @@
         (builtins.readFile ../../pubkeys/lillecarlworld.pub)
       ];
       loggingConfig = {
-        version = 1;
-        formatters = {
-          standard = {
-            format = "%(levelname)s [%(name)s] %(message)s";
-          };
-        };
-        handlers = {
-          console = {
-            class = "logging.StreamHandler";
-            formatter = "standard";
-            stream = "ext://sys.stdout";
-          };
-        };
+        renderer = "console";
         loggers = {
-          nix-csi = {
-            level = "DEBUG";
-            handlers = [ "console" ];
-            propagate = false;
-          };
-          httpx = {
-            level = "WARNING";
-            handlers = [ "console" ];
-            propagate = false;
-          };
-        };
-        root = {
-          level = "INFO";
-          handlers = [ "console" ];
+          nixkube.level = "DEBUG";
         };
       };
     };
