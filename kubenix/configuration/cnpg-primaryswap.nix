@@ -73,7 +73,7 @@ in
                     };
                     volumes = lib.mkNamedList {
                       nix-store.csi = {
-                        driver = "nix.csi.store";
+                        driver = "nixkube";
                         readOnly = true;
                       };
                     };

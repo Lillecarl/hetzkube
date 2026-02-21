@@ -105,7 +105,7 @@ in
               };
               volumes = lib.mkNamedList {
                 nix-csi.csi = {
-                  driver = "nix.csi.store";
+                  driver = "nixkube";
                   readOnly = true;
                   volumeAttributes.${pkgs.stdenv.hostPlatform.system} = pkgs.cheapam;
                   volumeAttributes.${pkgsOff.stdenv.hostPlatform.system} = pkgsOff.cheapam;

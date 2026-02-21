@@ -299,7 +299,7 @@
                     name = "otel-collector";
                   };
                   nix-store.csi = {
-                    driver = "nix.csi.store";
+                    driver = "nixkube";
                     readOnly = true;
                     volumeAttributes.${pkgs.stdenv.hostPlatform.system} = container-env;
                   };
