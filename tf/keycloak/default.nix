@@ -12,12 +12,13 @@ let
 in
 {
   config = {
-    data.kubernetes_secret_v1.mailgun = {
-      metadata = {
-        name = "mailgun";
-        namespace = "observability";
-      };
-    };
+    # TODO fix: mailgun secret doesn't exist yet
+    # data.kubernetes_secret_v1.mailgun = {
+    #   metadata = {
+    #     name = "mailgun";
+    #     namespace = "observability";
+    #   };
+    # };
 
     locals.realm_id = config.resource.keycloak_realm.auth "id";
     resource.keycloak_realm.auth = {
@@ -36,18 +37,19 @@ in
 
       attributes = { };
 
-      smtp_server = {
-        host = "smtp.eu.mailgun.org";
-        port = 587;
-        starttls = true;
+      # TODO fix: mailgun SMTP config depends on mailgun secret above
+      # smtp_server = {
+      #   host = "smtp.eu.mailgun.org";
+      #   port = 587;
+      #   starttls = true;
 
-        from = "auth@mg.lillecarl.com";
+      #   from = "auth@mg.lillecarl.com";
 
-        auth = {
-          username = data.kubernetes_secret_v1.mailgun "data.username";
-          password = data.kubernetes_secret_v1.mailgun "data.password";
-        };
-      };
+      #   auth = {
+      #     username = data.kubernetes_secret_v1.mailgun "data.username";
+      #     password = data.kubernetes_secret_v1.mailgun "data.password";
+      #   };
+      # };
     };
 
     resource.keycloak_realm_user_profile.auth =

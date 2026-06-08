@@ -29,7 +29,7 @@ rec {
       type = "github";
       owner = "opentofu";
       repo = "registry";
-      ref = "918e292b1a9151aea52a748f00d91d78f744e9d8";
+      ref = "main";
     };
   };
   plugins = [
@@ -60,12 +60,13 @@ rec {
   run = pkgs.writeShellApplication {
     name = "terranix";
     runtimeInputs = [
-      pkgs.opentofu
+      tofu
       pkgs.rsync
     ];
     text = ''
       set -x
-      rsync --archive --chmod=u+w ${module}/ .
+      # rsync --archive --verbose --chmod=u+w ${module}/ .
+      cp ${module}/{.terraform.lock.hcl,config.tf.json} .
       exec tofu "$@"
     '';
   };
