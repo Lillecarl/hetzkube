@@ -3,7 +3,7 @@
   config = lib.mkIf (config.stage == "full") {
     flux = {
       enable = true;
-      version = "2.7.5";
+      version = "2.8.8";
     };
 
     kubernetes.transformers = [
