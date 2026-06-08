@@ -9,7 +9,7 @@
         enable = true;
         operator = {
           enable = true;
-          version = "0.67.0";
+          version = "0.68.5";
         };
         metrics = {
           enable = true;
