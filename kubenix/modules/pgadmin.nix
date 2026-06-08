@@ -109,36 +109,31 @@ in
           ];
         };
       };
-      Ingress.${moduleName} = {
-        metadata.annotations = {
-          "cert-manager.io/cluster-issuer" = "le-prod";
-        };
+      HTTPRoute.${moduleName} = {
         spec = {
-          tls = [
+          parentRefs = [
             {
-              hosts = [ cfg.hostname ];
-              secretName = "cert";
+              name = "default";
+              namespace = "kube-system";
             }
           ];
+          hostnames = [ cfg.hostname ];
           rules = [
             {
-              host = cfg.hostname;
-              http = {
-                paths = [
-                  {
-                    path = "/";
-                    pathType = "Prefix";
-                    backend = {
-                      service = {
-                        name = moduleName;
-                        port = {
-                          name = "http";
-                        };
-                      };
-                    };
-                  }
-                ];
-              };
+              matches = [
+                {
+                  path = {
+                    type = "PathPrefix";
+                    value = "/";
+                  };
+                }
+              ];
+              backendRefs = [
+                {
+                  name = moduleName;
+                  port = 8080;
+                }
+              ];
             }
           ];
         };
