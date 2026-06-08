@@ -28,12 +28,13 @@ in
           type = "github";
           owner = "metallb";
           repo = "metallb";
-          ref = "v0.15.2";
+          ref = "v0.16.0";
         }
       }/charts/metallb";
 
       values = lib.recursiveUpdate {
         speaker.enabled = lib.mkDefault false;
+        frr-k8s.prometheus.serviceMonitor.enabled = lib.mkDefault false;
       } cfg.helmValues;
     };
     kubernetes.apiMappings = {
