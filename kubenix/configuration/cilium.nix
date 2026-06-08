@@ -77,12 +77,7 @@
         enableLocalRedirectPolicy = true;
         # RIP ingress-nginx
         ingressController = {
-          enabled = true;
-          default = true;
-          # Only one LB service since we don't have unlimited IP port combos
-          loadbalancerMode = "shared";
-          # Policy stuff
-          service.labels.ingress = "all";
+          enabled = false;
         };
         # Cilium is quite important
         operator.replicas = 2;
