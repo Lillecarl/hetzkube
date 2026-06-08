@@ -34,7 +34,7 @@
         nix copy \
           --substitute-on-destination \
           --no-check-sigs \
-          --to ssh-ng://nix@nixcache.lillecarl.com?port=2222 \
+          --to ssh-ng://nix@pynixd.lillecarl.com:2222 \
           ${config.kluctl.projectDir} \
           -v || true
       '';
