@@ -5,23 +5,18 @@
       # enable = config.stage == "full";
       enable = false;
       node.compat = false;
-      internalServiceName = "hetzkube";
-      cache.enable = true;
       push = true;
-      builders = {
+      pynixd = {
         enable = true;
-        deployments.builder-amd64 = {
-          enable = true;
-        };
+        storageClassName = "hcloud-volumes";
+        authorizedKeys = [
+          (builtins.readFile ../../pubkeys/carl.pub)
+          (builtins.readFile ../../pubkeys/lillecarlworld.pub)
+        ];
       };
-      cache.storageClassName = "hcloud-volumes";
       metadata.labels = {
         "cilium.io/ingress" = "true";
       };
-      authorizedKeys = [
-        (builtins.readFile ../../pubkeys/carl.pub)
-        (builtins.readFile ../../pubkeys/lillecarlworld.pub)
-      ];
       loggingConfig = {
         renderer = "console";
         loggers = {

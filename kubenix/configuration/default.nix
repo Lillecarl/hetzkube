@@ -158,14 +158,14 @@
     };
 
     kubernetes.resources = lib.mkIf (config.stage == "full") {
-      nixkube.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
-        "nixcache.lillecarl.com";
-      nixkube.Service.nix-proxy.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
-        "nixbuild.lillecarl.com";
-      kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
-      nixkube.StatefulSet = lib.mkIf config.nixkube.cache.enable {
-        nix-cache.spec.template.metadata.labels."cilium.io/ingress" = "true";
+      nixkube = lib.mkIf config.nixkube.enable {
+        Service.pynixd-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
+          "nixcache.lillecarl.com";
+        StatefulSet = lib.mkIf config.nixkube.pynixd.enable {
+          pynixd.spec.template.metadata.labels."cilium.io/ingress" = "true";
+        };
       };
+      kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
 
       kube-system.ExternalSecret.hcloud = hlib.eso.mkToken "name:hcloud-token";
 
