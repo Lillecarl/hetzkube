@@ -121,10 +121,6 @@
 
     coredns.replicas = 2;
 
-    stremio = {
-      enable = false;
-      hostname = "stremio.lillecarl.com";
-    };
     bitwarden.helmValues = {
       settings.bwSecretsManagerRefreshInterval = 180;
     };

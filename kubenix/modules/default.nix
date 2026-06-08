@@ -31,7 +31,6 @@
     ./node-exporter.nix
     ./pgadmin.nix
     ./sealed-secrets.nix
-    ./stremio.nix
     ./vertical-pod-autoscaler.nix
     ./victoriametrics.nix
   ];
