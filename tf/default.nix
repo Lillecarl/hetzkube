@@ -5,24 +5,22 @@ rec {
 
   terranix = import "${root.flake.inputs.terranix}/core" {
     inherit pkgs;
-    terranix_config = {
-      imports = [
-        ./terranix.nix
-        {
-          # Configure required_providers with our tofu providers
-          config = lib.pipe plugins [
-            (map (plugin: {
-              name = plugin.passthru.name;
-              value = plugin.passthru.config;
-            }))
-            lib.listToAttrs
-            (x: {
-              terraform.required_providers = x;
-            })
-          ];
-        }
-      ];
-    };
+    modules = [
+      ./terranix.nix
+      {
+        # Configure required_providers with our tofu providers
+        config = lib.pipe plugins [
+          (map (plugin: {
+            name = plugin.passthru.name;
+            value = plugin.passthru.config;
+          }))
+          lib.listToAttrs
+          (x: {
+            terraform.required_providers = x;
+          })
+        ];
+      }
+    ];
   };
 
   registry = import ./registry.nix {
