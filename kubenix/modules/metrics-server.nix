@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption moduleName;
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
-      default = "0.8.0";
+      default = "0.8.1";
     };
     helmValues = lib.mkOption {
       type = lib.types.anything;
@@ -35,6 +35,7 @@ in
         chart = "${src}/charts/metrics-server";
 
         values = lib.recursiveUpdate {
+          image.tag = lib.mkDefault "v${cfg.version}";
           args = lib.mkDefault [ "--kubelet-insecure-tls" ];
           service.labels = {
             "kubernetes.io/cluster-service" = "true";
