@@ -172,7 +172,7 @@ in
     enable = lib.mkEnableOption "external-dns";
     version = lib.mkOption {
       type = lib.types.str;
-      default = "0.20.0";
+      default = "0.21.0";
     };
     instances = lib.mkOption {
       default = { };
