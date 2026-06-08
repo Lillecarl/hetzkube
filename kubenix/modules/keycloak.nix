@@ -95,7 +95,7 @@ in
                     KC_PROXY_HEADERS.value = "xforwarded";
                     KC_HTTP_ENABLED.value = "true";
                     KC_HOSTNAME_STRICT.value = "false";
-                    # KC_HOSTNAME.value = cfg.hostname;
+                    KC_HOSTNAME.value = lib.head cfg.hostnames;
                     KC_HEALTH_ENABLED.value = "true";
                     # Cache
                     KC_CACHE.value = "ispn";
