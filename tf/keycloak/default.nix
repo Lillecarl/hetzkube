@@ -34,9 +34,7 @@ in
       verify_email = true;
       login_with_email_allowed = true;
 
-      attributes = {
-        frontendUrl = "https://auth.lillecarl.com";
-      };
+      attributes = { };
 
       smtp_server = {
         host = "smtp.eu.mailgun.org";

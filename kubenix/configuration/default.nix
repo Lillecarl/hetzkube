@@ -46,8 +46,7 @@
 
     capi.keyName = "lillecarl@lillecarl.com";
     keycloak.hostnames = [
-      "auth.lillecarl.com" # Auth realm?
-      "keycloak.lillecarl.com" # Keycloak admin
+      "keycloak.lillecarl.com"
     ];
     pgadmin.hostname = "pgadmin.lillecarl.com";
     headlamp = {
