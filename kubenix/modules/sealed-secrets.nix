@@ -12,12 +12,12 @@ in
     enable = lib.mkEnableOption moduleName;
     version = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = "0.33.1";
+      default = "0.37.0";
     };
   };
   config = lib.mkIf cfg.enable {
     importyaml.${moduleName} = {
-      src = "https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.33.1/controller.yaml";
+      src = "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${cfg.version}/controller.yaml";
     };
   };
 }
