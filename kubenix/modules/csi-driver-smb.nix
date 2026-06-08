@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption moduleName;
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
-      default = "1.19.1";
+      default = "1.20.1";
     };
     helmValues = lib.mkOption {
       type = lib.types.anything;

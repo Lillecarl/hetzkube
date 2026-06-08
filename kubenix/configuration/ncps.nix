@@ -109,7 +109,7 @@
         "app.kubernetes.io/name" = "ncps";
       };
     in
-    lib.mkIf (config.stage == "full") {
+    lib.mkIf (config.stage == "full" && config.nixkube.enable) {
       kubernetes.resources.${config.nixkube.namespace} = {
         StatefulSet.ncps = {
           spec = {
