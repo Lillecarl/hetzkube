@@ -1,9 +1,10 @@
-{ ... }:
+{ config, ... }:
 {
   config = {
-    nix-csi = {
-      namespace = "nix-csi";
-      node.compat = false; # only needed to transition from old nixkube to new hetzkube csi driver name
+    nixkube = {
+      # enable = config.stage == "full";
+      enable = false;
+      node.compat = false;
       internalServiceName = "hetzkube";
       cache.enable = true;
       push = true;

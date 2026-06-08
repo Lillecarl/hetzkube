@@ -110,7 +110,7 @@
       };
     in
     lib.mkIf (config.stage == "full") {
-      kubernetes.resources.nix-csi = {
+      kubernetes.resources.${config.nixkube.namespace} = {
         StatefulSet.ncps = {
           spec = {
             serviceName = "ncps";

@@ -158,12 +158,12 @@
     };
 
     kubernetes.resources = lib.mkIf (config.stage == "full") {
-      nix-csi.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
+      nixkube.Service.nix-cache-lb.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixcache.lillecarl.com";
-      nix-csi.Service.nix-proxy.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
+      nixkube.Service.nix-proxy.metadata.annotations."external-dns.alpha.kubernetes.io/hostname" =
         "nixbuild.lillecarl.com";
       kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
-      nix-csi.StatefulSet = lib.mkIf config.nix-csi.cache.enable {
+      nixkube.StatefulSet = lib.mkIf config.nixkube.cache.enable {
         nix-cache.spec.template.metadata.labels."cilium.io/ingress" = "true";
       };
 
