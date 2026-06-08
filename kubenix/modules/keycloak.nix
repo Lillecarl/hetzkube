@@ -23,7 +23,7 @@ in
     version = lib.mkOption {
       type = lib.types.str;
       description = "${moduleName} version";
-      default = "26.5";
+      default = "26.6.3";
     };
   };
   config = lib.mkIf cfg.enable {
