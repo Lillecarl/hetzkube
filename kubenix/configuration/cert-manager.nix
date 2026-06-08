@@ -12,7 +12,7 @@ in
   config = lib.mkIf (config.stage == "full") {
     cert-manager = {
       enable = true;
-      version = "1.19.3";
+      version = "1.20.0";
     };
     kubernetes.resources.cert-manager = {
       ExternalSecret.cloudflare = hlib.eso.mkToken "name:cloudflare-token";
