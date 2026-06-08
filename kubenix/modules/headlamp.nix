@@ -28,6 +28,35 @@ in
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
+    kubernetes.resources.${cfg.namespace}.HTTPRoute.headlamp = {
+      spec = {
+        parentRefs = [
+          {
+            name = "default";
+            namespace = "kube-system";
+          }
+        ];
+        hostnames = [ cfg.hostname ];
+        rules = [
+          {
+            matches = [
+              {
+                path = {
+                  type = "PathPrefix";
+                  value = "/";
+                };
+              }
+            ];
+            backendRefs = [
+              {
+                name = "headlamp";
+                port = 80;
+              }
+            ];
+          }
+        ];
+      };
+    };
     helm.releases.${moduleName} = {
       namespace = cfg.namespace;
 
@@ -48,30 +77,7 @@ in
             value = "kubernetes";
           }
         ];
-        ingress = {
-          enabled = true;
-          ingressClassName = "cilium";
-          annotations = {
-            "cert-manager.io/cluster-issuer" = "le-prod";
-          };
-          hosts = [
-            {
-              host = cfg.hostname;
-              paths = [
-                {
-                  path = "/";
-                  type = "Prefix";
-                }
-              ];
-            }
-          ];
-          tls = [
-            {
-              secretName = "tls";
-              hosts = [ cfg.hostname ];
-            }
-          ];
-        };
+        ingress.enabled = false;
         config = {
           oidc = {
             clientID = "headlamp";
