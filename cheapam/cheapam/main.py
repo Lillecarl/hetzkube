@@ -47,7 +47,7 @@ async def reconciliation_worker(event: Event, cluster_hostname: str) -> None:
         logger.info("--- Debounce period over. Starting full reconciliation. ---")
         try:
             all_nodes = [cast(Node, node) async for node in kr8s.asyncio.get("nodes")]
-            all_services = [svc async for svc in kr8s.asyncio.get("services")]
+            all_services = [svc async for svc in kr8s.asyncio.get("services", namespace=kr8s.ALL)]
             await reconcile_ipam(all_nodes, event)
             await reconcile_lb_services([s.raw for s in all_services], [n.raw for n in all_nodes])
             await update_external_resources(all_nodes, cluster_hostname, event)
@@ -82,7 +82,7 @@ async def service_watcher(event: Event) -> None:
     """
     while True:
         try:
-            async for evt, svc in kr8s.asyncio.watch("services"):
+            async for evt, svc in kr8s.asyncio.watch("services", namespace=kr8s.ALL):
                 logger.info(f"Service '{svc.name}' event: '{evt}'. Triggering reconciliation.")
                 event.set()
         except Exception as e:

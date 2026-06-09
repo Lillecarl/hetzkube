@@ -186,11 +186,17 @@ async def reconcile_lb_services(services: List[dict], nodes: List[dict]) -> None
 
     # Pre-populate state from all existing LB ingress IPs, not just cheapam-assigned ones.
     # This prevents port conflicts with services managed by other controllers (cilium gateway, etc.)
+    populated = 0
     for svc in services:
         current_ips = _get_assigned_ips(svc)
         if current_ips:
+            populated += 1
+            svc_name = svc.get("metadata", {}).get("name", "?")
+            svc_ns = svc.get("metadata", {}).get("namespace", "?")
+            logger.debug(f"Pre-populated state for {svc_ns}/{svc_name}: IPs={current_ips} ports={_ports_key(svc)}")
             for ip in current_ips:
                 state.assign(ip, _sharing_key(svc), _ports_key(svc))
+    logger.info(f"Pre-populated state from {populated} services with LB ingress IPs")
 
     for svc_raw in services:
         svc_name = svc_raw["metadata"]["name"]
@@ -248,7 +254,9 @@ async def reconcile_lb_services(services: List[dict], nodes: List[dict]) -> None
                 continue
             # Find the first address that doesn't conflict
             for addr in candidate_pool:
-                if not state.is_conflict(addr, sharing_key, ports):
+                conflict = state.is_conflict(addr, sharing_key, ports)
+                logger.debug(f"  Trying {addr} for '{key}': conflict={conflict}")
+                if not conflict:
                     assigned_ips.append(addr)
                     state.assign(addr, sharing_key, ports)
                     break
