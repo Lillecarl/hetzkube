@@ -108,7 +108,7 @@ def _collect_node_addresses(nodes: List[dict]) -> Tuple[List[str], List[str]]:
     """Collect IPv4 and IPv6 external addresses from nodes.
 
     Returns:
-        (ipv4_addresses, ipv6_service_subnets)
+        (ipv4_addresses, ipv6_service_addresses)
     """
     v4: List[str] = []
     v6: List[str] = []
@@ -123,11 +123,11 @@ def _collect_node_addresses(nodes: List[dict]) -> Tuple[List[str], List[str]]:
             if ip.version == 4:
                 v4.append(str(ip))
             elif ip.version == 6:
-                # Use second half of the /64 for services
+                # Use second half of the /64 for services — first usable host
                 net = ipaddress.IPv6Network(f"{ip}/64", strict=False)
                 service_subnets = list(net.subnets(prefixlen_diff=1))
                 if len(service_subnets) >= 2:
-                    v6.append(str(service_subnets[1]))
+                    v6.append(str(next(service_subnets[1].hosts())))
     return v4, v6
 
 
@@ -173,7 +173,9 @@ async def reconcile_lb_services(services: List[dict], nodes: List[dict]) -> None
 
     Called during each reconciliation cycle.  Idempotent.
     """
+    logger.info(f"Reconciling {len(services)} services, {len(nodes)} nodes")
     v4_addrs, v6_subnets = _collect_node_addresses(nodes)
+    logger.info(f"Node addresses: {len(v4_addrs)} IPv4, {len(v6_subnets)} IPv6 subnets")
 
     state = IpShareState()
 
