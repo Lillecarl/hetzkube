@@ -34,6 +34,8 @@ in
               resources = [
                 "nodes"
                 "nodes/status"
+                "services"
+                "services/status"
               ];
               inherit verbs;
             }
@@ -42,16 +44,7 @@ in
               resources = [ "configmaps" ];
               inherit verbs;
             }
-            {
-              apiGroups = [ "metallb.io" ];
-              resources = [ "ipaddresspools" ];
-              inherit verbs;
-            }
-            {
-              apiGroups = [ "cilium.io" ];
-              resources = [ "ciliumloadbalancerippools" ];
-              inherit verbs;
-            }
+
             {
               apiGroups = [ "externaldns.k8s.io" ];
               resources = [ "dnsendpoints" ];

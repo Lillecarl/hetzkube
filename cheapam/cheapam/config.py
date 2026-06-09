@@ -19,6 +19,7 @@ cheapam_logger.setLevel(getattr(logging, CHEAPAM_LOG_LEVEL, logging.INFO))
 # MetalLB / external-dns
 POOL_NAME = "external-ips"
 DNSENDPOINT_NAME = "apiservers"
+DNSENDPOINT_NODES_NAME = "nodes"
 
 # cheapam IPAM
 IPAM_CONFIG_MAP = "cheapam-config"

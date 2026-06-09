@@ -2,17 +2,28 @@ import ipaddress
 import logging
 from typing import List
 
+import kr8s
 from asyncio import Event
 from kr8s.asyncio.objects import Node
 
 from . import config
-from .kr8s_objects import CiliumLoadBalancerIPPool, IPAddressPool, DNSEndpoint
+from .kr8s_objects import DNSEndpoint
 
 logger = logging.getLogger(__name__)
 
 
+def _node_dns_name(node_name: str, cluster_hostname: str) -> str:
+    """Build a DNS name for an individual node.
+
+    For a node named "hetzkube-worker-x86-abc" and cluster "kubernetes.lillecarl.com",
+    returns "hetzkube-worker-x86-abc.lillecarl.com".
+    """
+    domain = ".".join(cluster_hostname.split(".", 1)[1:])
+    return f"{node_name}.{domain}"
+
+
 class ExternalResourcesUpdater:
-    """Handles updates to external resources like MetalLB IPAddressPool and external-dns DNSEndpoint."""
+    """Handles updates to external resources like external-dns DNSEndpoint."""
 
     event: Event
 
@@ -20,8 +31,7 @@ class ExternalResourcesUpdater:
         self.event = event
 
     async def _collect_addresses(self, nodes: List[Node]) -> tuple:
-        """Collects service subnets and control plane addresses from nodes."""
-        service_subnets = []
+        """Collects control plane addresses from nodes."""
         cp_addresses4 = []
         cp_addresses6 = []
 
@@ -31,54 +41,26 @@ class ExternalResourcesUpdater:
                     try:
                         ip = ipaddress.ip_address(addr.address)
                         if ip.version == 4:
-                            service_subnets.append(f"{ip}/32")
                             if "node-role.kubernetes.io/control-plane" in node.metadata.get("labels", {}):
                                 cp_addresses4.append(addr.address)
                         elif ip.version == 6:
-                            ipv6_net = ipaddress.ip_network(f"{ip}/{config.IPV6_SERVICE_PREFIX}", strict=False)
-                            supernet = ipv6_net.supernet()
-                            subnets = list(supernet.subnets())
-                            service_subnets.append(str(subnets[1]))
                             if "node-role.kubernetes.io/control-plane" in node.metadata.get("labels", {}):
                                 cp_addresses6.append(addr.address)
                     except ValueError:
                         logger.warning(f"Skipping invalid IP address: {addr.address}")
 
-        return service_subnets, cp_addresses4, cp_addresses6
-
-    async def _update_ip_address_pool(self, service_subnets: List[str]) -> None:
-        """Creates or patches the LoadBalancer IPAddressPool."""
-        if not service_subnets:
-            logger.warning("No ExternalIPs found. IPAddressPool will not be modified.")
-            return
-
-        ippool_spec = {
-            "metadata": {"name": config.POOL_NAME, "namespace": "metallb-system"},
-            "spec": {"addresses": [cidr for cidr in sorted(list(set(service_subnets)))]},
-        }
-        ippool = await IPAddressPool(ippool_spec)
-        try:
-            if await ippool.exists():
-                await ippool.patch(ippool_spec)
-                logger.info(f"Patched {ippool.kind} '{ippool.name}'")
-            else:
-                await ippool.create()
-                logger.info(f"Created {ippool.kind} '{ippool.name}'")
-        except Exception as e:
-            logger.error(f"An error occurred updating IPAddressPool: {e}")
-            logger.error(f"{ippool_spec=}")
-            self.event.set()
+        return cp_addresses4, cp_addresses6
 
     async def _update_dns_endpoint(self, cp_addresses4: List[str], cp_addresses6: List[str], cluster_hostname: str) -> None:
-        """Creates or patches the external-dns DNSEndpoint."""
-        if not cp_addresses4 and not cp_addresses6:
-            return
-
+        """Creates or patches the external-dns DNSEndpoint for the cluster hostname."""
         endpoints = []
         if cp_addresses4:
             endpoints.append({"dnsName": cluster_hostname, "recordTTL": 60, "recordType": "A", "targets": sorted(list(set(cp_addresses4)))})
         if cp_addresses6:
             endpoints.append({"dnsName": cluster_hostname, "recordTTL": 60, "recordType": "AAAA", "targets": sorted(list(set(cp_addresses6)))})
+
+        if not endpoints:
+            return
 
         dnsendpoint_spec = {"metadata": {"name": config.DNSENDPOINT_NAME}, "spec": {"endpoints": endpoints}}
         dnsendpoint = await DNSEndpoint(dnsendpoint_spec, "kube-system")
@@ -94,9 +76,71 @@ class ExternalResourcesUpdater:
             logger.error(f"{dnsendpoint_spec=}")
             self.event.set()
 
+    async def _update_node_dns(self, nodes: List[Node], cluster_hostname: str) -> None:
+        """Creates one DNSEndpoint per node, owned by that node so GC cleans it up on delete."""
+        # Collect current node names for cleanup detection (ephemeral node case)
+        current_node_names = {n.name for n in nodes}
+
+        for node in nodes:
+            v4_targets = []
+            v6_targets = []
+            for addr in node.status.addresses:
+                if addr.type != "ExternalIP":
+                    continue
+                try:
+                    ip = ipaddress.ip_address(addr.address)
+                except ValueError:
+                    continue
+                if ip.version == 4:
+                    v4_targets.append(addr.address)
+                elif ip.version == 6:
+                    v6_targets.append(addr.address)
+
+            dns_name = _node_dns_name(node.name, cluster_hostname)
+            dnsendpoint_name = f"node-{node.name}"
+
+            endpoints = []
+            if v4_targets:
+                endpoints.append({"dnsName": dns_name, "recordTTL": 60, "recordType": "A", "targets": sorted(v4_targets)})
+            if v6_targets:
+                endpoints.append({"dnsName": dns_name, "recordTTL": 60, "recordType": "AAAA", "targets": sorted(v6_targets)})
+
+            dnsendpoint_spec = {
+                "metadata": {
+                    "name": dnsendpoint_name,
+                    "ownerReferences": [{
+                        "apiVersion": "v1",
+                        "kind": "Node",
+                        "name": node.name,
+                        "uid": node.metadata.uid,
+                    }],
+                },
+                "spec": {"endpoints": endpoints},
+            }
+
+            dnsendpoint = await DNSEndpoint(dnsendpoint_spec, "kube-system")
+            try:
+                if await dnsendpoint.exists():
+                    await dnsendpoint.patch(dnsendpoint_spec)
+                else:
+                    await dnsendpoint.create()
+            except Exception as e:
+                logger.error(f"An error occurred updating node DNS for '{node.name}': {e}")
+                self.event.set()
+
+        # Clean up DNSEndpoints for nodes that no longer exist
+        existing_names = set()
+        async for ep in kr8s.asyncio.get("dnsendpoints", "kube-system"):
+            if not ep.metadata.name.startswith("node-"):
+                continue
+            node_name = ep.metadata.name[len("node-"):]
+            if node_name not in current_node_names:
+                logger.info(f"Cleaning up DNS endpoint for removed node '{node_name}'")
+                await ep.delete()
+
     async def update(self, nodes: List[Node], cluster_hostname: str) -> None:
         """
-        Creates/patches MetalLB IPAddressPool and external-dns DNSEndpoint.
+        Creates/patches external-dns DNSEndpoints for cluster and nodes.
 
         Args:
             nodes: List of current Node objects.
@@ -104,9 +148,9 @@ class ExternalResourcesUpdater:
         """
         logger.info("--- Starting external resource update ---")
 
-        service_subnets, cp_addresses4, cp_addresses6 = await self._collect_addresses(nodes)
-        await self._update_ip_address_pool(service_subnets)
+        cp_addresses4, cp_addresses6 = await self._collect_addresses(nodes)
         await self._update_dns_endpoint(cp_addresses4, cp_addresses6, cluster_hostname)
+        await self._update_node_dns(nodes, cluster_hostname)
 
         logger.info("--- Finished external resource update ---")
 

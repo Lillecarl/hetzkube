@@ -11,7 +11,7 @@
     keycloak.enable = true;
     kro.enable = false;
     local-path-provisioner.enable = true;
-    metallb.enable = true;
+    metallb.enable = false;
     metrics-server.enable = true;
     pgadmin.enable = true;
     sealed-secrets.enable = true;

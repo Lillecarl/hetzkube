@@ -12,6 +12,7 @@ from asyncio import Event, sleep
 from . import config
 from .external_resources import update_external_resources
 from .ipam import reconcile_ipam
+from .services import reconcile_lb_services
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,9 @@ async def reconciliation_worker(event: Event, cluster_hostname: str) -> None:
         logger.info("--- Debounce period over. Starting full reconciliation. ---")
         try:
             all_nodes = [cast(Node, node) async for node in kr8s.asyncio.get("nodes")]
+            all_services = [svc async for svc in kr8s.asyncio.get("services", "")]
             await reconcile_ipam(all_nodes, event)
+            await reconcile_lb_services([s.raw for s in all_services], [n.raw for n in all_nodes])
             await update_external_resources(all_nodes, cluster_hostname, event)
         except Exception as e:
             logger.error(f"Error during reconciliation: {e}")
@@ -67,6 +70,23 @@ async def node_watcher(event: Event) -> None:
                 event.set()
         except Exception as e:
             logger.error(f"Error in watch loop: {e}. Reconnecting in 10 seconds.")
+            await sleep(10)
+
+
+async def service_watcher(event: Event) -> None:
+    """
+    Watches for service changes and sets an event to trigger reconciliation.
+
+    Args:
+        event: The event to set on changes.
+    """
+    while True:
+        try:
+            async for evt, svc in kr8s.asyncio.watch("services", ""):
+                logger.info(f"Service '{svc.name}' event: '{evt}'. Triggering reconciliation.")
+                event.set()
+        except Exception as e:
+            logger.error(f"Error in service watch loop: {e}. Reconnecting in 10 seconds.")
             await sleep(10)
 
 
@@ -101,7 +121,8 @@ class CheapamApp:
             loop.add_signal_handler(sig, signal_handler)
 
         # 4. Start background tasks
-        watcher_task = asyncio.create_task(node_watcher(reconciliation_needed))
+        node_watcher_task = asyncio.create_task(node_watcher(reconciliation_needed))
+        svc_watcher_task = asyncio.create_task(service_watcher(reconciliation_needed))
         worker_task = asyncio.create_task(
             reconciliation_worker(reconciliation_needed, self.cluster_hostname)
         )
@@ -112,11 +133,12 @@ class CheapamApp:
 
         # 6. Graceful cleanup
         logger.info("Stopping tasks...")
-        watcher_task.cancel()
+        node_watcher_task.cancel()
+        svc_watcher_task.cancel()
         worker_task.cancel()
 
         # Wait for tasks to finish cancelling (suppress CancelledError)
-        await asyncio.gather(watcher_task, worker_task, return_exceptions=True)
+        await asyncio.gather(node_watcher_task, svc_watcher_task, worker_task, return_exceptions=True)
         logger.info("Shutdown complete.")
 
 def cli():
