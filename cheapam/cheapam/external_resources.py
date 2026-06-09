@@ -2,7 +2,6 @@ import ipaddress
 import logging
 from typing import List
 
-import kr8s
 from asyncio import Event
 from kr8s.asyncio.objects import Node
 
@@ -78,9 +77,6 @@ class ExternalResourcesUpdater:
 
     async def _update_node_dns(self, nodes: List[Node], cluster_hostname: str) -> None:
         """Creates one DNSEndpoint per node, owned by that node so GC cleans it up on delete."""
-        # Collect current node names for cleanup detection (ephemeral node case)
-        current_node_names = {n.name for n in nodes}
-
         for node in nodes:
             v4_targets = []
             v6_targets = []
@@ -97,7 +93,6 @@ class ExternalResourcesUpdater:
                     v6_targets.append(addr.address)
 
             dns_name = _node_dns_name(node.name, cluster_hostname)
-            dnsendpoint_name = f"node-{node.name}"
 
             endpoints = []
             if v4_targets:
@@ -107,7 +102,7 @@ class ExternalResourcesUpdater:
 
             dnsendpoint_spec = {
                 "metadata": {
-                    "name": dnsendpoint_name,
+                    "name": node.name,
                     "ownerReferences": [{
                         "apiVersion": "v1",
                         "kind": "Node",
@@ -127,16 +122,6 @@ class ExternalResourcesUpdater:
             except Exception as e:
                 logger.error(f"An error occurred updating node DNS for '{node.name}': {e}")
                 self.event.set()
-
-        # Clean up DNSEndpoints for nodes that no longer exist
-        existing_names = set()
-        async for ep in kr8s.asyncio.get("dnsendpoints", "kube-system"):
-            if not ep.metadata.name.startswith("node-"):
-                continue
-            node_name = ep.metadata.name[len("node-"):]
-            if node_name not in current_node_names:
-                logger.info(f"Cleaning up DNS endpoint for removed node '{node_name}'")
-                await ep.delete()
 
     async def update(self, nodes: List[Node], cluster_hostname: str) -> None:
         """
