@@ -42,8 +42,13 @@ def _ports_key(svc: dict) -> Set[Tuple[str, int]]:
 
 
 def _sharing_key(svc: dict) -> str:
-    """All services share the same key — full IP sharing."""
-    return "default"
+    """Unique per-service key so port conflicts are enforced.
+
+    Two services on the same IP must have non-overlapping (protocol, port)
+    tuples.  This means any two services can share an IP as long as they
+    don't compete for the same port.
+    """
+    return svc.get("metadata", {}).get("uid", "")
 
 
 def _is_lb(svc: dict) -> bool:
@@ -179,11 +184,12 @@ async def reconcile_lb_services(services: List[dict], nodes: List[dict]) -> None
 
     state = IpShareState()
 
-    # Pre-populate state from current assignments
+    # Pre-populate state from all existing LB ingress IPs, not just cheapam-assigned ones.
+    # This prevents port conflicts with services managed by other controllers (cilium gateway, etc.)
     for svc in services:
-        assigned = _assigned_ip_str(svc)
-        if assigned:
-            for ip in assigned.split(","):
+        current_ips = _get_assigned_ips(svc)
+        if current_ips:
+            for ip in current_ips:
                 state.assign(ip, _sharing_key(svc), _ports_key(svc))
 
     for svc_raw in services:
