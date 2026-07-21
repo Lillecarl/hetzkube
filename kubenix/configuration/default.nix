@@ -6,6 +6,7 @@
 }:
 {
   imports = [
+    ./argocd.nix
     ./cert-manager.nix
     ./chaoskube.nix
     ./cilium.nix
@@ -15,6 +16,7 @@
     ./external-dns.nix
     ./external-secrets.nix
     ./flux.nix
+    ./gitops.nix
     ./grafana.nix
     ./kluctl.nix
     ./kyverno.nix
@@ -67,7 +69,7 @@
       # make all Service dualstack
       (
         resource:
-        if resource.kind == "Service" then
+        if resource.kind or null == "Service" then
           lib.recursiveUpdate resource {
             spec.ipFamilyPolicy = "RequireDualStack";
           }
@@ -78,7 +80,7 @@
       (
         resource:
         if
-          lib.elem resource.kind [
+          lib.elem (resource.kind or null) [
             "Ingress"
             "HTTPRoute"
           ]
@@ -92,7 +94,7 @@
       # DNS TTL and IP sharing for LoadBalancer Service
       (
         resource:
-        if resource.kind == "Service" && resource.spec.type or null == "LoadBalancer" then
+        if resource.kind or null == "Service" && resource.spec.type or null == "LoadBalancer" then
           lib.recursiveUpdate resource {
             # IPv4 is scarce, share!
             metadata.annotations."metallb.io/allow-shared-ip" = "true";

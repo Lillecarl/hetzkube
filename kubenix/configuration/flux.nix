@@ -9,7 +9,7 @@
     kubernetes.transformers = [
       (
         resource:
-        if resource.kind == "HelmRelease" then
+        if resource.kind or null == "HelmRelease" then
           lib.recursiveUpdate {
             spec = {
               install = {

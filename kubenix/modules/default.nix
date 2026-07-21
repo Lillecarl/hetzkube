@@ -2,6 +2,7 @@
 {
   imports = [
     ./alloy.nix
+    ./argocd.nix
     ./bitwarden.nix
     ./capi.nix
     ./cert-manager.nix

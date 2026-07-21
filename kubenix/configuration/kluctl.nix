@@ -4,6 +4,13 @@
 }:
 {
   kluctl = {
+    # ArgoCD itself (and the Application CRs that self-manage it) has its own
+    # deployment path: scripts/bootstrap-argocd.py applies it once directly,
+    # then ArgoCD's "bootstrap" Application reconciles itself from then on.
+    # Don't also apply it via kluctl. "everything" isn't listed here yet --
+    # it stays on kluctl until ArgoCD's "everything" Application is actually
+    # syncing (see the GitOps rollout plan).
+    excludeGitopsPaths = [ "bootstrap" ];
     # Add SOPS secrets
     deployment.vars = [ { file = "secrets/all.yaml"; } ];
     files."secrets/all.yaml" = builtins.readFile ../../secrets/all.yaml;
