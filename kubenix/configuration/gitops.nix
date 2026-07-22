@@ -21,7 +21,16 @@ let
       # Manual sync until the rollout plan's diff-verification step (Phase 4)
       # confirms ArgoCD reconciling is a no-op against the kluctl-managed
       # cluster. Flip to automated (selfHeal+prune) afterwards.
-      syncPolicy = { };
+      syncPolicy = {
+        # Classic client-side `kubectl apply` stores the whole previous
+        # object in the kubectl.kubernetes.io/last-applied-configuration
+        # annotation, capped at 262144 bytes -- large CRDs (ArgoCD's own
+        # applicationsets.argoproj.io, VictoriaMetrics', cert-manager's)
+        # blow past that and fail to sync. Server-side apply doesn't use
+        # that annotation at all, matching what `ekn kubeapply` already
+        # does for direct applies.
+        syncOptions = [ "ServerSideApply=true" ];
+      };
     };
   };
 in
