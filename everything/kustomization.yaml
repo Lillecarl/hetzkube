@@ -160,7 +160,6 @@ resources:
 - kube-system/Secret/external-secrets-webhook.yaml
 - kube-system/Secret/hubble-relay-client-certs.yaml
 - kube-system/Secret/hubble-server-certs.yaml
-- kube-system/Secret/scaleway.yaml
 - kube-system/Service/cilium-envoy.yaml
 - kube-system/Service/coredns.yaml
 - kube-system/Service/external-secrets-webhook.yaml

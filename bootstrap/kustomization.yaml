@@ -70,3 +70,5 @@ resources:
 - argocd/VerticalPodAutoscaler/argocd-repo-server.yaml
 - argocd/VerticalPodAutoscaler/argocd-server.yaml
 - argocd/VerticalPodAutoscaler/argocd-application-controller.yaml
+generators:
+- kube-system/Secret/scaleway.ksops-generator.yaml

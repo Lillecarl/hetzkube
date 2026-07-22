@@ -7,6 +7,25 @@ spec:
   destination:
     namespace: argocd
     server: https://kubernetes.default.svc
+  ignoreDifferences:
+  - group: ''
+    jsonPointers:
+    - /data
+    kind: Secret
+    name: cilium-ca
+    namespace: kube-system
+  - group: ''
+    jsonPointers:
+    - /data
+    kind: Secret
+    name: hubble-server-certs
+    namespace: kube-system
+  - group: ''
+    jsonPointers:
+    - /data
+    kind: Secret
+    name: hubble-relay-client-certs
+    namespace: kube-system
   project: default
   source:
     path: everything
