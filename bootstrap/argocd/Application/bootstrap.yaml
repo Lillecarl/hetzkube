@@ -12,4 +12,6 @@ spec:
     path: bootstrap
     repoURL: https://github.com/Lillecarl/hetzkube.git
     targetRevision: deploy
-  syncPolicy: {}
+  syncPolicy:
+    syncOptions:
+    - ServerSideApply=true
