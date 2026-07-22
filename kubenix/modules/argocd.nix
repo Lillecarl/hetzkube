@@ -22,9 +22,11 @@ in
         description = ''
           Name of the Secret (in the argocd namespace) holding the
           SOPS_AGE_KEY_FILE identity, mounted read-only into
-          argocd-repo-server. ekn never handles key material -- this
-          Secret is created out-of-band by scripts/bootstrap-argocd.py via
-          a direct kubectl apply, never through Nix/git.
+          argocd-repo-server. Declared below as a
+          `kubernetes.sopsAgeIdentities` entry, so `ekn kubeapply`
+          generates and applies it directly (a fresh age keypair the
+          first time it's missing, printing the public half for
+          `.sops.yaml`) -- no bespoke bootstrap script needed.
         '';
       };
     };
@@ -34,7 +36,7 @@ in
       # Upstream install.yaml deliberately omits this (their docs expect
       # `kubectl create namespace argocd` first) -- declare it so the
       # namespace is part of kubernetes.generated like everything else,
-      # instead of only existing because bootstrap-argocd.py creates it by
+      # instead of relying on a bespoke bootstrap script to create it by
       # hand before applying anything else. Routed to "bootstrap" like the
       # rest of ArgoCD's own install objects (see gitops.nix's
       # importyaml.argocd.overrides) -- it needs to exist before ArgoCD can
@@ -44,6 +46,19 @@ in
       importyaml.argocd.src = "https://raw.githubusercontent.com/argoproj/argo-cd/v${cfg.version}/manifests/install.yaml";
     })
     (lib.mkIf cfg.ksops.enable {
+      # `ekn kubeapply` reads this generically -- see kubernetes.nix's
+      # sopsAgeIdentities option -- and ensures the Secret exists
+      # (generating a fresh age keypair the first time it's missing)
+      # before applying, regardless of which consumer declared it.
+      kubernetes.sopsAgeIdentities = [
+        {
+          namespace = "argocd";
+          secretName = cfg.ksops.secretName;
+          sopsConfigFile = ../../.sops.yaml;
+          sopsFiles = [ ../../secrets/all.yaml ];
+        }
+      ];
+
       # Wires argocd-repo-server up to build Kustomize trees through the
       # ksops KRM-generator plugin, so ArgoCD can decrypt SOPS-encrypted
       # Secrets that `ekn commit` writes as ksops generators (see

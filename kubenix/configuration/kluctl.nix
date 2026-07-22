@@ -5,9 +5,9 @@
 {
   kluctl = {
     # ArgoCD itself (and the Application CRs that self-manage it) has its own
-    # deployment path: scripts/bootstrap-argocd.py applies it once directly,
-    # then ArgoCD's "bootstrap" Application reconciles itself from then on.
-    # Don't also apply it via kluctl. "everything" isn't listed here yet --
+    # deployment path: `ekn kubeapply --target bootstrap` applies it once
+    # directly, then ArgoCD's "bootstrap" Application reconciles itself from
+    # then on. Don't also apply it via kluctl. "everything" isn't listed here yet --
     # it stays on kluctl until ArgoCD's "everything" Application is actually
     # syncing (see the GitOps rollout plan).
     excludeGitopsTargets = [ "bootstrap" ];
