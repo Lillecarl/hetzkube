@@ -1,0 +1,21 @@
+apiVersion: operator.victoriametrics.com/v1
+ekn:
+  gitOpsTarget: everything
+kind: VLAgent
+metadata:
+  name: logs-ingest
+  namespace: observability
+spec:
+  k8sCollector:
+    enabled: true
+    extraFields: '{"cluster":"hetzkube"}'
+  remoteWrite:
+  - url: http://vlsingle-logs:9428/insert/native
+  resources:
+    requests:
+      cpu: 250m
+      memory: 128Mi
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+    operator: Exists

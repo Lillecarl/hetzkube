@@ -1,0 +1,180 @@
+apiVersion: grafana.integreatly.org/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: GrafanaDashboard
+metadata:
+  name: pod-total
+  namespace: observability
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  json: "{\n   \"editable\": false,\n   \"links\": [\n      {\n         \"asDropdown\":
+    true,\n         \"includeVars\": true,\n         \"keepTime\": true,\n         \"tags\":
+    [\n            \"kubernetes-mixin\"\n         ],\n         \"targetBlank\": false,\n
+    \        \"title\": \"Kubernetes\",\n         \"type\": \"dashboards\"\n      }\n
+    \  ],\n   \"panels\": [\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"displayName\": \"$pod\",\n               \"max\":
+    10000000000,\n               \"min\": 0,\n               \"thresholds\": {\n                  \"steps\":
+    [\n                     {\n                        \"color\": \"dark-green\",\n
+    \                       \"index\": 0,\n                        \"value\": null\n
+    \                    },\n                     {\n                        \"color\":
+    \"dark-yellow\",\n                        \"index\": 1,\n                        \"value\":
+    5000000000\n                     },\n                     {\n                        \"color\":
+    \"dark-red\",\n                        \"index\": 2,\n                        \"value\":
+    7000000000\n                     }\n                  ]\n               },\n               \"unit\":
+    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 0\n         },\n
+    \        \"id\": 1,\n         \"interval\": \"1m\",\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(container_network_receive_bytes_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
+    pod=~\\\"$pod\\\"}[$__rate_interval]))\",\n               \"legendFormat\": \"__auto\"\n
+    \           }\n         ],\n         \"title\": \"Current Rate of Bytes Received\",\n
+    \        \"type\": \"gauge\"\n      },\n      {\n         \"datasource\": {\n
+    \           \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"displayName\":
+    \"$pod\",\n               \"max\": 10000000000,\n               \"min\": 0,\n
+    \              \"thresholds\": {\n                  \"steps\": [\n                     {\n
+    \                       \"color\": \"dark-green\",\n                        \"index\":
+    0,\n                        \"value\": null\n                     },\n                     {\n
+    \                       \"color\": \"dark-yellow\",\n                        \"index\":
+    1,\n                        \"value\": 5000000000\n                     },\n                     {\n
+    \                       \"color\": \"dark-red\",\n                        \"index\":
+    2,\n                        \"value\": 7000000000\n                     }\n                  ]\n
+    \              },\n               \"unit\": \"bps\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 9,\n            \"w\": 12,\n            \"x\":
+    12,\n            \"y\": 0\n         },\n         \"id\": 2,\n         \"interval\":
+    \"1m\",\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\": [\n            {\n
+    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
+    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
+    \"sum(rate(container_network_transmit_bytes_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
+    pod=~\\\"$pod\\\"}[$__rate_interval]))\",\n               \"legendFormat\": \"__auto\"\n
+    \           }\n         ],\n         \"title\": \"Current Rate of Bytes Transmitted\",\n
+    \        \"type\": \"gauge\"\n      },\n      {\n         \"datasource\": {\n
+    \           \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"showPoints\": \"never\"\n               },\n               \"unit\":
+    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 9\n         },\n
+    \        \"id\": 3,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(container_network_receive_bytes_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
+    pod=~\\\"$pod\\\"}[$__rate_interval])) by (pod)\",\n               \"legendFormat\":
+    \"__auto\"\n            }\n         ],\n         \"title\": \"Receive Bandwidth\",\n
+    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"showPoints\": \"never\"\n               },\n               \"unit\":
+    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    9,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 9\n         },\n
+    \        \"id\": 4,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(container_network_transmit_bytes_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
+    pod=~\\\"$pod\\\"}[$__rate_interval])) by (pod)\",\n               \"legendFormat\":
+    \"__auto\"\n            }\n         ],\n         \"title\": \"Transmit Bandwidth\",\n
+    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"showPoints\": \"never\"\n               },\n               \"unit\":
+    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 18\n         },\n
+    \        \"id\": 5,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(container_network_receive_packets_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
+    pod=~\\\"$pod\\\"}[$__rate_interval])) by (pod)\",\n               \"legendFormat\":
+    \"__auto\"\n            }\n         ],\n         \"title\": \"Rate of Received
+    Packets\",\n         \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"showPoints\": \"never\"\n               },\n               \"unit\":
+    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    9,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 18\n         },\n
+    \        \"id\": 6,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(container_network_transmit_packets_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
+    pod=~\\\"$pod\\\"}[$__rate_interval])) by (pod)\",\n               \"legendFormat\":
+    \"__auto\"\n            }\n         ],\n         \"title\": \"Rate of Transmitted
+    Packets\",\n         \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"showPoints\": \"never\"\n               },\n               \"unit\":
+    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 27\n         },\n
+    \        \"id\": 7,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(container_network_receive_packets_dropped_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
+    pod=~\\\"$pod\\\"}[$__rate_interval])) by (pod)\",\n               \"legendFormat\":
+    \"__auto\"\n            }\n         ],\n         \"title\": \"Rate of Received
+    Packets Dropped\",\n         \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"showPoints\": \"never\"\n               },\n               \"unit\":
+    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    9,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 27\n         },\n
+    \        \"id\": 8,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(container_network_transmit_packets_dropped_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
+    pod=~\\\"$pod\\\"}[$__rate_interval])) by (pod)\",\n               \"legendFormat\":
+    \"__auto\"\n            }\n         ],\n         \"title\": \"Rate of Transmitted
+    Packets Dropped\",\n         \"type\": \"timeseries\"\n      }\n   ],\n   \"refresh\":
+    \"10s\",\n   \"schemaVersion\": 39,\n   \"tags\": [\n      \"kubernetes-mixin\"\n
+    \  ],\n   \"templating\": {\n      \"list\": [\n         {\n            \"current\":
+    {\n               \"selected\": true,\n               \"text\": \"default\",\n
+    \              \"value\": \"default\"\n            },\n            \"hide\": 0,\n
+    \           \"label\": \"Data source\",\n            \"name\": \"datasource\",\n
+    \           \"query\": \"prometheus\",\n            \"regex\": \"\",\n            \"type\":
+    \"datasource\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
+    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
+    2,\n            \"label\": \"cluster\",\n            \"name\": \"cluster\",\n
+    \           \"query\": \"label_values(up{job=\\\"cadvisor\\\"}, cluster)\",\n
+    \           \"refresh\": 2,\n            \"sort\": 1,\n            \"type\": \"query\"\n
+    \        },\n         {\n            \"allValue\": \".+\",\n            \"current\":
+    {\n               \"selected\": false,\n               \"text\": \"kube-system\",\n
+    \              \"value\": \"kube-system\"\n            },\n            \"datasource\":
+    {\n               \"type\": \"prometheus\",\n               \"uid\": \"${datasource}\"\n
+    \           },\n            \"hide\": 0,\n            \"includeAll\": true,\n
+    \           \"label\": \"namespace\",\n            \"name\": \"namespace\",\n
+    \           \"query\": \"label_values(container_network_receive_packets_total{cluster=\\\"$cluster\\\"},
+    namespace)\",\n            \"refresh\": 2,\n            \"sort\": 1,\n            \"type\":
+    \"query\"\n         },\n         {\n            \"current\": {\n               \"selected\":
+    false,\n               \"text\": \"kube-system\",\n               \"value\": \"kube-system\"\n
+    \           },\n            \"datasource\": {\n               \"type\": \"prometheus\",\n
+    \              \"uid\": \"${datasource}\"\n            },\n            \"hide\":
+    0,\n            \"label\": \"pod\",\n            \"name\": \"pod\",\n            \"query\":
+    \"label_values(container_network_receive_packets_total{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"},
+    pod)\",\n            \"refresh\": 2,\n            \"sort\": 1,\n            \"type\":
+    \"query\"\n         }\n      ]\n   },\n   \"time\": {\n      \"from\": \"now-1h\",\n
+    \     \"to\": \"now\"\n   },\n   \"timezone\": \"UTC\",\n   \"title\": \"Kubernetes
+    / Networking / Pod\",\n   \"uid\": \"7a18067ce943a40ae25454675c19ff5c\"\n}\n"

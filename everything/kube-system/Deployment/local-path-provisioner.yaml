@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: local-path-provisioner
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: local-path-provisioner
+    app.kubernetes.io/version: v0.0.36
+    helm.sh/chart: local-path-provisioner-0.0.36
+  name: local-path-provisioner
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: local-path-provisioner
+      app.kubernetes.io/name: local-path-provisioner
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: local-path-provisioner
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: local-path-provisioner
+        app.kubernetes.io/version: v0.0.36
+        helm.sh/chart: local-path-provisioner-0.0.36
+    spec:
+      containers:
+      - command:
+        - local-path-provisioner
+        - start
+        - --config
+        - /etc/config/config.json
+        - --service-account-name
+        - local-path-provisioner
+        - --provisioner-name
+        - cluster.local/local-path-provisioner
+        - --helper-image
+        - docker.io/library/busybox:latest
+        - --configmap-name
+        - local-path-config
+        env:
+        - name: CONFIG_MOUNT_PATH
+          value: /etc/config/
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: docker.io/rancher/local-path-provisioner:v0.0.36
+        imagePullPolicy: IfNotPresent
+        name: local-path-provisioner
+        resources: {}
+        securityContext: {}
+        volumeMounts:
+        - mountPath: /etc/config/
+          name: config-volume
+      hostUsers: true
+      securityContext: {}
+      serviceAccountName: local-path-provisioner
+      volumes:
+      - configMap:
+          name: local-path-config
+        name: config-volume

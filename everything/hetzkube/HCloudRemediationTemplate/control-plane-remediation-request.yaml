@@ -1,0 +1,14 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: HCloudRemediationTemplate
+metadata:
+  name: control-plane-remediation-request
+  namespace: hetzkube
+spec:
+  template:
+    spec:
+      strategy:
+        retryLimit: 1
+        timeout: 180s
+        type: Reboot

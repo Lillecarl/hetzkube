@@ -1,0 +1,23 @@
+apiVersion: cilium.io/v2
+ekn:
+  gitOpsTarget: everything
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: ep-default
+spec:
+  egress:
+  - toEntities:
+    - all
+  endpointSelector: {}
+  ingress:
+  - fromEntities:
+    - cluster
+    - ingress
+  - fromEntities:
+    - all
+    icmps:
+    - fields:
+      - family: IPv4
+        type: EchoRequest
+      - family: IPv6
+        type: EchoRequest

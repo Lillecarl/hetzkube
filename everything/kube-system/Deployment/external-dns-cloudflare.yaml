@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: Deployment
+metadata:
+  name: external-dns-cloudflare
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: external-dns-cloudflare
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: external-dns-cloudflare
+    spec:
+      containers:
+      - args:
+        - --source=crd
+        - --source=gateway-httproute
+        - --source=ingress
+        - --source=service
+        - --provider=cloudflare
+        - --txt-owner-id=hetzkube
+        env:
+        - name: CF_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: cloudflare-token
+        image: registry.k8s.io/external-dns/external-dns:v0.21.0
+        name: external-dns
+      serviceAccountName: external-dns-cloudflare

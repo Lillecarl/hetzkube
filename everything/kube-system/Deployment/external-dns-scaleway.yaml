@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: Deployment
+metadata:
+  name: external-dns-scaleway
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: external-dns-scaleway
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: external-dns-scaleway
+    spec:
+      containers:
+      - args:
+        - --source=crd
+        - --source=gateway-httproute
+        - --source=ingress
+        - --source=service
+        - --provider=scaleway
+        - --txt-owner-id=hetzkube
+        env:
+        - name: SCW_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: scaleway-dns-key
+        - name: SCW_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: scaleway-dns-key
+        image: registry.k8s.io/external-dns/external-dns:v0.21.0
+        name: external-dns
+      serviceAccountName: external-dns-scaleway

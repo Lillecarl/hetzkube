@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: k8s-events
+    app.kubernetes.io/name: otel-collector
+  name: otel-collector
+  namespace: observability
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: k8s-events
+      app.kubernetes.io/name: otel-collector
+  template:
+    metadata:
+      annotations:
+        configHash: 74b5e55dd36c99d6fa562ab72ab1cbb4
+      labels:
+        app.kubernetes.io/component: k8s-events
+        app.kubernetes.io/name: otel-collector
+    spec:
+      containers:
+      - args:
+        - --config=file:/etc/otel-collector/config.yaml
+        command:
+        - /nix/store/2dp500yzs3riv2mwnnx5s0xvbsi1nc2v-tini-0.19.0/bin/tini
+        - --
+        - /nix/store/59j84kgb2nwzaqf1wf0hxvwgidly7xzd-otelcol-k8s-0.155.0/bin/otelcol-k8s
+        env:
+        - name: PATH
+          value: /nix/var/result/bin
+        image: gcr.io/distroless/static:latest
+        livenessProbe:
+          httpGet:
+            path: /
+            port: health
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        name: otel-collector
+        ports:
+        - containerPort: 13133
+          name: health
+        - containerPort: 8888
+          name: metrics
+        readinessProbe:
+          httpGet:
+            path: /
+            port: health
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /etc/otel-collector
+          name: config
+          readOnly: true
+        - mountPath: /nix
+          name: nix-store
+          readOnly: true
+          subPath: nix
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      serviceAccountName: otel-collector
+      volumes:
+      - configMap:
+          name: otel-collector
+        name: config
+      - csi:
+          driver: nixkube
+          readOnly: true
+          volumeAttributes:
+            x86_64-linux: /nix/store/kpxp6h186xz8sx567prjk89gd2alfg09-otel-collector-env
+        name: nix-store

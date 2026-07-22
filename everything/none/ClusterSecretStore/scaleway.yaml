@@ -1,0 +1,21 @@
+apiVersion: external-secrets.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterSecretStore
+metadata:
+  name: scaleway
+spec:
+  provider:
+    scaleway:
+      accessKey:
+        secretRef:
+          key: SCW_ACCESS_KEY
+          name: scaleway
+          namespace: kube-system
+      projectId: cbc08bd9-d5af-4258-b8b7-21f5d5ae481a
+      region: nl-ams
+      secretKey:
+        secretRef:
+          key: SCW_SECRET_KEY
+          name: scaleway
+          namespace: kube-system

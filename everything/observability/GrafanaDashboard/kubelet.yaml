@@ -1,0 +1,444 @@
+apiVersion: grafana.integreatly.org/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: GrafanaDashboard
+metadata:
+  name: kubelet
+  namespace: observability
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  json: "{\n   \"editable\": false,\n   \"links\": [\n      {\n         \"asDropdown\":
+    true,\n         \"includeVars\": true,\n         \"keepTime\": true,\n         \"tags\":
+    [\n            \"kubernetes-mixin\"\n         ],\n         \"targetBlank\": false,\n
+    \        \"title\": \"Kubernetes\",\n         \"type\": \"dashboards\"\n      }\n
+    \  ],\n   \"panels\": [\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"unit\": \"none\"\n            }\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    4,\n            \"x\": 0,\n            \"y\": 0\n         },\n         \"id\":
+    1,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"colorMode\":
+    \"none\"\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(kubelet_node_name{cluster=\\\"$cluster\\\", job=\\\"kubelet\\\"})\",\n
+    \              \"instant\": true\n            }\n         ],\n         \"title\":
+    \"Running Kubelets\",\n         \"type\": \"stat\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"unit\":
+    \"none\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 4,\n            \"x\": 4,\n            \"y\": 0\n         },\n
+    \        \"id\": 2,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"colorMode\": \"none\"\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(kubelet_running_pods{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\"})\",\n               \"instant\":
+    true\n            }\n         ],\n         \"title\": \"Running Pods\",\n         \"type\":
+    \"stat\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"unit\": \"none\"\n            }\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    4,\n            \"x\": 8,\n            \"y\": 0\n         },\n         \"id\":
+    3,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"colorMode\":
+    \"none\"\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(kubelet_running_containers{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\"})\",\n               \"instant\":
+    true\n            }\n         ],\n         \"title\": \"Running Containers\",\n
+    \        \"type\": \"stat\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"unit\": \"none\"\n            }\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    4,\n            \"x\": 12,\n            \"y\": 0\n         },\n         \"id\":
+    4,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"colorMode\":
+    \"none\"\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(volume_manager_total_volumes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\", state=\\\"actual_state_of_world\\\"})\",\n
+    \              \"instant\": true\n            }\n         ],\n         \"title\":
+    \"Actual Volume Count\",\n         \"type\": \"stat\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"unit\":
+    \"none\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 4,\n            \"x\": 16,\n            \"y\": 0\n         },\n
+    \        \"id\": 5,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"colorMode\": \"none\"\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(volume_manager_total_volumes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\",state=\\\"desired_state_of_world\\\"})\",\n
+    \              \"instant\": true\n            }\n         ],\n         \"title\":
+    \"Desired Volume Count\",\n         \"type\": \"stat\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"unit\":
+    \"none\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 4,\n            \"x\": 20,\n            \"y\": 0\n         },\n
+    \        \"id\": 6,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"colorMode\": \"none\"\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(kubelet_node_config_error{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\"}[$__rate_interval]))\",\n               \"instant\":
+    true\n            }\n         ],\n         \"title\": \"Config Error Count\",\n
+    \        \"type\": \"stat\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"ops\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
+    0,\n            \"y\": 7\n         },\n         \"id\": 7,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(kubelet_runtime_operations_total{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (operation_type, instance)\",\n               \"legendFormat\": \"{{instance}}
+    {{operation_type}}\"\n            }\n         ],\n         \"title\": \"Operation
+    Rate\",\n         \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
+    \                 \"spanNulls\": true\n               },\n               \"unit\":
+    \"ops\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 7\n         },\n
+    \        \"id\": 8,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(kubelet_runtime_operations_errors_total{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance, operation_type)\",\n               \"legendFormat\": \"{{instance}}
+    {{operation_type}}\"\n            }\n         ],\n         \"title\": \"Operation
+    Error Rate\",\n         \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
+    \                 \"spanNulls\": true\n               },\n               \"unit\":
+    \"s\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\": 14\n         },\n
+    \        \"id\": 9,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"histogram_quantile(0.99, sum(rate(kubelet_runtime_operations_duration_seconds_bucket{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance, operation_type, le))\",\n               \"legendFormat\": \"{{instance}}
+    {{operation_type}}\"\n            }\n         ],\n         \"title\": \"Operation
+    Duration 99th quantile\",\n         \"type\": \"timeseries\"\n      },\n      {\n
+    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
+    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
+    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
+    \"ops\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 21\n         },\n
+    \        \"id\": 10,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(kubelet_pod_start_duration_seconds_count{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance)\",\n               \"legendFormat\": \"{{instance}} pod\"\n            },\n
+    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
+    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
+    \"sum(rate(kubelet_pod_worker_duration_seconds_count{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance)\",\n               \"legendFormat\": \"{{instance}} worker\"\n            }\n
+    \        ],\n         \"title\": \"Pod Start Rate\",\n         \"type\": \"timeseries\"\n
+    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
+    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
+    \           \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"s\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
+    12,\n            \"y\": 21\n         },\n         \"id\": 11,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"histogram_quantile(0.99, sum(rate(kubelet_pod_start_duration_seconds_bucket{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance, le))\",\n               \"legendFormat\": \"{{instance}} pod\"\n
+    \           },\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"histogram_quantile(0.99, sum(rate(kubelet_pod_worker_duration_seconds_bucket{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance, le))\",\n               \"legendFormat\": \"{{instance}} worker\"\n
+    \           }\n         ],\n         \"title\": \"Pod Start Duration\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"ops\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
+    0,\n            \"y\": 28\n         },\n         \"id\": 12,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(storage_operation_duration_seconds_count{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance, operation_name, volume_plugin)\",\n               \"legendFormat\":
+    \"{{instance}} {{operation_name}} {{volume_plugin}}\"\n            }\n         ],\n
+    \        \"title\": \"Storage Operation Rate\",\n         \"type\": \"timeseries\"\n
+    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
+    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
+    \           \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"ops\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
+    12,\n            \"y\": 28\n         },\n         \"id\": 13,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(storage_operation_errors_total{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance, operation_name, volume_plugin)\",\n               \"legendFormat\":
+    \"{{instance}} {{operation_name}} {{volume_plugin}}\"\n            }\n         ],\n
+    \        \"title\": \"Storage Operation Error Rate\",\n         \"type\": \"timeseries\"\n
+    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
+    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
+    \           \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"s\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\":
+    0,\n            \"y\": 35\n         },\n         \"id\": 14,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"histogram_quantile(0.99, sum(rate(storage_operation_duration_seconds_bucket{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\"}[$__rate_interval])) by (instance,
+    operation_name, volume_plugin, le))\",\n               \"legendFormat\": \"{{instance}}
+    {{operation_name}} {{volume_plugin}}\"\n            }\n         ],\n         \"title\":
+    \"Storage Operation Duration 99th quantile\",\n         \"type\": \"timeseries\"\n
+    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
+    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
+    \           \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"ops\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
+    0,\n            \"y\": 42\n         },\n         \"id\": 15,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(kubelet_cgroup_manager_duration_seconds_count{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\"}[$__rate_interval])) by (instance,
+    operation_type)\",\n               \"legendFormat\": \"{{operation_type}}\"\n
+    \           }\n         ],\n         \"title\": \"Cgroup manager operation rate\",\n
+    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
+    \                 \"spanNulls\": true\n               },\n               \"unit\":
+    \"s\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 42\n         },\n
+    \        \"id\": 16,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"histogram_quantile(0.99, sum(rate(kubelet_cgroup_manager_duration_seconds_bucket{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\"}[$__rate_interval])) by (instance,
+    operation_type, le))\",\n               \"legendFormat\": \"{{instance}} {{operation_type}}\"\n
+    \           }\n         ],\n         \"title\": \"Cgroup manager 99th quantile\",\n
+    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
+    \                 \"spanNulls\": true\n               },\n               \"unit\":
+    \"ops\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 49\n         },\n
+    \        \"id\": 17,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(kubelet_pleg_relist_duration_seconds_count{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", instance=~\\\"$instance\\\"}[$__rate_interval])) by (instance)\",\n
+    \              \"legendFormat\": \"{{instance}}\"\n            }\n         ],\n
+    \        \"title\": \"PLEG relist rate\",\n         \"type\": \"timeseries\"\n
+    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
+    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
+    \           \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"s\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
+    12,\n            \"y\": 49\n         },\n         \"id\": 18,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"histogram_quantile(0.99, sum(rate(kubelet_pleg_relist_interval_seconds_bucket{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance, le))\",\n               \"legendFormat\": \"{{instance}}\"\n            }\n
+    \        ],\n         \"title\": \"PLEG relist interval\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"s\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\":
+    0,\n            \"y\": 56\n         },\n         \"id\": 19,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"histogram_quantile(0.99, sum(rate(kubelet_pleg_relist_duration_seconds_bucket{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))
+    by (instance, le))\",\n               \"legendFormat\": \"{{instance}}\"\n            }\n
+    \        ],\n         \"title\": \"PLEG relist duration\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"ops\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\":
+    0,\n            \"y\": 63\n         },\n         \"id\": 20,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(rest_client_requests_total{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",
+    instance=~\\\"$instance\\\",code=~\\\"2..\\\"}[$__rate_interval]))\",\n               \"legendFormat\":
+    \"2xx\"\n            },\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(rest_client_requests_total{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",
+    instance=~\\\"$instance\\\",code=~\\\"3..\\\"}[$__rate_interval]))\",\n               \"legendFormat\":
+    \"3xx\"\n            },\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(rest_client_requests_total{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",
+    instance=~\\\"$instance\\\",code=~\\\"4..\\\"}[$__rate_interval]))\",\n               \"legendFormat\":
+    \"4xx\"\n            },\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"sum(rate(rest_client_requests_total{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",
+    instance=~\\\"$instance\\\",code=~\\\"5..\\\"}[$__rate_interval]))\",\n               \"legendFormat\":
+    \"5xx\"\n            }\n         ],\n         \"title\": \"RPC rate\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"s\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\":
+    0,\n            \"y\": 70\n         },\n         \"id\": 21,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"histogram_quantile(0.99, sum(rate(rest_client_request_duration_seconds_bucket{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",
+    instance=~\\\"$instance\\\"}[$__rate_interval])) by (instance, verb, le))\",\n
+    \              \"legendFormat\": \"{{instance}} {{verb}}\"\n            }\n         ],\n
+    \        \"title\": \"Request duration 99th quantile\",\n         \"type\": \"timeseries\"\n
+    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
+    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
+    \           \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"bytes\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 8,\n            \"x\":
+    0,\n            \"y\": 77\n         },\n         \"id\": 22,\n         \"interval\":
+    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
+    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
+    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"process_resident_memory_bytes{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}\",\n
+    \              \"legendFormat\": \"{{instance}}\"\n            }\n         ],\n
+    \        \"title\": \"Memory\",\n         \"type\": \"timeseries\"\n      },\n
+    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
+    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
+    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
+    \"short\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 8,\n            \"x\": 8,\n            \"y\": 77\n         },\n
+    \        \"id\": 23,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"rate(process_cpu_seconds_total{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}[$__rate_interval])\",\n
+    \              \"legendFormat\": \"{{instance}}\"\n            }\n         ],\n
+    \        \"title\": \"CPU usage\",\n         \"type\": \"timeseries\"\n      },\n
+    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
+    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
+    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
+    \"short\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 8,\n            \"x\": 16,\n            \"y\": 77\n         },\n
+    \        \"id\": 24,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"go_goroutines{cluster=\\\"$cluster\\\",job=\\\"kubelet\\\",instance=~\\\"$instance\\\"}\",\n
+    \              \"legendFormat\": \"{{instance}}\"\n            }\n         ],\n
+    \        \"title\": \"Goroutines\",\n         \"type\": \"timeseries\"\n      }\n
+    \  ],\n   \"refresh\": \"10s\",\n   \"schemaVersion\": 39,\n   \"tags\": [\n      \"kubernetes-mixin\"\n
+    \  ],\n   \"templating\": {\n      \"list\": [\n         {\n            \"current\":
+    {\n               \"selected\": true,\n               \"text\": \"default\",\n
+    \              \"value\": \"default\"\n            },\n            \"hide\": 0,\n
+    \           \"label\": \"Data source\",\n            \"name\": \"datasource\",\n
+    \           \"query\": \"prometheus\",\n            \"regex\": \"\",\n            \"type\":
+    \"datasource\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
+    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
+    2,\n            \"label\": \"cluster\",\n            \"name\": \"cluster\",\n
+    \           \"query\": \"label_values(up{job=\\\"kubelet\\\"}, cluster)\",\n            \"refresh\":
+    2,\n            \"sort\": 1,\n            \"type\": \"query\"\n         },\n         {\n
+    \           \"datasource\": {\n               \"type\": \"prometheus\",\n               \"uid\":
+    \"${datasource}\"\n            },\n            \"hide\": 0,\n            \"includeAll\":
+    true,\n            \"label\": \"instance\",\n            \"name\": \"instance\",\n
+    \           \"query\": \"label_values(up{job=\\\"kubelet\\\",cluster=\\\"$cluster\\\"},
+    instance)\",\n            \"refresh\": 2,\n            \"type\": \"query\"\n         }\n
+    \     ]\n   },\n   \"time\": {\n      \"from\": \"now-1h\",\n      \"to\": \"now\"\n
+    \  },\n   \"timezone\": \"UTC\",\n   \"title\": \"Kubernetes / Kubelet\",\n   \"uid\":
+    \"3138fa155d5915769fbded898ac09fd9\"\n}\n"

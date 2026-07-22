@@ -1,0 +1,19 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMNodeScrape
+metadata:
+  name: node-exporter
+  namespace: observability
+spec:
+  interval: 30s
+  path: /metrics
+  port: '9100'
+  relabelConfigs:
+  - action: replace
+    sourceLabels:
+    - __meta_kubernetes_node_name
+    targetLabel: node
+  - action: replace
+    replacement: node-exporter
+    targetLabel: job

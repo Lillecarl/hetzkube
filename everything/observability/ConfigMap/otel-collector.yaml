@@ -1,0 +1,31 @@
+apiVersion: v1
+data:
+  config.yaml: "receivers:\n  k8sobjects:\n    auth_type: serviceAccount\n    objects:\n
+    \     - name: events\n        mode: \"watch\"\n        group: \"events.k8s.io\"\n
+    \       exclude_watch_type:\n          - \"DELETED\"\n\nprocessors:\n  k8sattributes:\n
+    \   passthrough: false\n    pod_association:\n      - sources:\n          - from:
+    resource_attribute\n            name: k8s.pod.ip\n      - sources:\n          -
+    from: resource_attribute\n            name: k8s.pod.uid\n      - sources:\n          -
+    from: connection\n    extract:\n      otel_annotations: true\n      metadata:\n
+    \       - k8s.namespace.name\n        - k8s.pod.name\n        - k8s.pod.uid\n
+    \       - k8s.node.name\n        - k8s.pod.start_time\n        - k8s.deployment.name\n
+    \       - k8s.replicaset.name\n        - k8s.replicaset.uid\n        - k8s.daemonset.name\n
+    \       - k8s.daemonset.uid\n        - k8s.job.name\n        - k8s.job.uid\n        -
+    k8s.container.name\n        - k8s.cronjob.name\n        - k8s.statefulset.name\n
+    \       - k8s.statefulset.uid\n        - container.image.tag\n        - container.image.name\n
+    \ transform:\n    log_statements:\n      - context: log\n        statements:\n
+    \         - set(body[\"_msg\"], body[\"object\"][\"note\"])\n\nexporters:\n  debug:\n
+    \   verbosity: detailed\n  otlphttp:\n    logs_endpoint: http://vlsingle-logs:9428/insert/opentelemetry/v1/logs\n\nextensions:\n
+    \ health_check:\n    endpoint: :13133\n\nservice:\n  telemetry:\n    logs:\n      level:
+    debug\n  extensions: [health_check]\n  pipelines:\n    logs:\n      receivers:
+    [k8sobjects]\n      processors: [k8sattributes, transform]\n      exporters: [debug,
+    otlphttp]\n"
+ekn:
+  gitOpsTarget: everything
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: k8s-events
+    app.kubernetes.io/name: otel-collector
+  name: otel-collector
+  namespace: observability

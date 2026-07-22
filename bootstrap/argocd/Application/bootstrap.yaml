@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+ekn:
+  gitOpsTarget: bootstrap
+kind: Application
+metadata:
+  name: bootstrap
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: bootstrap
+    repoURL: https://github.com/Lillecarl/hetzkube.git
+    targetRevision: deploy
+  syncPolicy: {}

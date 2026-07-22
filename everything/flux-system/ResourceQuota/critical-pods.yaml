@@ -1,0 +1,20 @@
+apiVersion: v1
+ekn:
+  gitOpsTarget: everything
+kind: ResourceQuota
+metadata:
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+  name: critical-pods
+  namespace: flux-system
+spec:
+  hard:
+    pods: '1000'
+  scopeSelector:
+    matchExpressions:
+    - operator: In
+      scopeName: PriorityClass
+      values:
+      - system-node-critical
+      - system-cluster-critical

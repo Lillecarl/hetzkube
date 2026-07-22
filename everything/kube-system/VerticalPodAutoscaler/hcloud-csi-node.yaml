@@ -1,0 +1,14 @@
+apiVersion: autoscaling.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: VerticalPodAutoscaler
+metadata:
+  name: hcloud-csi-node
+  namespace: kube-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: hcloud-csi-node
+  updatePolicy:
+    updateMode: InPlaceOrRecreate

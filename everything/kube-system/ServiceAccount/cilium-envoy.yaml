@@ -1,0 +1,7 @@
+apiVersion: v1
+ekn:
+  gitOpsTarget: everything
+kind: ServiceAccount
+metadata:
+  name: cilium-envoy
+  namespace: kube-system

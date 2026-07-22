@@ -1,0 +1,23 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMNodeScrape
+metadata:
+  name: cadvisor
+  namespace: observability
+spec:
+  bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+  interval: 30s
+  path: /metrics/cadvisor
+  port: '10250'
+  relabelConfigs:
+  - action: replace
+    sourceLabels:
+    - __meta_kubernetes_node_name
+    targetLabel: node
+  - action: replace
+    replacement: cadvisor
+    targetLabel: job
+  scheme: https
+  tlsConfig:
+    insecureSkipVerify: true

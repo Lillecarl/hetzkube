@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterIssuer
+metadata:
+  name: le-staging
+spec:
+  acme:
+    email: le@lillecarl.com
+    privateKeySecretRef:
+      name: le-staging-pk
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    solvers:
+    - dns01:
+        cloudflare:
+          apiTokenSecretRef:
+            key: token
+            name: cloudflare

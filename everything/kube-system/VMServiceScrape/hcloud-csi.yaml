@@ -1,0 +1,18 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMServiceScrape
+metadata:
+  name: hcloud-csi
+  namespace: kube-system
+spec:
+  endpoints:
+  - interval: 30s
+    path: /metrics
+    port: '9189'
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  selector:
+    matchLabels:
+      app: hcloud-csi

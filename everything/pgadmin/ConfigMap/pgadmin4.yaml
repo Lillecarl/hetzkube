@@ -1,0 +1,24 @@
+apiVersion: v1
+data:
+  config_local.py: "AUTHENTICATION_SOURCES = ['oauth2', 'internal']\nOAUTH2_CONFIG
+    = [\n    {\n        'OAUTH2_NAME': 'keycloak',\n        'OAUTH2_DISPLAY_NAME':
+    'Keycloak',\n        'OAUTH2_ICON': 'fa-openid',\n        'OAUTH2_CLIENT_ID':
+    'pgadmin',\n        'OAUTH2_CLIENT_SECRET': \"\", # we use PKCE/public but this
+    must be set anyways\n        'OAUTH2_TOKEN_URL': 'https://keycloak.lillecarl.com/realms/auth/protocol/openid-connect/token',\n
+    \       'OAUTH2_AUTHORIZATION_URL': 'https://keycloak.lillecarl.com/realms/auth/protocol/openid-connect/auth',\n
+    \       'OAUTH2_API_BASE_URL': 'https://keycloak.lillecarl.com/realms/auth/protocol/openid-connect',\n
+    \       'OAUTH2_USERINFO_ENDPOINT': 'https://keycloak.lillecarl.com/realms/auth/protocol/openid-connect/userinfo',\n
+    \       'OAUTH2_SERVER_METADATA_URL': 'https://keycloak.lillecarl.com/realms/auth/.well-known/openid-configuration',\n
+    \       'OAUTH2_SCOPE': 'openid email profile',\n        'OAUTH2_ICON': 'fa-key',\n
+    \       # Claims mapping\n        'OAUTH2_USERNAME_CLAIM': 'preferred_username',\n
+    \       'OAUTH2_EMAIL_CLAIM': 'email',\n        # Optional: Auto-create users
+    that don't exist\n        'OAUTH2_AUTO_CREATE_USER': True,\n        # Optional:
+    Additional parameters\n        'OAUTH2_ADDITIONAL_PARAMS': {\n            'access_type':
+    'offline'\n        },\n        'OAUTH2_SSL_CERT_VERIFICATION': True,\n        'OAUTH2_CHALLENGE_METHOD':
+    'S256',\n        'OAUTH2_RESPONSE_TYPE': 'code',\n    }\n]\n"
+ekn:
+  gitOpsTarget: everything
+kind: ConfigMap
+metadata:
+  name: pgadmin4
+  namespace: pgadmin

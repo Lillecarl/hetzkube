@@ -1,0 +1,12 @@
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: 'true'
+  name: hcloud-volumes
+provisioner: csi.hetzner.cloud
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer

@@ -1,0 +1,19 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMServiceScrape
+metadata:
+  labels:
+    app.kubernetes.io/name: kube-state-metrics
+  name: kube-state-metrics
+  namespace: observability
+spec:
+  endpoints:
+  - honorLabels: true
+    interval: 30s
+    port: http-metrics
+  - interval: 30s
+    port: telemetry
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics

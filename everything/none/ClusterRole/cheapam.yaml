@@ -1,0 +1,40 @@
+apiVersion: rbac.authorization.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterRole
+metadata:
+  name: cheapam
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - nodes
+  - nodes/status
+  - services
+  - services/status
+  verbs:
+  - get
+  - list
+  - create
+  - watch
+  - patch
+- apiGroups:
+  - ''
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - create
+  - watch
+  - patch
+- apiGroups:
+  - externaldns.k8s.io
+  resources:
+  - dnsendpoints
+  verbs:
+  - get
+  - list
+  - create
+  - watch
+  - patch

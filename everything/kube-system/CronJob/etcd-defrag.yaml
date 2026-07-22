@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+ekn:
+  gitOpsTarget: everything
+kind: CronJob
+metadata:
+  name: etcd-defrag
+  namespace: kube-system
+spec:
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        metadata:
+          labels:
+            app: etcd-defrag
+        spec:
+          containers:
+          - command:
+            - /nix/store/2dp500yzs3riv2mwnnx5s0xvbsi1nc2v-tini-0.19.0/bin/tini
+            - --
+            - /nix/store/4rrwdszxj0wnj0gffww0b0jbv991cp3y-etcd-defrag/bin/etcd-defrag
+            image: ghcr.io/lillecarl/nix-csi/scratch:1.0.1
+            name: etcd-defrag
+          restartPolicy: OnFailure
+          serviceAccountName: etcd-defrag
+      ttlSecondsAfterFinished: 604800
+  schedule: 0 3 * * *

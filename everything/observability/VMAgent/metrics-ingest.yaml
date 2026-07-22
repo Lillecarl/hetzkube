@@ -1,0 +1,29 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMAgent
+metadata:
+  name: metrics-ingest
+  namespace: observability
+spec:
+  externalLabels:
+    cluster: hetzkube
+  nodeScrapeNamespaceSelector: {}
+  nodeScrapeSelector: {}
+  podScrapeNamespaceSelector: {}
+  podScrapeSelector: {}
+  remoteWrite:
+  - url: http://vmsingle-metrics:8429/api/v1/write
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 128Mi
+  selectAllByDefault: true
+  serviceScrapeNamespaceSelector: {}
+  serviceScrapeSelector: {}
+  staticScrapeNamespaceSelector: {}
+  staticScrapeSelector:
+    matchExpressions:
+    - key: role
+      operator: DoesNotExist

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: Deployment
+metadata:
+  name: cheapam
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cheapam
+  template:
+    metadata:
+      labels:
+        app: cheapam
+    spec:
+      containers:
+      - command:
+        - cheapam
+        env:
+        - name: HCLOUD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: hcloud-cheapam
+        - name: PYTHONUNBUFFERED
+          value: '1'
+        image: quay.io/nix-csi/scratch:1.0.1
+        name: cheapam
+        volumeMounts:
+        - mountPath: /nix
+          name: nix-csi
+          subPath: nix
+      serviceAccountName: cheapam
+      volumes:
+      - csi:
+          driver: nixkube
+          readOnly: true
+          volumeAttributes:
+            aarch64-linux: /nix/store/s7h461pgd3r3yapk6ppl67pfmqfp3y40-python3.14-cheapam-0.1.0
+            x86_64-linux: /nix/store/az5032cqxkvplqhxrd24gqbi3q2zr672-python3.14-cheapam-0.1.0
+        name: nix-csi

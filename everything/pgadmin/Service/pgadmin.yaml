@@ -1,0 +1,19 @@
+apiVersion: v1
+ekn:
+  gitOpsTarget: everything
+kind: Service
+metadata:
+  labels:
+    app: pgadmin
+  name: pgadmin
+  namespace: pgadmin
+spec:
+  ipFamilyPolicy: RequireDualStack
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: pgadmin
+  type: ClusterIP

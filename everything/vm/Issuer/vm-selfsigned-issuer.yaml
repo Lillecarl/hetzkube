@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: Issuer
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: vm-operator
+  name: vm-selfsigned-issuer
+  namespace: vm
+spec:
+  selfSigned: {}

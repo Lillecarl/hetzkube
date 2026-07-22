@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterRoleBinding
+metadata:
+  name: chaoskube-chaoskube
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: chaoskube-chaoskube
+subjects:
+- kind: ServiceAccount
+  name: chaoskube
+  namespace: kube-system

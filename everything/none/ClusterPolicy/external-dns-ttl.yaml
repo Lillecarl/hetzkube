@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterPolicy
+metadata:
+  name: external-dns-ttl
+spec:
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Ingress
+        - HTTPRoute
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            external-dns.alpha.kubernetes.io/ttl: '60'
+    name: add-dns-ttl-annotation

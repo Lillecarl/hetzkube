@@ -1,0 +1,27 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: Cluster
+metadata:
+  labels:
+    clusterName: hetzkube
+  name: hetzkube
+  namespace: hetzkube
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+      - 10.133.0.0/16
+      - fdce:9c4d:abcd::/48
+    services:
+      cidrBlocks:
+      - 10.134.0.0/16
+      - fdce:9c4d:dcba::/112
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: KubeadmControlPlane
+    name: hetzkube-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: HetznerCluster
+    name: hetzkube

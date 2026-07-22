@@ -1,0 +1,22 @@
+apiVersion: cert-manager.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: Certificate
+metadata:
+  labels:
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/created-by: vm-operator
+    app.kubernetes.io/instance: vm-serving-cert
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: vm-operator
+    app.kubernetes.io/part-of: vm-operator
+  name: vm-serving-cert
+  namespace: vm
+spec:
+  dnsNames:
+  - vm-webhook-service.vm.svc
+  - vm-webhook-service.vm.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: vm-selfsigned-issuer
+  secretName: webhook-server-cert

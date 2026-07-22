@@ -1,0 +1,16 @@
+apiVersion: grafana.integreatly.org/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: GrafanaDatasource
+metadata:
+  name: vmsingle-vm
+  namespace: observability
+spec:
+  datasource:
+    access: proxy
+    name: VictoriaMetrics
+    type: victoriametrics-metrics-datasource
+    url: http://vmsingle-metrics.observability.svc.cluster.local:8429
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana

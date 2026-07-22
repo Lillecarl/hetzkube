@@ -1,0 +1,27 @@
+apiVersion: v1
+ekn:
+  gitOpsTarget: everything
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: metrics-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: metrics-server
+    app.kubernetes.io/version: 0.8.0
+    helm.sh/chart: metrics-server-3.13.0
+    kubernetes.io/cluster-service: 'true'
+    kubernetes.io/name: Metrics-server
+  name: metrics-server
+  namespace: kube-system
+spec:
+  ipFamilyPolicy: RequireDualStack
+  ports:
+  - appProtocol: https
+    name: https
+    port: 443
+    protocol: TCP
+    targetPort: https
+  selector:
+    app.kubernetes.io/instance: metrics-server
+    app.kubernetes.io/name: metrics-server
+  type: ClusterIP

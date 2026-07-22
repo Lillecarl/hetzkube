@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterRoleBinding
+metadata:
+  name: external-dns-scaleway
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-dns-scaleway
+subjects:
+- kind: ServiceAccount
+  name: external-dns-scaleway
+  namespace: kube-system

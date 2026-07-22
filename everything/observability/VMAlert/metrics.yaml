@@ -1,0 +1,17 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMAlert
+metadata:
+  name: metrics
+  namespace: observability
+spec:
+  datasource:
+    url: http://vmsingle-metrics:8429
+  evaluationInterval: 30s
+  notifiers: []
+  remoteWrite:
+    url: http://vmsingle-metrics:8429
+  ruleSelector:
+    matchLabels:
+      role: metrics

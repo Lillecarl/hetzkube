@@ -1,0 +1,14 @@
+apiVersion: autoscaling.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: VerticalPodAutoscaler
+metadata:
+  name: cilium-operator
+  namespace: kube-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cilium-operator
+  updatePolicy:
+    updateMode: InPlaceOrRecreate

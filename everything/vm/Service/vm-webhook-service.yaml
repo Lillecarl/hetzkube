@@ -1,0 +1,15 @@
+apiVersion: v1
+ekn:
+  gitOpsTarget: everything
+kind: Service
+metadata:
+  name: vm-webhook-service
+  namespace: vm
+spec:
+  ipFamilyPolicy: RequireDualStack
+  ports:
+  - port: 443
+    targetPort: 9443
+  selector:
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/name: victoria-metrics-operator

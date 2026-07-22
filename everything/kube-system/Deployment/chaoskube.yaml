@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: Deployment
+metadata:
+  name: chaoskube
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chaoskube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        app: chaoskube
+        chaos.alpha.kubernetes.io/disabled: ''
+    spec:
+      containers:
+      - args:
+        - --annotations=!chaos.alpha.kubernetes.io/disabled
+        - --interval=15m
+        - --labels=cnpg.io/instanceRole!=primary,tier!=control-plane
+        - --minimum-age=6h
+        - --no-dry-run
+        - --timezone=Europe/Stockholm
+        image: ghcr.io/linki/chaoskube:v0.39.0
+        name: chaoskube
+      serviceAccountName: chaoskube

@@ -1,0 +1,34 @@
+apiVersion: cilium.io/v2
+ekn:
+  gitOpsTarget: everything
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: node-default
+spec:
+  egress:
+  - toEntities:
+    - all
+  ingress:
+  - fromEntities:
+    - all
+    toPorts:
+    - ports:
+      - port: '22'
+        protocol: TCP
+      - port: '2379'
+        protocol: TCP
+      - port: '2380'
+        protocol: TCP
+      - port: '6443'
+        protocol: TCP
+  - fromEntities:
+    - cluster
+  - fromEntities:
+    - all
+    icmps:
+    - fields:
+      - family: IPv4
+        type: EchoRequest
+      - family: IPv6
+        type: EchoRequest
+  nodeSelector: {}

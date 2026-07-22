@@ -1,0 +1,32 @@
+apiVersion: gateway.networking.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: Gateway
+metadata:
+  annotations:
+    metallb.io/allow-shared-ip: 'true'
+  name: default
+  namespace: kube-system
+spec:
+  gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      metallb.io/allow-shared-ip: 'true'
+  listeners:
+  - allowedRoutes:
+      namespaces:
+        from: All
+    name: https
+    port: 443
+    protocol: HTTPS
+    tls:
+      certificateRefs:
+      - kind: Secret
+        name: default-cert
+      mode: Terminate
+  - allowedRoutes:
+      namespaces:
+        from: All
+    name: http
+    port: 80
+    protocol: HTTP

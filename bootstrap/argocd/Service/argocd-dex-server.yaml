@@ -1,0 +1,29 @@
+apiVersion: v1
+ekn:
+  gitOpsTarget: bootstrap
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: dex-server
+    app.kubernetes.io/name: argocd-dex-server
+    app.kubernetes.io/part-of: argocd
+  name: argocd-dex-server
+  namespace: argocd
+spec:
+  ipFamilyPolicy: RequireDualStack
+  ports:
+  - name: grpc
+    port: 5557
+    protocol: TCP
+    targetPort: 5557
+  - appProtocol: TCP
+    name: http
+    port: 5556
+    protocol: TCP
+    targetPort: 5556
+  - name: metrics
+    port: 5558
+    protocol: TCP
+    targetPort: 5558
+  selector:
+    app.kubernetes.io/name: argocd-dex-server

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: StatefulSet
+metadata:
+  name: pgadmin
+  namespace: pgadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      annotations:
+        configHash: 23ba2e7363f1f5d9f6c376e85853c5a0
+      labels:
+        app: pgadmin
+    spec:
+      containers:
+      - env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: admin
+        - name: PGADMIN_DEFAULT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: admin
+        image: docker.io/dpage/pgadmin4:latest
+        name: pgadmin
+        volumeMounts:
+        - mountPath: /var/lib/pgadmin
+          name: data
+        - mountPath: /pgadmin4/config_local.py
+          name: pgadmin4
+          subPath: config_local.py
+      securityContext:
+        fsGroup: 5050
+      volumes:
+      - configMap:
+          name: pgadmin4
+        name: pgadmin4
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi

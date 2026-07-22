@@ -1,0 +1,29 @@
+apiVersion: postgresql.cnpg.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: Cluster
+metadata:
+  name: pg0
+  namespace: database
+spec:
+  enablePDB: true
+  enableSuperuserAccess: true
+  instances: 2
+  managed:
+    roles:
+    - login: true
+      name: grafana
+      passwordSecret:
+        name: pg0-grafana
+    - login: true
+      name: keycloak
+      passwordSecret:
+        name: pg0-keycloak
+    - login: true
+      name: lillecarl
+      passwordSecret:
+        name: pg0-lillecarl
+      superuser: true
+  storage:
+    size: 10Gi
+    storageClass: hcloud-volumes

@@ -1,0 +1,27 @@
+apiVersion: gateway.networking.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: HTTPRoute
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/ttl: '60'
+  name: keycloak-redir
+  namespace: keycloak
+spec:
+  hostnames:
+  - keycloak.lillecarl.com
+  parentRefs:
+  - name: default
+    namespace: kube-system
+  rules:
+  - filters:
+    - requestRedirect:
+        path:
+          replaceFullPath: /realms/auth/account
+          type: ReplaceFullPath
+        statusCode: 302
+      type: RequestRedirect
+    matches:
+    - path:
+        type: Exact
+        value: /

@@ -1,0 +1,25 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: MachineHealthCheck
+metadata:
+  name: hetzkube-workers-arm64-unhealthy-5m
+  namespace: hetzkube
+spec:
+  clusterName: hetzkube
+  maxUnhealthy: 100%
+  nodeStartupTimeout: 10m
+  remediationTemplate:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: HCloudRemediationTemplate
+    name: worker-remediation-request
+  selector:
+    matchLabels:
+      nodepool: hetzkube-workers-arm64
+  unhealthyConditions:
+  - status: Unknown
+    timeout: 180s
+    type: Ready
+  - status: 'False'
+    timeout: 180s
+    type: Ready

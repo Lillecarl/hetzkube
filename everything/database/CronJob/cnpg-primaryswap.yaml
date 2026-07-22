@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+ekn:
+  gitOpsTarget: everything
+kind: CronJob
+metadata:
+  name: cnpg-primaryswap
+  namespace: database
+spec:
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 10
+      template:
+        metadata:
+          labels:
+            app: cnpg-primaryswap
+        spec:
+          containers:
+          - command:
+            - /nix/store/2dp500yzs3riv2mwnnx5s0xvbsi1nc2v-tini-0.19.0/bin/tini
+            - /nix/store/9szyn1dzxbqrfs918nzw8adz2ndaly35-swapPrimary/bin/swapPrimary
+            image: gcr.io/distroless/static:latest
+            name: cnpg-primaryswap
+            volumeMounts:
+            - mountPath: /nix
+              name: nix-store
+              readOnly: true
+              subPath: nix
+          nodeSelector:
+            kubernetes.io/arch: amd64
+          restartPolicy: OnFailure
+          securityContext:
+            fsGroup: 1000
+            runAsGroup: 1000
+            runAsUser: 1000
+          serviceAccountName: cnpg-primaryswap
+          volumes:
+          - csi:
+              driver: nixkube
+              readOnly: true
+            name: nix-store
+      ttlSecondsAfterFinished: 604800
+  schedule: 0 4 * * *

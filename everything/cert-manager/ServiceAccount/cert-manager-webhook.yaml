@@ -1,0 +1,14 @@
+apiVersion: v1
+automountServiceAccountToken: true
+ekn:
+  gitOpsTarget: everything
+kind: ServiceAccount
+metadata:
+  labels:
+    app: webhook
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/instance: cert-manager
+    app.kubernetes.io/name: webhook
+    app.kubernetes.io/version: v1.20.2
+  name: cert-manager-webhook
+  namespace: cert-manager

@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: hcloud-csi
+    app.kubernetes.io/name: hcloud-csi
+  name: hcloud-csi-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: hcloud-csi-controller
+subjects:
+- kind: ServiceAccount
+  name: hcloud-csi-controller
+  namespace: kube-system

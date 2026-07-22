@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: vm-operator
+  name: vm-allow-webhook-traffic
+  namespace: vm
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          webhook: enabled
+    ports:
+    - port: 443
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vm-operator
+      control-plane: controller-manager
+  policyTypes:
+  - Ingress

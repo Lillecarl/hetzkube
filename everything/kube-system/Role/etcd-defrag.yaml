@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: Role
+metadata:
+  name: etcd-defrag
+  namespace: kube-system
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ''
+  resources:
+  - pods/exec
+  verbs:
+  - create

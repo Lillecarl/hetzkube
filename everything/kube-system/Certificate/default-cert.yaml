@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: Certificate
+metadata:
+  name: default-cert
+  namespace: kube-system
+spec:
+  dnsNames:
+  - lillecarl.com
+  - '*.lillecarl.com'
+  issuerRef:
+    kind: ClusterIssuer
+    name: le-prod
+  secretName: default-cert

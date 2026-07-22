@@ -1,0 +1,23 @@
+apiVersion: kyverno.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterPolicy
+metadata:
+  name: add-metallb-shared-ip
+spec:
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Service
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            metallb.io/allow-shared-ip: 'true'
+    name: add-allow-shared-ip-annotation
+    preconditions:
+      all:
+      - key: '{{ request.object.spec.type }}'
+        operator: Equals
+        value: LoadBalancer

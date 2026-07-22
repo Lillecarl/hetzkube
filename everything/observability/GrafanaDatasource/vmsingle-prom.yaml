@@ -1,0 +1,17 @@
+apiVersion: grafana.integreatly.org/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: GrafanaDatasource
+metadata:
+  name: vmsingle-prom
+  namespace: observability
+spec:
+  datasource:
+    access: proxy
+    isDefault: true
+    name: Prometheus
+    type: prometheus
+    url: http://vmsingle-metrics.observability.svc.cluster.local:8429
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana

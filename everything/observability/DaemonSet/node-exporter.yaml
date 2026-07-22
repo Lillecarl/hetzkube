@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: DaemonSet
+metadata:
+  labels:
+    app: node-exporter
+  name: node-exporter
+  namespace: observability
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      containers:
+      - args:
+        - --path.procfs=/host/proc
+        - --path.sysfs=/host/sys
+        - --path.rootfs=/host/root
+        - --collector.systemd
+        - --collector.processes
+        image: prom/node-exporter:latest
+        name: node-exporter
+        ports:
+        - containerPort: 9100
+          hostPort: 9100
+          name: metrics
+        volumeMounts:
+        - mountPath: /host/proc
+          name: proc
+          readOnly: true
+        - mountPath: /host/sys
+          name: sys
+          readOnly: true
+        - mountPath: /host/root
+          mountPropagation: HostToContainer
+          name: root
+          readOnly: true
+        - mountPath: /var/run/dbus/system_bus_socket
+          name: dbus
+          readOnly: true
+      hostNetwork: true
+      hostPID: true
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /proc
+        name: proc
+      - hostPath:
+          path: /sys
+        name: sys
+      - hostPath:
+          path: /
+        name: root
+      - hostPath:
+          path: /var/run/dbus/system_bus_socket
+        name: dbus

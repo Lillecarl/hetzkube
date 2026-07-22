@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: HTTPRoute
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/ttl: '60'
+  name: pgadmin
+  namespace: pgadmin
+spec:
+  hostnames:
+  - pgadmin.lillecarl.com
+  parentRefs:
+  - name: default
+    namespace: kube-system
+  rules:
+  - backendRefs:
+    - name: pgadmin
+      port: 8080
+    matches:
+    - path:
+        type: PathPrefix
+        value: /

@@ -1,0 +1,35 @@
+apiVersion: v1
+data:
+  config.json: "{\n  \"nodePathMap\": [\n    {\n      \"node\": \"DEFAULT_PATH_FOR_NON_LISTED_NODES\",\n
+    \     \"paths\": [\n        \"/var/lib/local-path-provisioner\"\n      ]\n    }\n
+    \ ]\n}"
+  helperPod.yaml: "apiVersion: v1\nkind: Pod\nmetadata:\n  name: helper-pod\n  namespace:
+    kube-system\n  labels:\n    app.kubernetes.io/name: local-path-provisioner\n    helm.sh/chart:
+    local-path-provisioner-0.0.36\n    app.kubernetes.io/instance: local-path-provisioner\n
+    \   app.kubernetes.io/version: \"v0.0.36\"\n    app.kubernetes.io/managed-by:
+    Helm\nspec:\n  priorityClassName: system-node-critical\n  tolerations:\n    -
+    key: node.kubernetes.io/disk-pressure\n      operator: Exists\n      effect: NoSchedule\n
+    \ containers:\n    - name: helper-pod\n      image: docker.io/library/busybox:latest\n
+    \     imagePullPolicy: IfNotPresent\n      resources:\n        {}"
+  setup: '#!/bin/sh
+
+    set -eu
+
+    mkdir -m 0777 -p "$VOL_DIR"'
+  teardown: '#!/bin/sh
+
+    set -eu
+
+    rm -rf "$VOL_DIR"'
+ekn:
+  gitOpsTarget: everything
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: local-path-provisioner
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: local-path-provisioner
+    app.kubernetes.io/version: v0.0.36
+    helm.sh/chart: local-path-provisioner-0.0.36
+  name: local-path-config
+  namespace: kube-system

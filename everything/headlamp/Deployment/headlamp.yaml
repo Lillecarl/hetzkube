@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: headlamp
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: headlamp
+    app.kubernetes.io/version: 0.41.0
+    helm.sh/chart: headlamp-0.41.0
+  name: headlamp
+  namespace: headlamp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: headlamp
+      app.kubernetes.io/name: headlamp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: headlamp
+        app.kubernetes.io/name: headlamp
+    spec:
+      automountServiceAccountToken: true
+      containers:
+      - args:
+        - -in-cluster
+        - -in-cluster-context-name=main
+        - -plugins-dir=/headlamp/plugins
+        - -session-ttl=86400
+        - -oidc-client-id=$(OIDC_CLIENT_ID)
+        - -oidc-idp-issuer-url=$(OIDC_ISSUER_URL)
+        - -oidc-scopes=$(OIDC_SCOPES)
+        - -oidc-validator-client-id=$(OIDC_VALIDATOR_CLIENT_ID)
+        - -oidc-use-pkce=$(OIDC_USE_PKCE)
+        env:
+        - name: OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: clientID
+              name: oidc
+        - name: OIDC_ISSUER_URL
+          valueFrom:
+            secretKeyRef:
+              key: issuerURL
+              name: oidc
+        - name: OIDC_SCOPES
+          valueFrom:
+            secretKeyRef:
+              key: scopes
+              name: oidc
+        - name: OIDC_USE_PKCE
+          valueFrom:
+            secretKeyRef:
+              key: usePKCE
+              name: oidc
+        - name: OIDC_VALIDATOR_CLIENT_ID
+          value: kubernetes
+        image: ghcr.io/headlamp-k8s/headlamp:v0.42.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        name: headlamp
+        ports:
+        - containerPort: 4466
+          name: http
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources: {}
+        securityContext:
+          privileged: false
+          runAsGroup: 101
+          runAsNonRoot: true
+          runAsUser: 100
+      hostUsers: true
+      securityContext: {}
+      serviceAccountName: headlamp

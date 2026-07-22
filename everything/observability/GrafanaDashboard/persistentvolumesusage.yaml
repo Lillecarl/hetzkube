@@ -1,0 +1,136 @@
+apiVersion: grafana.integreatly.org/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: GrafanaDashboard
+metadata:
+  name: persistentvolumesusage
+  namespace: observability
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  json: "{\n   \"editable\": false,\n   \"links\": [\n      {\n         \"asDropdown\":
+    true,\n         \"includeVars\": true,\n         \"keepTime\": true,\n         \"tags\":
+    [\n            \"kubernetes-mixin\"\n         ],\n         \"targetBlank\": false,\n
+    \        \"title\": \"Kubernetes\",\n         \"type\": \"dashboards\"\n      }\n
+    \  ],\n   \"panels\": [\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
+    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
+    true\n               },\n               \"unit\": \"bytes\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 18,\n            \"y\":
+    0\n         },\n         \"id\": 1,\n         \"interval\": \"1m\",\n         \"options\":
+    {\n            \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
+    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
+    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
+    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
+    [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"(\\n  sum without(instance, node) (topk(1, (kubelet_volume_stats_capacity_bytes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})))\\n
+    \ -\\n  sum without(instance, node) (topk(1, (kubelet_volume_stats_available_bytes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})))\\n)\\n\",\n
+    \              \"legendFormat\": \"Used Space\"\n            },\n            {\n
+    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
+    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
+    \"sum without(instance, node) (topk(1, (kubelet_volume_stats_available_bytes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})))\\n\",\n
+    \              \"legendFormat\": \"Free Space\"\n            }\n         ],\n
+    \        \"title\": \"Volume Space Usage\",\n         \"type\": \"timeseries\"\n
+    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
+    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
+    \           \"defaults\": {\n               \"color\": {\n                  \"mode\":
+    \"thresholds\"\n               },\n               \"max\": 100,\n               \"min\":
+    0,\n               \"thresholds\": {\n                  \"mode\": \"absolute\",\n
+    \                 \"steps\": [\n                     {\n                        \"color\":
+    \"green\",\n                        \"value\": 0\n                     },\n                     {\n
+    \                       \"color\": \"orange\",\n                        \"value\":
+    80\n                     },\n                     {\n                        \"color\":
+    \"red\",\n                        \"value\": 90\n                     }\n                  ]\n
+    \              },\n               \"unit\": \"percent\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 6,\n            \"x\":
+    18,\n            \"y\": 0\n         },\n         \"id\": 2,\n         \"interval\":
+    \"1m\",\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\": [\n            {\n
+    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
+    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
+    \"max without(instance,node) (\\n(\\n  topk(1, kubelet_volume_stats_capacity_bytes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})\\n
+    \ -\\n  topk(1, kubelet_volume_stats_available_bytes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})\\n)\\n/\\ntopk(1,
+    kubelet_volume_stats_capacity_bytes{cluster=\\\"$cluster\\\", job=\\\"kubelet\\\",
+    namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})\\n* 100)\\n\",\n
+    \              \"instant\": true\n            }\n         ],\n         \"title\":
+    \"Volume Space Usage\",\n         \"type\": \"gauge\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
+    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
+    \                 \"spanNulls\": true\n               },\n               \"unit\":
+    \"none\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 18,\n            \"y\": 7\n         },\n         \"id\":
+    3,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
+    {\n               \"asTable\": true,\n               \"calcs\": [\n                  \"lastNotNull\"\n
+    \              ],\n               \"displayMode\": \"table\",\n               \"placement\":
+    \"right\",\n               \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum without(instance, node) (topk(1,
+    (kubelet_volume_stats_inodes_used{cluster=\\\"$cluster\\\", job=\\\"kubelet\\\",
+    namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})))\",\n               \"legendFormat\":
+    \"Used inodes\"\n            },\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"(\\n  sum without(instance, node)
+    (topk(1, (kubelet_volume_stats_inodes{cluster=\\\"$cluster\\\", job=\\\"kubelet\\\",
+    namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})))\\n  -\\n
+    \ sum without(instance, node) (topk(1, (kubelet_volume_stats_inodes_used{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})))\\n)\\n\",\n
+    \              \"legendFormat\": \"Free inodes\"\n            }\n         ],\n
+    \        \"title\": \"Volume inodes Usage\",\n         \"type\": \"timeseries\"\n
+    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
+    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
+    \           \"defaults\": {\n               \"color\": {\n                  \"mode\":
+    \"thresholds\"\n               },\n               \"max\": 100,\n               \"min\":
+    0,\n               \"thresholds\": {\n                  \"mode\": \"absolute\",\n
+    \                 \"steps\": [\n                     {\n                        \"color\":
+    \"green\",\n                        \"value\": 0\n                     },\n                     {\n
+    \                       \"color\": \"orange\",\n                        \"value\":
+    80\n                     },\n                     {\n                        \"color\":
+    \"red\",\n                        \"value\": 90\n                     }\n                  ]\n
+    \              },\n               \"unit\": \"percent\"\n            }\n         },\n
+    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 6,\n            \"x\":
+    18,\n            \"y\": 7\n         },\n         \"id\": 4,\n         \"interval\":
+    \"1m\",\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\": [\n            {\n
+    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
+    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
+    \"max without(instance,node) (\\ntopk(1, kubelet_volume_stats_inodes_used{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", namespace=\\\"$namespace\\\", persistentvolumeclaim=\\\"$volume\\\"})\\n/\\ntopk(1,
+    kubelet_volume_stats_inodes{cluster=\\\"$cluster\\\", job=\\\"kubelet\\\", namespace=\\\"$namespace\\\",
+    persistentvolumeclaim=\\\"$volume\\\"})\\n* 100)\\n\",\n               \"instant\":
+    true\n            }\n         ],\n         \"title\": \"Volume inodes Usage\",\n
+    \        \"type\": \"gauge\"\n      }\n   ],\n   \"refresh\": \"10s\",\n   \"schemaVersion\":
+    39,\n   \"tags\": [\n      \"kubernetes-mixin\"\n   ],\n   \"templating\": {\n
+    \     \"list\": [\n         {\n            \"current\": {\n               \"selected\":
+    true,\n               \"text\": \"default\",\n               \"value\": \"default\"\n
+    \           },\n            \"hide\": 0,\n            \"label\": \"Data source\",\n
+    \           \"name\": \"datasource\",\n            \"query\": \"prometheus\",\n
+    \           \"regex\": \"\",\n            \"type\": \"datasource\"\n         },\n
+    \        {\n            \"datasource\": {\n               \"type\": \"prometheus\",\n
+    \              \"uid\": \"${datasource}\"\n            },\n            \"hide\":
+    2,\n            \"label\": \"cluster\",\n            \"name\": \"cluster\",\n
+    \           \"query\": \"label_values(kubelet_volume_stats_capacity_bytes{job=\\\"kubelet\\\"},
+    cluster)\",\n            \"refresh\": 2,\n            \"sort\": 1,\n            \"type\":
+    \"query\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
+    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
+    0,\n            \"label\": \"Namespace\",\n            \"name\": \"namespace\",\n
+    \           \"query\": \"label_values(kubelet_volume_stats_capacity_bytes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\"}, namespace)\",\n            \"refresh\": 2,\n            \"sort\":
+    1,\n            \"type\": \"query\"\n         },\n         {\n            \"datasource\":
+    {\n               \"type\": \"prometheus\",\n               \"uid\": \"${datasource}\"\n
+    \           },\n            \"hide\": 0,\n            \"label\": \"PersistentVolumeClaim\",\n
+    \           \"name\": \"volume\",\n            \"query\": \"label_values(kubelet_volume_stats_capacity_bytes{cluster=\\\"$cluster\\\",
+    job=\\\"kubelet\\\", namespace=\\\"$namespace\\\"}, persistentvolumeclaim)\",\n
+    \           \"refresh\": 2,\n            \"sort\": 1,\n            \"type\": \"query\"\n
+    \        }\n      ]\n   },\n   \"time\": {\n      \"from\": \"now-1h\",\n      \"to\":
+    \"now\"\n   },\n   \"timezone\": \"UTC\",\n   \"title\": \"Kubernetes / Persistent
+    Volumes\",\n   \"uid\": \"919b92a8e8041bd567af9edab12c840c\"\n}\n"

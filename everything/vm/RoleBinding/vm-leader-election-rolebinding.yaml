@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: RoleBinding
+metadata:
+  name: vm-leader-election-rolebinding
+  namespace: vm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vm-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: vm-operator
+  namespace: vm

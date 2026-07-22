@@ -1,0 +1,16 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMPodScrape
+metadata:
+  name: pg0
+  namespace: database
+spec:
+  namespaceSelector: {}
+  podMetricsEndpoints:
+  - path: /metrics
+    port: metrics
+    scheme: http
+  selector:
+    matchLabels:
+      cnpg.io/cluster: pg0

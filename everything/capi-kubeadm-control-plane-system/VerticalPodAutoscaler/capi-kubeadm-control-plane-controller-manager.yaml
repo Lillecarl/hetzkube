@@ -1,0 +1,14 @@
+apiVersion: autoscaling.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: VerticalPodAutoscaler
+metadata:
+  name: capi-kubeadm-control-plane-controller-manager
+  namespace: capi-kubeadm-control-plane-system
+spec:
+  targetRef:
+    apiVersion: v1
+    kind: Deployment
+    name: capi-kubeadm-control-plane-controller-manager
+  updatePolicy:
+    updateMode: InPlaceOrRecreate

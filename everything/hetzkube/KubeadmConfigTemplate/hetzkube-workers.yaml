@@ -1,0 +1,44 @@
+apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: KubeadmConfigTemplate
+metadata:
+  name: hetzkube-workers
+  namespace: hetzkube
+spec:
+  template:
+    spec:
+      files:
+      - content: '{"apiVersion":"kubelet.config.k8s.io/v1beta1","cgroupDriver":"systemd","cloudProvider":"external","clusterDNS":["10.134.0.10","fdce:9c4d:dcba::10"],"failSwapOn":false,"featureGates":{"ContainerRestartRules":true,"ImageVolume":true,"KubeletPSI":true},"imageMaximumGCAge":"12h","kind":"KubeletConfiguration","resolvConf":"/etc/resolv.conf","shutdownGracePeriod":"30s","shutdownGracePeriodCriticalPods":"10s"}'
+        owner: root:root
+        path: /etc/kubernetes/patches/kubeletconfiguration+strategic.json
+        permissions: '0644'
+      joinConfiguration:
+        nodeRegistration:
+          ignorePreflightErrors:
+          - Swap
+          kubeletExtraArgs:
+            cloud-provider: external
+        patches:
+          directory: /etc/kubernetes/patches
+      preKubeadmCommands:
+      - '#! /usr/bin/env bash
+
+        set -x
+
+        export PATH=/run/current-system/sw/bin:$PATH
+
+        # Clone latest config
+
+        git clone https://github.com/lillecarl/hetzkube.git /etc/hetzkube
+
+        # Get node info
+
+        nix run --file /etc/hetzkube pkgs.hetzInfo
+
+        # Rebuild with new config, TODO: split image and prod configs
+
+        nixos-rebuild switch --file /etc/hetzkube/ --attr nixosConfigurations.image-$(nix
+        eval --raw --impure --expr builtins.currentSystem)
+
+        '

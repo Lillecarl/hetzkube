@@ -1,0 +1,38 @@
+apiVersion: rbac.authorization.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: Role
+metadata:
+  name: cnpg-primaryswap
+  namespace: database
+rules:
+- apiGroups:
+  - postgresql.cnpg.io
+  resources:
+  - clusters
+  - clusters/status
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - policy
+  resources:
+  - poddisruptionbudgets
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - postgresql.cnpg.io
+  resources:
+  - clusters
+  - clusters/status
+  verbs:
+  - patch
+  - update

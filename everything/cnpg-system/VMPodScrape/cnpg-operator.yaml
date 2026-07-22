@@ -1,0 +1,15 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMPodScrape
+metadata:
+  name: cnpg-operator
+  namespace: cnpg-system
+spec:
+  podMetricsEndpoints:
+  - interval: 30s
+    path: /metrics
+    port: metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloudnative-pg

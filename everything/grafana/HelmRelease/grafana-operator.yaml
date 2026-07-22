@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+ekn:
+  gitOpsTarget: everything
+kind: HelmRelease
+metadata:
+  name: grafana-operator
+  namespace: grafana
+spec:
+  chart:
+    spec:
+      chart: grafana-operator
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: grafana
+      version: '*'
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  interval: 1h
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3

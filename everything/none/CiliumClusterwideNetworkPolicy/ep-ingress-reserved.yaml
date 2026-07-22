@@ -1,0 +1,13 @@
+apiVersion: cilium.io/v2
+ekn:
+  gitOpsTarget: everything
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: ep-ingress-reserved
+spec:
+  endpointSelector:
+    matchLabels:
+      reserved:ingress: ''
+  ingress:
+  - fromEntities:
+    - all

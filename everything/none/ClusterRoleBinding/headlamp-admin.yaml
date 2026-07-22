@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: headlamp
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: headlamp
+    app.kubernetes.io/version: 0.41.0
+    helm.sh/chart: headlamp-0.41.0
+  name: headlamp-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: headlamp
+  namespace: headlamp

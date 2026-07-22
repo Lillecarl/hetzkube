@@ -1,0 +1,20 @@
+apiVersion: kyverno.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ClusterPolicy
+metadata:
+  name: require-dualstack-services
+spec:
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Service
+    mutate:
+      patchStrategicMerge:
+        spec:
+          ipFamilies:
+          - IPv4
+          - IPv6
+          ipFamilyPolicy: RequireDualStack
+    name: set-require-dualstack

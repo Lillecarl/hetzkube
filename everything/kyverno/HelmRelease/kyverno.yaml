@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+ekn:
+  gitOpsTarget: everything
+kind: HelmRelease
+metadata:
+  name: kyverno
+  namespace: kyverno
+spec:
+  chart:
+    spec:
+      chart: kyverno
+      sourceRef:
+        kind: HelmRepository
+        name: kyverno
+        namespace: kyverno
+      version: '*'
+  driftDetection:
+    ignore:
+    - paths:
+      - /spec/template/spec/resources/requests
+      - /spec/template/spec/containers/*/resources/requests
+      target:
+        kind: Deployment
+    mode: enabled
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  interval: 1h
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  values:
+    reportsController:
+      rbac:
+        clusterRole:
+          extraResources:
+          - apiGroups:
+            - gateway.networking.k8s.io
+            resources:
+            - httproutes
+            verbs:
+            - get
+            - list
+            - watch

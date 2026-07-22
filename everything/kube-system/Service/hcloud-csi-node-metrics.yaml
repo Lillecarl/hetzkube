@@ -1,0 +1,20 @@
+apiVersion: v1
+ekn:
+  gitOpsTarget: everything
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: node
+    app.kubernetes.io/instance: hcloud-csi
+    app.kubernetes.io/name: hcloud-csi
+  name: hcloud-csi-node-metrics
+  namespace: kube-system
+spec:
+  ipFamilyPolicy: RequireDualStack
+  ports:
+  - name: metrics
+    port: 9189
+  selector:
+    app.kubernetes.io/component: node
+    app.kubernetes.io/instance: hcloud-csi
+    app.kubernetes.io/name: hcloud-csi

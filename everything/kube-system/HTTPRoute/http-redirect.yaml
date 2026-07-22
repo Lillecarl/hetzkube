@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: HTTPRoute
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/ttl: '60'
+  name: http-redirect
+  namespace: kube-system
+spec:
+  parentRefs:
+  - name: cilium
+    namespace: kube-system
+    sectionName: http
+  rules:
+  - filters:
+    - requestRedirect:
+        scheme: https
+        statusCode: 301
+      type: RequestRedirect

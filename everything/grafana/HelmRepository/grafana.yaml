@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: HelmRepository
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  interval: 1h
+  type: oci
+  url: oci://ghcr.io/grafana/helm-charts

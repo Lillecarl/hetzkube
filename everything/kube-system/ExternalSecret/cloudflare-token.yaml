@@ -1,0 +1,19 @@
+apiVersion: external-secrets.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: ExternalSecret
+metadata:
+  name: cloudflare-token
+  namespace: kube-system
+spec:
+  data:
+  - remoteRef:
+      key: name:cloudflare-token
+    secretKey: token
+  refreshInterval: 30m0s
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: scaleway
+  target:
+    template:
+      type: Opaque

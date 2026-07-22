@@ -1,0 +1,320 @@
+apiVersion: grafana.integreatly.org/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: GrafanaDashboard
+metadata:
+  name: apiserver
+  namespace: observability
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  json: "{\n   \"editable\": false,\n   \"links\": [\n      {\n         \"asDropdown\":
+    true,\n         \"includeVars\": true,\n         \"keepTime\": true,\n         \"tags\":
+    [\n            \"kubernetes-mixin\"\n         ],\n         \"targetBlank\": false,\n
+    \        \"title\": \"Kubernetes\",\n         \"type\": \"dashboards\"\n      }\n
+    \  ],\n   \"panels\": [\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"description\":
+    \"The SLO (service level objective) and other metrics displayed on this dashboard
+    are for informational purposes only.\",\n         \"gridPos\": {\n            \"h\":
+    2,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\": 0\n         },\n
+    \        \"id\": 1,\n         \"options\": {\n            \"content\": \"The SLO
+    (service level objective) and other metrics displayed on this dashboard are for
+    informational purposes only.\"\n         },\n         \"pluginVersion\": \"v11.1.0\",\n
+    \        \"title\": \"Notice\",\n         \"type\": \"text\"\n      },\n      {\n
+    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
+    \"-- Mixed --\"\n         },\n         \"description\": \"How many percent of
+    requests (both read and write) in 30 days have been answered successfully and
+    fast enough?\",\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"decimals\":
+    3,\n               \"unit\": \"percentunit\"\n            }\n         },\n         \"gridPos\":
+    {\n            \"h\": 7,\n            \"w\": 8,\n            \"x\": 0,\n            \"y\":
+    2\n         },\n         \"id\": 2,\n         \"interval\": \"1m\",\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"apiserver_request:availability30d{verb=\\\"all\\\",
+    cluster=\\\"$cluster\\\"}\"\n            }\n         ],\n         \"title\": \"Availability
+    (30d) > 99.000%\",\n         \"type\": \"stat\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"description\": \"How much error budget is left looking
+    at our 0.990% availability guarantees?\",\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"custom\": {\n                  \"fillOpacity\": 100\n               },\n
+    \              \"decimals\": 3,\n               \"unit\": \"percentunit\"\n            }\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    16,\n            \"x\": 8,\n            \"y\": 2\n         },\n         \"id\":
+    3,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
+    {\n               \"asTable\": true,\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"100 * (apiserver_request:availability30d{verb=\\\"all\\\",
+    cluster=\\\"$cluster\\\"} - 0.990000)\",\n               \"legendFormat\": \"errorbudget\"\n
+    \           }\n         ],\n         \"title\": \"ErrorBudget (30d) > 99.000%\",\n
+    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"description\": \"How many percent of read requests (LIST,GET)
+    in 30 days have been answered successfully and fast enough?\",\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"decimals\": 3,\n               \"unit\":
+    \"percentunit\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 6,\n            \"x\": 0,\n            \"y\": 9\n         },\n
+    \        \"id\": 4,\n         \"interval\": \"1m\",\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"apiserver_request:availability30d{verb=\\\"read\\\",
+    cluster=\\\"$cluster\\\"}\"\n            }\n         ],\n         \"title\": \"Read
+    Availability (30d)\",\n         \"type\": \"stat\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"description\": \"How many read requests (LIST,GET) per
+    second do the apiservers get by code?\",\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"custom\": {\n                  \"fillOpacity\": 100,\n                  \"stacking\":
+    {\n                     \"mode\": \"normal\"\n                  }\n               },\n
+    \              \"unit\": \"reqps\"\n            },\n            \"overrides\":
+    [\n               {\n                  \"matcher\": {\n                     \"id\":
+    \"byRegexp\",\n                     \"options\": \"/2../i\"\n                  },\n
+    \                 \"properties\": [\n                     {\n                        \"id\":
+    \"color\",\n                        \"value\": \"#56A64B\"\n                     }\n
+    \                 ]\n               },\n               {\n                  \"matcher\":
+    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
+    \"/3../i\"\n                  },\n                  \"properties\": [\n                     {\n
+    \                       \"id\": \"color\",\n                        \"value\":
+    \"#F2CC0C\"\n                     }\n                  ]\n               },\n
+    \              {\n                  \"matcher\": {\n                     \"id\":
+    \"byRegexp\",\n                     \"options\": \"/4../i\"\n                  },\n
+    \                 \"properties\": [\n                     {\n                        \"id\":
+    \"color\",\n                        \"value\": \"#3274D9\"\n                     }\n
+    \                 ]\n               },\n               {\n                  \"matcher\":
+    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
+    \"/5../i\"\n                  },\n                  \"properties\": [\n                     {\n
+    \                       \"id\": \"color\",\n                        \"value\":
+    \"#E02F44\"\n                     }\n                  ]\n               }\n            ]\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    6,\n            \"x\": 6,\n            \"y\": 9\n         },\n         \"id\":
+    5,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
+    {\n               \"asTable\": true,\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum by (code) (code_resource:apiserver_request_total:rate5m{verb=\\\"read\\\",
+    cluster=\\\"$cluster\\\"})\",\n               \"legendFormat\": \"{{ code }}\"\n
+    \           }\n         ],\n         \"title\": \"Read SLI - Requests\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"description\":
+    \"How many percent of read requests (LIST,GET) per second are returned with errors
+    (5xx)?\",\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"min\":
+    0,\n               \"unit\": \"percentunit\"\n            }\n         },\n         \"gridPos\":
+    {\n            \"h\": 7,\n            \"w\": 6,\n            \"x\": 12,\n            \"y\":
+    9\n         },\n         \"id\": 6,\n         \"interval\": \"1m\",\n         \"options\":
+    {\n            \"legend\": {\n               \"asTable\": true,\n               \"placement\":
+    \"right\",\n               \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum by (resource) (code_resource:apiserver_request_total:rate5m{verb=\\\"read\\\",code=~\\\"5..\\\",
+    cluster=\\\"$cluster\\\"}) / sum by (resource) (code_resource:apiserver_request_total:rate5m{verb=\\\"read\\\",
+    cluster=\\\"$cluster\\\"})\",\n               \"legendFormat\": \"{{ resource
+    }}\"\n            }\n         ],\n         \"title\": \"Read SLI - Errors\",\n
+    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"description\": \"How many seconds is the 99th percentile
+    for reading (LIST|GET) a given resource?\",\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"unit\": \"s\"\n            }\n         },\n         \"gridPos\":
+    {\n            \"h\": 7,\n            \"w\": 6,\n            \"x\": 18,\n            \"y\":
+    9\n         },\n         \"id\": 7,\n         \"interval\": \"1m\",\n         \"options\":
+    {\n            \"legend\": {\n               \"asTable\": true,\n               \"placement\":
+    \"right\",\n               \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"cluster_quantile:apiserver_request_sli_duration_seconds:histogram_quantile{verb=\\\"read\\\",
+    cluster=\\\"$cluster\\\"}\",\n               \"legendFormat\": \"{{ resource }}\"\n
+    \           }\n         ],\n         \"title\": \"Read SLI - Duration\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"description\":
+    \"How many percent of write requests (POST|PUT|PATCH|DELETE) in 30 days have been
+    answered successfully and fast enough?\",\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"decimals\": 3,\n               \"unit\": \"percentunit\"\n
+    \           }\n         },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    6,\n            \"x\": 0,\n            \"y\": 16\n         },\n         \"id\":
+    8,\n         \"interval\": \"1m\",\n         \"pluginVersion\": \"v11.1.0\",\n
+    \        \"targets\": [\n            {\n               \"datasource\": {\n                  \"type\":
+    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
+    \              \"expr\": \"apiserver_request:availability30d{verb=\\\"write\\\",
+    cluster=\\\"$cluster\\\"}\"\n            }\n         ],\n         \"title\": \"Write
+    Availability (30d)\",\n         \"type\": \"stat\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"description\": \"How many write requests (POST|PUT|PATCH|DELETE)
+    per second do the apiservers get by code?\",\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"custom\": {\n                  \"fillOpacity\": 100,\n                  \"stacking\":
+    {\n                     \"mode\": \"normal\"\n                  }\n               },\n
+    \              \"unit\": \"reqps\"\n            },\n            \"overrides\":
+    [\n               {\n                  \"matcher\": {\n                     \"id\":
+    \"byRegexp\",\n                     \"options\": \"/2../i\"\n                  },\n
+    \                 \"properties\": [\n                     {\n                        \"id\":
+    \"color\",\n                        \"value\": \"#56A64B\"\n                     }\n
+    \                 ]\n               },\n               {\n                  \"matcher\":
+    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
+    \"/3../i\"\n                  },\n                  \"properties\": [\n                     {\n
+    \                       \"id\": \"color\",\n                        \"value\":
+    \"#F2CC0C\"\n                     }\n                  ]\n               },\n
+    \              {\n                  \"matcher\": {\n                     \"id\":
+    \"byRegexp\",\n                     \"options\": \"/4../i\"\n                  },\n
+    \                 \"properties\": [\n                     {\n                        \"id\":
+    \"color\",\n                        \"value\": \"#3274D9\"\n                     }\n
+    \                 ]\n               },\n               {\n                  \"matcher\":
+    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
+    \"/5../i\"\n                  },\n                  \"properties\": [\n                     {\n
+    \                       \"id\": \"color\",\n                        \"value\":
+    \"#E02F44\"\n                     }\n                  ]\n               }\n            ]\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    6,\n            \"x\": 6,\n            \"y\": 16\n         },\n         \"id\":
+    9,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
+    {\n               \"asTable\": true,\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum by (code) (code_resource:apiserver_request_total:rate5m{verb=\\\"write\\\",
+    cluster=\\\"$cluster\\\"})\",\n               \"legendFormat\": \"{{ code }}\"\n
+    \           }\n         ],\n         \"title\": \"Write SLI - Requests\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"description\":
+    \"How many percent of write requests (POST|PUT|PATCH|DELETE) per second are returned
+    with errors (5xx)?\",\n         \"fieldConfig\": {\n            \"defaults\":
+    {\n               \"min\": 0,\n               \"unit\": \"percentunit\"\n            }\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    6,\n            \"x\": 12,\n            \"y\": 16\n         },\n         \"id\":
+    10,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
+    {\n               \"asTable\": true,\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum by (resource) (code_resource:apiserver_request_total:rate5m{verb=\\\"write\\\",code=~\\\"5..\\\",
+    cluster=\\\"$cluster\\\"}) / sum by (resource) (code_resource:apiserver_request_total:rate5m{verb=\\\"write\\\",
+    cluster=\\\"$cluster\\\"})\",\n               \"legendFormat\": \"{{ resource
+    }}\"\n            }\n         ],\n         \"title\": \"Write SLI - Errors\",\n
+    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"description\": \"How many seconds is the 99th percentile
+    for writing (POST|PUT|PATCH|DELETE) a given resource?\",\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"unit\": \"s\"\n            }\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    6,\n            \"x\": 18,\n            \"y\": 16\n         },\n         \"id\":
+    11,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
+    {\n               \"asTable\": true,\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"cluster_quantile:apiserver_request_sli_duration_seconds:histogram_quantile{verb=\\\"write\\\",
+    cluster=\\\"$cluster\\\"}\",\n               \"legendFormat\": \"{{ resource }}\"\n
+    \           }\n         ],\n         \"title\": \"Write SLI - Duration\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"min\": 0,\n               \"unit\":
+    \"ops\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 23\n         },\n
+    \        \"id\": 12,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"placement\":
+    \"right\",\n               \"showLegend\": false\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(workqueue_adds_total{job=\\\"kube-apiserver\\\",
+    instance=~\\\"$instance\\\", cluster=\\\"$cluster\\\"}[$__rate_interval])) by
+    (instance, name)\",\n               \"legendFormat\": \"{{instance}} {{name}}\"\n
+    \           }\n         ],\n         \"title\": \"Work Queue Add Rate\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"min\": 0,\n               \"unit\":
+    \"short\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 23\n         },\n
+    \        \"id\": 13,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"placement\":
+    \"right\",\n               \"showLegend\": false\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"sum(rate(workqueue_depth{job=\\\"kube-apiserver\\\",
+    instance=~\\\"$instance\\\", cluster=\\\"$cluster\\\"}[$__rate_interval])) by
+    (instance, name)\",\n               \"legendFormat\": \"{{instance}} {{name}}\"\n
+    \           }\n         ],\n         \"title\": \"Work Queue Depth\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"min\": 0,\n               \"unit\":
+    \"s\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\": 30\n         },\n
+    \        \"id\": 14,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
+    [\n                  \"lastNotNull\"\n               ],\n               \"placement\":
+    \"right\",\n               \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"histogram_quantile(0.99, sum(rate(workqueue_queue_duration_seconds_bucket{job=\\\"kube-apiserver\\\",
+    instance=~\\\"$instance\\\", cluster=\\\"$cluster\\\"}[$__rate_interval])) by
+    (instance, name, le))\",\n               \"legendFormat\": \"{{instance}} {{name}}\"\n
+    \           }\n         ],\n         \"title\": \"Work Queue Latency\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"unit\": \"bytes\"\n            }\n
+    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
+    8,\n            \"x\": 0,\n            \"y\": 37\n         },\n         \"id\":
+    15,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
+    {\n               \"asTable\": true,\n               \"placement\": \"right\",\n
+    \              \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"process_resident_memory_bytes{job=\\\"kube-apiserver\\\",instance=~\\\"$instance\\\",
+    cluster=\\\"$cluster\\\"}\",\n               \"legendFormat\": \"{{instance}}\"\n
+    \           }\n         ],\n         \"title\": \"Memory\",\n         \"type\":
+    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
+    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
+    {\n            \"defaults\": {\n               \"min\": 0,\n               \"unit\":
+    \"short\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 8,\n            \"x\": 8,\n            \"y\": 37\n         },\n
+    \        \"id\": 16,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"placement\":
+    \"right\",\n               \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"rate(process_cpu_seconds_total{job=\\\"kube-apiserver\\\",instance=~\\\"$instance\\\",
+    cluster=\\\"$cluster\\\"}[$__rate_interval])\",\n               \"legendFormat\":
+    \"{{instance}}\"\n            }\n         ],\n         \"title\": \"CPU usage\",\n
+    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
+    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
+    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"unit\":
+    \"short\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
+    7,\n            \"w\": 8,\n            \"x\": 16,\n            \"y\": 37\n         },\n
+    \        \"id\": 17,\n         \"interval\": \"1m\",\n         \"options\": {\n
+    \           \"legend\": {\n               \"asTable\": true,\n               \"placement\":
+    \"right\",\n               \"showLegend\": true\n            },\n            \"tooltip\":
+    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
+    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
+    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
+    \              },\n               \"expr\": \"go_goroutines{job=\\\"kube-apiserver\\\",instance=~\\\"$instance\\\",
+    cluster=\\\"$cluster\\\"}\",\n               \"legendFormat\": \"{{instance}}\"\n
+    \           }\n         ],\n         \"title\": \"Goroutines\",\n         \"type\":
+    \"timeseries\"\n      }\n   ],\n   \"refresh\": \"10s\",\n   \"schemaVersion\":
+    39,\n   \"tags\": [\n      \"kubernetes-mixin\"\n   ],\n   \"templating\": {\n
+    \     \"list\": [\n         {\n            \"current\": {\n               \"selected\":
+    true,\n               \"text\": \"default\",\n               \"value\": \"default\"\n
+    \           },\n            \"hide\": 0,\n            \"label\": \"Data source\",\n
+    \           \"name\": \"datasource\",\n            \"query\": \"prometheus\",\n
+    \           \"regex\": \"\",\n            \"type\": \"datasource\"\n         },\n
+    \        {\n            \"datasource\": {\n               \"type\": \"prometheus\",\n
+    \              \"uid\": \"${datasource}\"\n            },\n            \"hide\":
+    2,\n            \"label\": \"cluster\",\n            \"name\": \"cluster\",\n
+    \           \"query\": \"label_values(up{job=\\\"kube-apiserver\\\"}, cluster)\",\n
+    \           \"refresh\": 2,\n            \"sort\": 1,\n            \"type\": \"query\"\n
+    \        },\n         {\n            \"datasource\": {\n               \"type\":
+    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
+    0,\n            \"includeAll\": true,\n            \"name\": \"instance\",\n            \"query\":
+    \"label_values(up{job=\\\"kube-apiserver\\\", cluster=\\\"$cluster\\\"}, instance)\",\n
+    \           \"refresh\": 2,\n            \"sort\": 1,\n            \"type\": \"query\"\n
+    \        }\n      ]\n   },\n   \"time\": {\n      \"from\": \"now-1h\",\n      \"to\":
+    \"now\"\n   },\n   \"timezone\": \"UTC\",\n   \"title\": \"Kubernetes / API server\",\n
+    \  \"uid\": \"09ec8aa1e996d6ffcd6817bbaff4db1b\"\n}\n"

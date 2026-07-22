@@ -1,0 +1,17 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMAlert
+metadata:
+  name: logs
+  namespace: observability
+spec:
+  datasource:
+    url: http://vlsingle-logs:9428/select/logsql/query
+  evaluationInterval: 30s
+  notifiers: []
+  remoteWrite:
+    url: http://vmsingle-metrics:8429
+  ruleSelector:
+    matchLabels:
+      role: logs

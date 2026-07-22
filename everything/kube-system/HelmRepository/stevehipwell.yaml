@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: HelmRepository
+metadata:
+  name: stevehipwell
+  namespace: kube-system
+spec:
+  interval: 1h
+  url: https://stevehipwell.github.io/helm-charts

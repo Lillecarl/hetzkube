@@ -1,0 +1,40 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: VMAgent
+metadata:
+  name: metrics-control-plane
+  namespace: observability
+spec:
+  daemonSetMode: true
+  dnsPolicy: ClusterFirstWithHostNet
+  externalLabels:
+    cluster: hetzkube
+  hostNetwork: true
+  inlineScrapeConfig: "- job_name: kube-scheduler\n  static_configs:\n    - targets:
+    [\"127.0.0.1:10259\"]\n  scheme: https\n  tls_config:\n    insecure_skip_verify:
+    true\n  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token\n
+    \ metrics_path: /metrics\n  scrape_interval: 30s\n\n- job_name: kube-controller-manager\n
+    \ static_configs:\n    - targets: [\"127.0.0.1:10257\"]\n  scheme: https\n  tls_config:\n
+    \   insecure_skip_verify: true\n  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token\n
+    \ metrics_path: /metrics\n  scrape_interval: 30s\n\n- job_name: etcd\n  static_configs:\n
+    \   - targets: [\"127.0.0.1:2381\"]\n  scheme: http\n  metrics_path: /metrics\n
+    \ scrape_interval: 30s\n"
+  nodeScrapeNamespaceSelector: {}
+  nodeScrapeSelector: {}
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ''
+  podScrapeNamespaceSelector: {}
+  podScrapeSelector: {}
+  remoteWrite:
+  - url: http://vmsingle-metrics:8429/api/v1/write
+  resources:
+    requests:
+      cpu: 250m
+      memory: 128Mi
+  serviceScrapeNamespaceSelector: {}
+  serviceScrapeSelector: {}
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+    operator: Exists

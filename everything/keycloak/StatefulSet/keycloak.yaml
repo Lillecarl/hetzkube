@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+ekn:
+  gitOpsTarget: everything
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/name: keycloak
+  name: keycloak
+  namespace: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: keycloak
+  serviceName: keycloak-discovery
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak
+    spec:
+      containers:
+      - args:
+        - start
+        env:
+        - name: JAVA_OPTS_APPEND
+          value: -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:G1PeriodicGCInterval=30000
+        - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: admin
+        - name: KC_BOOTSTRAP_ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: admin
+        - name: KC_CACHE
+          value: ispn
+        - name: KC_CACHE_EMBEDDED_NETWORK_BIND_ADDRESS
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KC_DB
+          value: postgres
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: db
+        - name: KC_DB_URL_DATABASE
+          value: keycloak
+        - name: KC_DB_URL_HOST
+          value: pg0-rw.database
+        - name: KC_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: db
+        - name: KC_HEALTH_ENABLED
+          value: 'true'
+        - name: KC_HOSTNAME
+          value: keycloak.lillecarl.com
+        - name: KC_HOSTNAME_STRICT
+          value: 'false'
+        - name: KC_HTTP_ENABLED
+          value: 'true'
+        - name: KC_METRICS_ENABLED
+          value: 'true'
+        - name: KC_PROXY_HEADERS
+          value: xforwarded
+        image: quay.io/keycloak/keycloak:26.6.3
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health/live
+            port: 9000
+          periodSeconds: 10
+        name: keycloak
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 7800
+          name: jgroups
+        - containerPort: 57800
+          name: jgroups-fd
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health/ready
+            port: 9000
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+        startupProbe:
+          failureThreshold: 600
+          httpGet:
+            path: /health/started
+            port: 9000
+          periodSeconds: 1
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: keycloak
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule

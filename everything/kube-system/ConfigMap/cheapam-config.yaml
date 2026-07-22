@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  IPv4: 10.133.0.0/16
+ekn:
+  gitOpsTarget: everything
+kind: ConfigMap
+metadata:
+  name: cheapam-config
+  namespace: kube-system

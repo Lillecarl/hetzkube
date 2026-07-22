@@ -1,0 +1,13 @@
+apiVersion: postgresql.cnpg.io/v1
+ekn:
+  gitOpsTarget: everything
+kind: Database
+metadata:
+  name: grafana
+  namespace: database
+spec:
+  cluster:
+    name: pg0
+  databaseReclaimPolicy: delete
+  name: grafana
+  owner: grafana

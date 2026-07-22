@@ -1,0 +1,29 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: HetznerCluster
+metadata:
+  name: hetzkube
+  namespace: hetzkube
+spec:
+  controlPlaneEndpoint:
+    host: kubernetes.lillecarl.com
+    port: 6443
+  controlPlaneLoadBalancer:
+    enabled: false
+  controlPlaneRegions:
+  - hel1
+  hcloudNetwork:
+    enabled: false
+  hcloudPlacementGroups:
+  - name: control-plane
+    type: spread
+  - name: workers
+    type: spread
+  hetznerSecretRef:
+    key:
+      hcloudToken: hcloud
+    name: hetzner
+  sshKeys:
+    hcloud:
+    - name: lillecarl@lillecarl.com

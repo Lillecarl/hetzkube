@@ -1,0 +1,30 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+ekn:
+  gitOpsTarget: everything
+kind: MachineDeployment
+metadata:
+  labels:
+    nodepool: hetzkube-workers-x86
+  name: hetzkube-workers-x86
+  namespace: hetzkube
+spec:
+  clusterName: hetzkube
+  replicas: 1
+  selector: {}
+  template:
+    metadata:
+      labels:
+        nodepool: hetzkube-workers-x86
+    spec:
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+          kind: KubeadmConfigTemplate
+          name: hetzkube-workers
+      clusterName: hetzkube
+      failureDomain: hel1
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: HCloudMachineTemplate
+        name: hetzkube-workers-x86
+      version: v1.36.2
