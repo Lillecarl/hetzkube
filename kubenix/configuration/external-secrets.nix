@@ -19,12 +19,14 @@
     # decrypted at sync/apply time rather than template-substituted --
     # matching how the rest of the ArgoCD rollout is meant to replace kluctl.
     #
-    # Routed to "bootstrap" (not "everything"): kluctl still deploys
-    # everything else in kubernetes.generated (kluctl.nix's
-    # excludeGitopsTargets only excludes "bootstrap" so far), and kluctl has
-    # no SOPS-decrypt-at-apply mechanism of its own -- if this object stayed
-    # in "everything", kluctl would apply the literal ciphertext as the
-    # Secret's stringData, breaking ESO's connection to Scaleway.
+    # No special GitOps-target routing needed -- it stays on the default
+    # "everything" path like the rest of the ESO stack (no ordering
+    # dependency requires it to exist before external-secrets itself; ESO
+    # just retries until the Secret shows up, same as any other
+    # ExternalSecret). kluctl.nix's isExcludedFromKluctl now generically
+    # excludes any object carrying a `sops` key regardless of target, so
+    # kluctl never touches this one's raw ciphertext even while it still
+    # owns the rest of "everything".
     importyaml.scaleway-secret = {
       # `importyaml`'s local-file branch expects an already-store-copied
       # path string (unlike its remote-URL branch, a bare repo-relative
@@ -35,7 +37,6 @@
       # named/numbered-list override support, and skipping the conversion
       # avoids any risk of it touching the sops metadata's own `age` list.
       convertLists = false;
-      overrides = [ (object: object // { ekn.gitOpsTarget = "bootstrap"; }) ];
     };
     kubernetes.resources.none.ClusterSecretStore.scaleway = {
       spec = {
