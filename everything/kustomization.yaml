@@ -506,3 +506,5 @@ resources:
 - observability/VerticalPodAutoscaler/otel-collector.yaml
 - pgadmin/VerticalPodAutoscaler/pgadmin.yaml
 - vm/VerticalPodAutoscaler/vm-operator.yaml
+generators:
+- kube-system/Secret/scaleway.ksops-generator.yaml
