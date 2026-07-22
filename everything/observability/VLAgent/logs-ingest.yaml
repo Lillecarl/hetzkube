@@ -1,6 +1,4 @@
 apiVersion: operator.victoriametrics.com/v1
-ekn:
-  gitOpsTarget: everything
 kind: VLAgent
 metadata:
   name: logs-ingest

@@ -21,8 +21,6 @@ data:
     set -eu
 
     rm -rf "$VOL_DIR"'
-ekn:
-  gitOpsTarget: everything
 kind: ConfigMap
 metadata:
   labels:

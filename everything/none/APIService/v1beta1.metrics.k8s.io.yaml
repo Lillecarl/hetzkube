@@ -1,6 +1,4 @@
 apiVersion: apiregistration.k8s.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: APIService
 metadata:
   labels:

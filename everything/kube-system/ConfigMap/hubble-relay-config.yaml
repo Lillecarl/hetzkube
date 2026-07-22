@@ -5,8 +5,6 @@ data:
     \nsort-buffer-drain-timeout: \ntls-hubble-client-cert-file: /var/lib/hubble-relay/tls/client.crt\ntls-hubble-client-key-file:
     /var/lib/hubble-relay/tls/client.key\ntls-hubble-server-ca-files: /var/lib/hubble-relay/tls/hubble-server-ca.crt\n\ndisable-server-tls:
     true\n"
-ekn:
-  gitOpsTarget: everything
 kind: ConfigMap
 metadata:
   name: hubble-relay-config

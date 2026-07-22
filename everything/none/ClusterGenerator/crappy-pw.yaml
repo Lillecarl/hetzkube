@@ -1,6 +1,4 @@
 apiVersion: generators.external-secrets.io/v1alpha1
-ekn:
-  gitOpsTarget: everything
 kind: ClusterGenerator
 metadata:
   name: crappy-pw

@@ -1,6 +1,4 @@
 apiVersion: grafana.integreatly.org/v1beta1
-ekn:
-  gitOpsTarget: everything
 kind: GrafanaDashboard
 metadata:
   name: k8s-resources-cluster

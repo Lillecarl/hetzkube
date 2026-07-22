@@ -1,6 +1,4 @@
 apiVersion: batch/v1
-ekn:
-  gitOpsTarget: everything
 kind: CronJob
 metadata:
   name: cnpg-primaryswap

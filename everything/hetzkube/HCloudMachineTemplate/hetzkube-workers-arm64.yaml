@@ -1,6 +1,4 @@
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
-ekn:
-  gitOpsTarget: everything
 kind: HCloudMachineTemplate
 metadata:
   name: hetzkube-workers-arm64

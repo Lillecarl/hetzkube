@@ -40,8 +40,6 @@ data:
     \ - PolicyReport\n  - ClusterPolicyReport\n  - EphemeralReport\n  - ClusterEphemeralReport\n
     \ - AdmissionReport\n  - ClusterAdmissionReport\n  - BackgroundScanReport\n  -
     ClusterBackgroundScanReport\n  - UpdateRequest\n"
-ekn:
-  gitOpsTarget: bootstrap
 kind: ConfigMap
 metadata:
   labels:

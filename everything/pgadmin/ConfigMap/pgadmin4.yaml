@@ -16,8 +16,6 @@ data:
     Additional parameters\n        'OAUTH2_ADDITIONAL_PARAMS': {\n            'access_type':
     'offline'\n        },\n        'OAUTH2_SSL_CERT_VERIFICATION': True,\n        'OAUTH2_CHALLENGE_METHOD':
     'S256',\n        'OAUTH2_RESPONSE_TYPE': 'code',\n    }\n]\n"
-ekn:
-  gitOpsTarget: everything
 kind: ConfigMap
 metadata:
   name: pgadmin4

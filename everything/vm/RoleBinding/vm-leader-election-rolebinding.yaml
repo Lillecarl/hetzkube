@@ -1,6 +1,4 @@
 apiVersion: rbac.authorization.k8s.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: RoleBinding
 metadata:
   name: vm-leader-election-rolebinding

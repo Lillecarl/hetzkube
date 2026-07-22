@@ -1,6 +1,4 @@
 apiVersion: cilium.io/v2alpha1
-ekn:
-  gitOpsTarget: everything
 kind: CiliumGatewayClassConfig
 metadata:
   name: cilium

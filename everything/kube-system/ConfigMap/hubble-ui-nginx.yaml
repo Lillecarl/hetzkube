@@ -10,8 +10,6 @@ data:
     $uri $uri/ /index.html /index.html;\n        }\n\n        # Liveness probe\n        location
     /healthz {\n            access_log off;\n            add_header Content-Type text/plain;\n
     \           return 200 'ok';\n        }\n    }\n}"
-ekn:
-  gitOpsTarget: everything
 kind: ConfigMap
 metadata:
   name: hubble-ui-nginx

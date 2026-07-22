@@ -20,8 +20,6 @@ data:
     debug\n  extensions: [health_check]\n  pipelines:\n    logs:\n      receivers:
     [k8sobjects]\n      processors: [k8sattributes, transform]\n      exporters: [debug,
     otlphttp]\n"
-ekn:
-  gitOpsTarget: everything
 kind: ConfigMap
 metadata:
   labels:

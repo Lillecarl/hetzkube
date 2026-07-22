@@ -1,6 +1,4 @@
 apiVersion: cert-manager.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: Certificate
 metadata:
   labels:

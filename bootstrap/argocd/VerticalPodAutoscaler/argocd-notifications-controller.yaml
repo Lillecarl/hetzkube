@@ -1,6 +1,4 @@
 apiVersion: autoscaling.k8s.io/v1
-ekn:
-  gitOpsTarget: bootstrap
 kind: VerticalPodAutoscaler
 metadata:
   name: argocd-notifications-controller

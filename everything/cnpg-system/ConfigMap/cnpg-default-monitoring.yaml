@@ -234,8 +234,6 @@ data:
     \"Default version\"\n    - installed_version:\n        usage: \"LABEL\"\n        description:
     \"Installed version\"\n    - update_available:\n        usage: \"GAUGE\"\n        description:
     \"An update is available\"\n  target_databases:\n    - '*'\n"
-ekn:
-  gitOpsTarget: everything
 kind: ConfigMap
 metadata:
   labels:

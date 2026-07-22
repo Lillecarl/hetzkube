@@ -1,7 +1,5 @@
 apiVersion: v1
 automountServiceAccountToken: true
-ekn:
-  gitOpsTarget: everything
 kind: ServiceAccount
 metadata:
   labels:

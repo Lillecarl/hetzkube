@@ -156,8 +156,6 @@ data:
   vtep-mac: ''
   vtep-mask: ''
   write-cni-conf-when-ready: /host/etc/cni/net.d/05-cilium.conflist
-ekn:
-  gitOpsTarget: everything
 kind: ConfigMap
 metadata:
   name: cilium-config

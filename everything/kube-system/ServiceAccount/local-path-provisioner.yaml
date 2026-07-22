@@ -1,6 +1,4 @@
 apiVersion: v1
-ekn:
-  gitOpsTarget: everything
 imagePullSecrets: null
 kind: ServiceAccount
 metadata:

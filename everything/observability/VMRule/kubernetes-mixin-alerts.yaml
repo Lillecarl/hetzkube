@@ -1,6 +1,4 @@
 apiVersion: operator.victoriametrics.com/v1beta1
-ekn:
-  gitOpsTarget: everything
 kind: VMRule
 metadata:
   labels:

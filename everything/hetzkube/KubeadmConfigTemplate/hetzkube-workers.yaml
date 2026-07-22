@@ -1,6 +1,4 @@
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
-ekn:
-  gitOpsTarget: everything
 kind: KubeadmConfigTemplate
 metadata:
   name: hetzkube-workers

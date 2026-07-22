@@ -1,6 +1,4 @@
 apiVersion: apps/v1
-ekn:
-  gitOpsTarget: everything
 kind: Deployment
 metadata:
   name: chaoskube

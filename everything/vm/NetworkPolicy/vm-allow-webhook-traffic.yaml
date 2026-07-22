@@ -1,6 +1,4 @@
 apiVersion: networking.k8s.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: NetworkPolicy
 metadata:
   labels:

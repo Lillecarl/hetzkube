@@ -1,6 +1,4 @@
 apiVersion: apps/v1
-ekn:
-  gitOpsTarget: bootstrap
 kind: Deployment
 metadata:
   labels:

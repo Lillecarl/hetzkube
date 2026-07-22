@@ -1,6 +1,4 @@
 apiVersion: argoproj.io/v1alpha1
-ekn:
-  gitOpsTarget: bootstrap
 kind: Application
 metadata:
   name: bootstrap

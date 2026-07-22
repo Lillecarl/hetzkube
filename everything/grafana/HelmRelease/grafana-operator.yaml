@@ -1,6 +1,4 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
-ekn:
-  gitOpsTarget: everything
 kind: HelmRelease
 metadata:
   name: grafana-operator

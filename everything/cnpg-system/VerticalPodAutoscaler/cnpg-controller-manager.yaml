@@ -1,6 +1,4 @@
 apiVersion: autoscaling.k8s.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: VerticalPodAutoscaler
 metadata:
   name: cnpg-controller-manager

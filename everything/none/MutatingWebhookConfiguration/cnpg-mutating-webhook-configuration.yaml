@@ -1,6 +1,4 @@
 apiVersion: admissionregistration.k8s.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: MutatingWebhookConfiguration
 metadata:
   name: cnpg-mutating-webhook-configuration

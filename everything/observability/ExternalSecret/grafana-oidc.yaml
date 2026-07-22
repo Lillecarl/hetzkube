@@ -1,6 +1,4 @@
 apiVersion: external-secrets.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: ExternalSecret
 metadata:
   name: grafana-oidc

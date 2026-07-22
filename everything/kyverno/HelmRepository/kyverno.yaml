@@ -1,6 +1,4 @@
 apiVersion: source.toolkit.fluxcd.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: HelmRepository
 metadata:
   name: kyverno

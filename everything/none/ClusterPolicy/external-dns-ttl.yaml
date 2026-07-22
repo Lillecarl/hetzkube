@@ -1,6 +1,4 @@
 apiVersion: kyverno.io/v1
-ekn:
-  gitOpsTarget: everything
 kind: ClusterPolicy
 metadata:
   name: external-dns-ttl
