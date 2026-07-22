@@ -62,8 +62,11 @@
       # Reject Ingress resources — use Gateway API (HTTPRoute) instead
       (
         object:
-        assert object.kind or null != "Ingress"
-          || throw "Ingress resource '${object.metadata.name}' found in namespace '${object.metadata.namespace or "none"}'. Use Gateway API (HTTPRoute) instead.";
+        assert
+          object.kind or null != "Ingress"
+          || throw "Ingress resource '${object.metadata.name}' found in namespace '${
+            object.metadata.namespace or "none"
+          }'. Use Gateway API (HTTPRoute) instead.";
         object
       )
       # make all Service dualstack
