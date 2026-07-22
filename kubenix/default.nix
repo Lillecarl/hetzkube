@@ -7,14 +7,10 @@
 }:
 let
   inherit (pkgs) lib;
-  stage =
-    if lib.hasAttr "stage" args then
-      args.stage
-    else
-      builtins.trace ''
-        Please specify a stage using the following arguments:
-        --argstr stage $stage
-      '' "full";
+  # "full" is the day-to-day default -- "capi" only matters when
+  # bootstrapping a brand new cluster from scratch (see README.md), a
+  # one-time concern, not something worth nagging about on every eval.
+  stage = args.stage or "full";
 in
 import easykubenix {
   inherit pkgs;
