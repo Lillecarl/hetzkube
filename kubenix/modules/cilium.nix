@@ -163,9 +163,16 @@ in
           lib.boolToString cfg.policyAuditMode;
 
         kubernetes.resources.kube-system = {
-          Secret.cilium-ca.metadata.annotations."kluctl.io/ignore-diff" = true;
-          Secret.hubble-server-certs.metadata.annotations."kluctl.io/ignore-diff" = true;
-          Secret.hubble-relay-client-certs.metadata.annotations."kluctl.io/ignore-diff" = true;
+          # Kubernetes annotations are map[string]string -- a Nix bool here
+          # serializes as a JSON boolean, which client-side apply/merge-patch
+          # (kluctl) tolerates silently but real server-side apply's
+          # structured-merge-diff rejects with a 500 ("expected string, got
+          # &value.valueUnstructured{Value:true}") while building the typed
+          # patch, since it can't reconcile the value against the
+          # map[string]string schema.
+          Secret.cilium-ca.metadata.annotations."kluctl.io/ignore-diff" = "true";
+          Secret.hubble-server-certs.metadata.annotations."kluctl.io/ignore-diff" = "true";
+          Secret.hubble-relay-client-certs.metadata.annotations."kluctl.io/ignore-diff" = "true";
         };
         helm.releases.${moduleName} = {
           namespace = "kube-system";
