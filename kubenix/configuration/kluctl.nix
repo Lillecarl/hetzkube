@@ -10,7 +10,7 @@
     # Don't also apply it via kluctl. "everything" isn't listed here yet --
     # it stays on kluctl until ArgoCD's "everything" Application is actually
     # syncing (see the GitOps rollout plan).
-    excludeGitopsPaths = [ "bootstrap" ];
+    excludeGitopsTargets = [ "bootstrap" ];
     # Add SOPS secrets
     deployment.vars = [ { file = "secrets/all.yaml"; } ];
     files."secrets/all.yaml" = builtins.readFile ../../secrets/all.yaml;

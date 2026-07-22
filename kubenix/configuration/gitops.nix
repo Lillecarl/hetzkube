@@ -1,15 +1,12 @@
 { config, lib, ... }:
 let
-  bootstrapApp = config.kubernetes.objects.argocd.Application.bootstrap;
-  everythingApp = config.kubernetes.objects.argocd.Application.everything;
-
   # Every Application CR is itself managed by "bootstrap" -- app-of-apps root
   # that self-manages, so a change to sync policy or adding a third
   # Application later just flows through the same `ekn commit` pipeline as
   # everything else.
   mkApplication = path: {
     metadata.namespace = "argocd";
-    ekn.argo = [ bootstrapApp ];
+    ekn.gitOpsTarget = "bootstrap";
     spec = {
       project = "default";
       source = {
@@ -33,6 +30,12 @@ in
     gitops = {
       enable = true;
       branch = "deploy";
+      targets = {
+        bootstrap.branch = config.gitops.branch;
+        bootstrap.path = "bootstrap";
+        everything.branch = config.gitops.branch;
+        everything.path = "everything";
+      };
     };
 
     kubernetes.apiMappings = {
@@ -67,18 +70,18 @@ in
         else
           object
       )
-      (object: object // { ekn.argo = [ bootstrapApp ]; })
+      (object: object // { ekn.gitOpsTarget = "bootstrap"; })
     ];
 
     # Any generated object that isn't already explicitly routed to a GitOps
-    # target (via ekn.argo/ekn.flux set elsewhere) flows to the single
+    # target (via ekn.gitOpsTarget set elsewhere) flows to the single
     # "everything" Application by default. This is what lets every existing
     # module keep working unmodified instead of hand-annotating each one.
     kubernetes.transformers = [
       (
         object:
-        if (object.ekn.argo or [ ]) == [ ] && (object.ekn.flux or [ ]) == [ ] then
-          lib.recursiveUpdate object { ekn.argo = [ everythingApp ]; }
+        if (object.ekn.gitOpsTarget or null) == null then
+          lib.recursiveUpdate object { ekn.gitOpsTarget = "everything"; }
         else
           object
       )

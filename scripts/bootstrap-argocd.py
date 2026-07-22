@@ -23,7 +23,7 @@ import subprocess
 import sys
 
 EXPECTED_CONTEXT = "hetzkube"
-TARGET_PATH = "bootstrap"
+TARGET_NAME = "bootstrap"
 ARGOCD_NAMESPACE = "argocd"
 
 
@@ -50,20 +50,14 @@ def check_context() -> None:
 
 
 def bootstrap_objects() -> list[dict]:
-    generated: list[dict] = nix_eval("kubenix.config.kubernetes.generated")  # type: ignore[assignment]
-    eken_by_path: dict = nix_eval("kubenix.config.kubernetes.eknByPath")  # type: ignore[assignment]
-
-    routed_keys: set[tuple[str, str, str]] = set()
-    for namespace, kinds in eken_by_path.items():
-        for kind, names in kinds.items():
-            for name, routes in names.items():
-                if any(route["path"] == TARGET_PATH for route in routes):
-                    routed_keys.add((namespace, kind, name))
-
-    def key(obj: dict) -> tuple[str, str, str]:
-        return (obj["metadata"].get("namespace", "none"), obj["kind"], obj["metadata"]["name"])
-
-    return [obj for obj in generated if key(obj) in routed_keys]
+    gitops_targets: dict = nix_eval("kubenix.config.kubernetes.gitopsTargets")  # type: ignore[assignment]
+    target = gitops_targets.get(TARGET_NAME)
+    if target is None:
+        return []
+    # kubernetes.gitopsTargets objects still carry `.ekn` routing metadata
+    # (it's stripped in kubernetes.generated, not here) -- drop it before
+    # applying, kubectl doesn't want it.
+    return [{k: v for k, v in obj.items() if k != "ekn"} for obj in target["objects"]]
 
 
 def kubectl_apply(objects: list[dict], *, wait_crds: bool) -> None:
