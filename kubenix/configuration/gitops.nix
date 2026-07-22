@@ -4,35 +4,39 @@ let
   # that self-manages, so a change to sync policy or adding a third
   # Application later just flows through the same `ekn commit` pipeline as
   # everything else.
-  mkApplication = path: {
-    metadata.namespace = "argocd";
-    ekn.gitOpsTarget = "bootstrap";
-    spec = {
-      project = "default";
-      source = {
-        repoURL = "https://github.com/Lillecarl/hetzkube.git";
-        targetRevision = config.gitops.branch;
-        inherit path;
-      };
-      destination = {
-        server = "https://kubernetes.default.svc";
-        namespace = "argocd";
-      };
-      # Manual sync until the rollout plan's diff-verification step (Phase 4)
-      # confirms ArgoCD reconciling is a no-op against the kluctl-managed
-      # cluster. Flip to automated (selfHeal+prune) afterwards.
-      syncPolicy = {
-        # Classic client-side `kubectl apply` stores the whole previous
-        # object in the kubectl.kubernetes.io/last-applied-configuration
-        # annotation, capped at 262144 bytes -- large CRDs (ArgoCD's own
-        # applicationsets.argoproj.io, VictoriaMetrics', cert-manager's)
-        # blow past that and fail to sync. Server-side apply doesn't use
-        # that annotation at all, matching what `ekn kubeapply` already
-        # does for direct applies.
-        syncOptions = [ "ServerSideApply=true" ];
+  mkApplication =
+    path:
+    { ignoreDifferences ? [ ] }:
+    {
+      metadata.namespace = "argocd";
+      ekn.gitOpsTarget = "bootstrap";
+      spec = {
+        project = "default";
+        source = {
+          repoURL = "https://github.com/Lillecarl/hetzkube.git";
+          targetRevision = config.gitops.branch;
+          inherit path;
+        };
+        destination = {
+          server = "https://kubernetes.default.svc";
+          namespace = "argocd";
+        };
+        # Manual sync until the rollout plan's diff-verification step (Phase 4)
+        # confirms ArgoCD reconciling is a no-op against the kluctl-managed
+        # cluster. Flip to automated (selfHeal+prune) afterwards.
+        syncPolicy = {
+          # Classic client-side `kubectl apply` stores the whole previous
+          # object in the kubectl.kubernetes.io/last-applied-configuration
+          # annotation, capped at 262144 bytes -- large CRDs (ArgoCD's own
+          # applicationsets.argoproj.io, VictoriaMetrics', cert-manager's)
+          # blow past that and fail to sync. Server-side apply doesn't use
+          # that annotation at all, matching what `ekn kubeapply` already
+          # does for direct applies.
+          syncOptions = [ "ServerSideApply=true" ];
+        };
+        inherit ignoreDifferences;
       };
     };
-  };
 in
 {
   config = lib.mkIf (config.stage == "full") {
@@ -53,8 +57,23 @@ in
     };
 
     kubernetes.objects.argocd.Application = {
-      bootstrap = mkApplication "bootstrap";
-      everything = mkApplication "everything";
+      bootstrap = mkApplication "bootstrap" { };
+      everything = mkApplication "everything" {
+        # These 3 Secrets' real content is generated/rotated by Cilium's own
+        # agent at runtime (self-signed CA + leaf certs), never a Nix-authored
+        # value -- kluctl already carries the matching kluctl.io/ignore-diff
+        # annotation on them (kubenix/modules/cilium.nix) for the same reason.
+        # ArgoCD has no equivalent respect for that annotation, so without
+        # this, syncing "everything" would blow away Cilium's live-generated
+        # cert material with whatever stale value is in kubernetes.generated.
+        ignoreDifferences = map (name: {
+          group = "";
+          kind = "Secret";
+          namespace = "kube-system";
+          inherit name;
+          jsonPointers = [ "/data" ];
+        }) [ "cilium-ca" "hubble-server-certs" "hubble-relay-client-certs" ];
+      };
     };
 
     # ArgoCD's own installed manifests (namespace, CRDs, controllers) are
