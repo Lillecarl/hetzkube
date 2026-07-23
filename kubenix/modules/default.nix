@@ -22,6 +22,7 @@
     ./headlamp.nix
     ./keycloak.nix
     ./kro.nix
+    ./kube-proxy.nix
     ./kube-state-metrics.nix
     ./kubernetes-mixins.nix
     ./kyverno.nix

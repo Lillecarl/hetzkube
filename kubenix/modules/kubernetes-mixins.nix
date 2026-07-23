@@ -131,6 +131,13 @@ in
           } // rule) group.rules;
         }
       );
+
+      # The mixin has no config knob to disable its KubeProxyDown alert (it
+      # unconditionally warns on `absent(up{job="kube-proxy"})`) -- when
+      # kube-proxy isn't expected to run at all (Cilium's eBPF replacement),
+      # that target never exists and the alert fires forever. Drop the whole
+      # group rather than leave a permanently-firing false alarm.
+      dropKubeProxyAlerts = lib.filter (group: group.name != "kubernetes-system-kube-proxy");
     in
     lib.mkIf cfg.enable {
       kubernetes.resources.none.Namespace.${cfg.namespace} = { };
@@ -138,7 +145,11 @@ in
         VMRule.kubernetes-mixin-alerts = {
           metadata.labels.role = "metrics";
           spec = {
-            groups = normalizeGroups (lib.importJSON "${package}/prometheus_alerts.json").groups;
+            groups =
+              let
+                groups = (lib.importJSON "${package}/prometheus_alerts.json").groups;
+              in
+              normalizeGroups (if config.kube-proxy.enable then groups else dropKubeProxyAlerts groups);
           };
         };
         VMRule.kubernetes-mixin-rules = {

@@ -15,6 +15,16 @@ in
     version = lib.mkOption {
       type = lib.types.str;
     };
+    kubeProxyReplacement = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Whether Cilium replaces kube-proxy entirely via eBPF. Modeled as a
+        first-class option (rather than left inside `helmValues`) so other
+        modules (kube-proxy.nix) can react to it without reaching into
+        Cilium's freeform Helm values.
+      '';
+    };
     gatewayAPI = {
       enable = (lib.mkEnableOption "gateway api") // {
         default = true;
@@ -201,6 +211,7 @@ in
               enabled = cfg.gatewayAPI.enable;
               # gatewayClass.create = lib.boolToString cfg.gatewayAPI.enable;
             };
+            kubeProxyReplacement = cfg.kubeProxyReplacement;
           } cfg.helmValues;
         };
         # Install Cilium CRDs with easykubenix, required so we can install network policies before

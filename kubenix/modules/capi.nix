@@ -141,9 +141,8 @@ in
           inherit preKubeadmCommands files;
           initConfiguration = {
             skipPhases = [
-              "addon/kube-proxy" # Replaced by Cilium
               "addon/coredns" # Deployed by us
-            ];
+            ] ++ lib.optional (!config.kube-proxy.enable) "addon/kube-proxy";
             nodeRegistration = nodeRegistration // {
               taints = cpTaints;
             };

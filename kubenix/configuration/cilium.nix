@@ -9,6 +9,10 @@
     cilium = {
       enable = true;
       version = "1.18.7";
+      # Cilium replaces kube-proxy, so instead of iptables based service forwarding
+      # Cilium uses it's own eBPF rules which scale better and can do more voodoo
+      # at the expense of being harder to troubleshoot.
+      kubeProxyReplacement = true;
 
       gatewayAPI = {
         enable = true;
@@ -67,10 +71,6 @@
         # before Cilium can talk to apiserver.
         k8sServiceHost = config.clusterHost;
         k8sServicePort = 6443;
-        # Cilium replaces kube-proxy, so instead of iptables based service forwarding
-        # Cilium uses it's own eBPF rules which scale better and can do more voodoo
-        # at the expense of being harder to troubleshoot.
-        kubeProxyReplacement = true;
         # Always tunnel
         autoDirectNodeRoutes = false;
         # Efficient on-node forwarding
