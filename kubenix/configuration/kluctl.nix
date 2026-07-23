@@ -7,10 +7,19 @@
     # ArgoCD itself (and the Application CRs that self-manage it) has its own
     # deployment path: `ekn kubeapply --target bootstrap` applies it once
     # directly, then ArgoCD's "bootstrap" Application reconciles itself from
-    # then on. Don't also apply it via kluctl. "everything" isn't listed here yet --
-    # it stays on kluctl until ArgoCD's "everything" Application is actually
-    # syncing (see the GitOps rollout plan).
-    excludeGitopsTargets = [ "bootstrap" ];
+    # then on. Don't also apply it via kluctl.
+    #
+    # "everything" joins it here in the same change that flips both
+    # Applications' syncPolicy to automated (gitops.nix) -- the rollout
+    # plan's diff-verification step confirmed ArgoCD reconciling
+    # "everything" is a no-op against the kluctl-managed cluster, so this is
+    # the actual cutover: kluctl and ArgoCD must not both actively manage
+    # the same objects (prune wars, drift resets), so this can't lag behind
+    # the syncPolicy change by even one deploy.
+    excludeGitopsTargets = [
+      "bootstrap"
+      "everything"
+    ];
     # Add SOPS secrets
     deployment.vars = [ { file = "secrets/all.yaml"; } ];
     files."secrets/all.yaml" = builtins.readFile ../../secrets/all.yaml;

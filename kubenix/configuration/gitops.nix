@@ -21,10 +21,21 @@ let
           server = "https://kubernetes.default.svc";
           namespace = "argocd";
         };
-        # Manual sync until the rollout plan's diff-verification step (Phase 4)
-        # confirms ArgoCD reconciling is a no-op against the kluctl-managed
-        # cluster. Flip to automated (selfHeal+prune) afterwards.
+        # Automated as of the rollout plan's final step: the diff-
+        # verification phase confirmed ArgoCD reconciling "everything" is a
+        # no-op against the kluctl-managed cluster (module the known
+        # tracking-id/benign-drift/Cilium-initContainer-reorder items), so
+        # both Applications flip to automated together with kluctl.nix's
+        # excludeGitopsTargets picking up "everything" in the same change --
+        # otherwise there'd be a window where ArgoCD self-heals/prunes the
+        # same objects kluctl also actively deploys (prune wars, drift
+        # resets), which is exactly the risk kluctl.nix's own comments call
+        # out.
         syncPolicy = {
+          automated = {
+            selfHeal = true;
+            prune = true;
+          };
           # Classic client-side `kubectl apply` stores the whole previous
           # object in the kubectl.kubernetes.io/last-applied-configuration
           # annotation, capped at 262144 bytes -- large CRDs (ArgoCD's own
