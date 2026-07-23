@@ -3,6 +3,7 @@
   pkgs,
   lib,
   hlib,
+  ekn,
   ...
 }:
 let
@@ -417,5 +418,43 @@ in
       MachineDeployment = true;
       MachineHealthCheck = true;
     };
+
+    # clusterctl init owns these CRDs out-of-band on the real cluster, so we
+    # never want them going through GitOps -- kubernetes.crds bypasses the
+    # generators/transformers pipeline entirely (never gets an
+    # ekn.gitOpsTarget, never lands in any gitopsTarget), while still showing
+    # up in kubernetes.generated so `ekn validate`'s ephemeral harness knows
+    # these kinds exist instead of 404ing on them.
+    kubernetes.crds =
+      let
+        fetchCrd =
+          url:
+          ekn.lib.parseYAMLStream {
+            src = builtins.fetchTree {
+              type = "file";
+              inherit url;
+            };
+            yamlVersion = "yaml12";
+          };
+        capiRef = "v1.10.7";
+        caphRef = "v1.0.7";
+        capiRaw = path: "https://raw.githubusercontent.com/kubernetes-sigs/cluster-api/${capiRef}/${path}";
+        caphRaw =
+          path: "https://raw.githubusercontent.com/syself/cluster-api-provider-hetzner/${caphRef}/${path}";
+      in
+      lib.concatMap fetchCrd (
+        map capiRaw [
+          "config/crd/bases/cluster.x-k8s.io_clusters.yaml"
+          "config/crd/bases/cluster.x-k8s.io_machinedeployments.yaml"
+          "config/crd/bases/cluster.x-k8s.io_machinehealthchecks.yaml"
+          "bootstrap/kubeadm/config/crd/bases/bootstrap.cluster.x-k8s.io_kubeadmconfigtemplates.yaml"
+          "controlplane/kubeadm/config/crd/bases/controlplane.cluster.x-k8s.io_kubeadmcontrolplanes.yaml"
+        ]
+        ++ map caphRaw [
+          "config/crd/bases/infrastructure.cluster.x-k8s.io_hcloudmachinetemplates.yaml"
+          "config/crd/bases/infrastructure.cluster.x-k8s.io_hetznerclusters.yaml"
+          "config/crd/bases/infrastructure.cluster.x-k8s.io_hcloudremediationtemplates.yaml"
+        ]
+      );
   };
 }

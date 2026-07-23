@@ -205,13 +205,24 @@ in
         };
         # Install Cilium CRDs with easykubenix, required so we can install network policies before
         # cilium-operator has installed them itself.
-        importyaml = lib.pipe (builtins.readDir "${src}/pkg/k8s/apis/cilium.io/client/crds/v2") [
-          (lib.mapAttrs' (
-            filename: type: {
-              name = filename;
-              value.src = "${src}/pkg/k8s/apis/cilium.io/client/crds/v2/${filename}";
-            }
+        # Some kinds (e.g. CiliumGatewayClassConfig) only ship their CRD under
+        # v2alpha1, not v2 -- both dirs must be read or those kinds 404.
+        importyaml = lib.pipe [
+          "v2"
+          "v2alpha1"
+        ] [
+          (lib.concatMap (
+            crdVersion:
+            lib.pipe (builtins.readDir "${src}/pkg/k8s/apis/cilium.io/client/crds/${crdVersion}") [
+              (lib.mapAttrsToList (
+                filename: type: {
+                  name = "${crdVersion}-${filename}";
+                  value.src = "${src}/pkg/k8s/apis/cilium.io/client/crds/${crdVersion}/${filename}";
+                }
+              ))
+            ]
           ))
+          lib.listToAttrs
         ];
       })
       {
