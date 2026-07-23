@@ -19,6 +19,21 @@ in
       type = lib.types.nonEmptyStr;
       default = "1.4.2";
     };
+    jsonnetConfig = lib.mkOption {
+      type = lib.types.attrsOf lib.types.anything;
+      default = { };
+      description = ''
+        Overrides merged into the mixin's `_config` object via jsonnet's
+        `+::` overlay (same mechanism upstream's own README documents for
+        customizing the mixin -- see config.libsonnet in
+        kubernetes-monitoring/kubernetes-mixin for every available key, e.g.
+        clusterLabel, showMultiCluster, kubeJobTimeoutDuration,
+        grafanaK8s.dashboardTags). Because `+::` deep-merges objects,
+        overriding one leaf (e.g. `grafanaK8s.refresh`) leaves the rest of
+        that nested object (e.g. `grafanaK8s.dashboardTags`) at its upstream
+        default.
+      '';
+    };
   };
   config =
     let
@@ -62,6 +77,24 @@ in
         "github.com/jsonnet-libs/xtd" = xtd;
       };
 
+      # The mixin's own customization surface: everything upstream exposes
+      # for tuning alerts/rules/dashboards lives behind this single `_config`
+      # overlay (its README's documented way to customize the mixin without
+      # forking it), so this one Nix option is what actually makes the whole
+      # mixin build flexible -- rather than reimplementing config.libsonnet's
+      # ~15 knobs as individual Nix options that go stale the moment upstream
+      # adds/renames one.
+      entrypoint = pkgs.writeText "kubernetes-mixin-entrypoint.jsonnet" ''
+        local mixin = (import 'mixin.libsonnet') + { _config+:: ${builtins.toJSON cfg.jsonnetConfig} };
+        {
+          'prometheus_alerts.json': mixin.prometheusAlerts,
+          'prometheus_rules.json': mixin.prometheusRules,
+        } + {
+          ['dashboards/' + name]: mixin.grafanaDashboards[name]
+          for name in std.objectFields(mixin.grafanaDashboards)
+        }
+      '';
+
       package = pkgs.stdenv.mkDerivation {
         pname = "kubernetes-mixin";
         version = cfg.version;
@@ -72,18 +105,15 @@ in
 
         buildPhase = ''
           ln -s ${vendor} vendor
-
-          jsonnet -J vendor -e '(import "mixin.libsonnet").prometheusAlerts' > prometheus_alerts.json
-          jsonnet -J vendor -e '(import "mixin.libsonnet").prometheusRules' > prometheus_rules.json
-          mkdir -p dashboards_out
-          jsonnet -J vendor -m dashboards_out lib/dashboards.jsonnet
+          mkdir -p out/dashboards
+          jsonnet -J vendor -J "$src" -m out ${entrypoint}
         '';
 
         installPhase = ''
           mkdir -p $out/dashboards
-          cp prometheus_alerts.json $out/
-          cp prometheus_rules.json $out/
-          cp dashboards_out/*.json $out/dashboards/
+          cp out/prometheus_alerts.json $out/
+          cp out/prometheus_rules.json $out/
+          cp out/dashboards/*.json $out/dashboards/
         '';
       };
 
