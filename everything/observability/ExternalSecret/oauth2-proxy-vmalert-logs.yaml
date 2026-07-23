@@ -1,0 +1,20 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: oauth2-proxy-vmalert-logs
+  namespace: observability
+spec:
+  data:
+  - remoteRef:
+      key: name:vmalert-oauth2-proxy-client-secret
+    secretKey: client-secret
+  - remoteRef:
+      key: name:vmalert-oauth2-proxy-cookie-secret
+    secretKey: cookie-secret
+  refreshInterval: 30m0s
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: scaleway
+  target:
+    template:
+      type: Opaque

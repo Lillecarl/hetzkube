@@ -1,0 +1,21 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/ttl: '60'
+  name: vmalert-logs
+  namespace: observability
+spec:
+  hostnames:
+  - vmalert-logs.lillecarl.com
+  parentRefs:
+  - name: default
+    namespace: kube-system
+  rules:
+  - backendRefs:
+    - name: oauth2-proxy-vmalert-logs
+      port: 4180
+    matches:
+    - path:
+        type: PathPrefix
+        value: /

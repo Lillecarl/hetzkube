@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: oauth2-proxy-vmalert-logs
+  name: oauth2-proxy-vmalert-logs
+  namespace: observability
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: oauth2-proxy-vmalert-logs
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: oauth2-proxy-vmalert-logs
+    spec:
+      containers:
+      - env:
+        - name: OAUTH2_PROXY_CLIENT_ID
+          value: vmalert
+        - name: OAUTH2_PROXY_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: client-secret
+              name: oauth2-proxy-vmalert-logs
+        - name: OAUTH2_PROXY_COOKIE_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: cookie-secret
+              name: oauth2-proxy-vmalert-logs
+        - name: OAUTH2_PROXY_COOKIE_SECURE
+          value: 'true'
+        - name: OAUTH2_PROXY_EMAIL_DOMAINS
+          value: '*'
+        - name: OAUTH2_PROXY_HTTP_ADDRESS
+          value: 0.0.0.0:4180
+        - name: OAUTH2_PROXY_OIDC_ISSUER_URL
+          value: https://keycloak.lillecarl.com/realms/auth
+        - name: OAUTH2_PROXY_PROVIDER
+          value: oidc
+        - name: OAUTH2_PROXY_REDIRECT_URL
+          value: https://vmalert-logs.lillecarl.com/oauth2/callback
+        - name: OAUTH2_PROXY_REVERSE_PROXY
+          value: 'true'
+        - name: OAUTH2_PROXY_SKIP_PROVIDER_BUTTON
+          value: 'true'
+        - name: OAUTH2_PROXY_UPSTREAMS
+          value: http://vmalert-logs:8080
+        image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
+        name: oauth2-proxy
+        ports:
+        - containerPort: 4180
+          name: http
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi

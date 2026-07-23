@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: oauth2-proxy-vmalert-metrics
+  name: oauth2-proxy-vmalert-metrics
+  namespace: observability
+spec:
+  ipFamilyPolicy: RequireDualStack
+  ports:
+  - name: http
+    port: 4180
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/name: oauth2-proxy-vmalert-metrics

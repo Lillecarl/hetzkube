@@ -1,0 +1,21 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/ttl: '60'
+  name: vmalert-metrics
+  namespace: observability
+spec:
+  hostnames:
+  - vmalert-metrics.lillecarl.com
+  parentRefs:
+  - name: default
+    namespace: kube-system
+  rules:
+  - backendRefs:
+    - name: oauth2-proxy-vmalert-metrics
+      port: 4180
+    matches:
+    - path:
+        type: PathPrefix
+        value: /

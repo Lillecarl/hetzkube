@@ -1,0 +1,12 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: oauth2-proxy-vmalert-metrics
+  namespace: observability
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: oauth2-proxy-vmalert-metrics
+  updatePolicy:
+    updateMode: InPlaceOrRecreate
