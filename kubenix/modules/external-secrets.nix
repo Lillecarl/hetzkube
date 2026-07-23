@@ -18,7 +18,7 @@ in
     };
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
-      default = "2.6.0";
+      default = "2.8.0";
     };
     helmValues = lib.mkOption {
       type = lib.types.anything;
