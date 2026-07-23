@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  labels:
+    app.kubernetes.io/component: admission-controller
+    app.kubernetes.io/component-instance: vertical-pod-autoscaler-admission-controller
+    app.kubernetes.io/instance: vertical-pod-autoscaler
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vertical-pod-autoscaler
+    app.kubernetes.io/version: 1.7.0
+    helm.sh/chart: vertical-pod-autoscaler-1.12.0
+  name: vertical-pod-autoscaler-admission-controller-cert
+  namespace: kube-system
+spec:
+  selfSigned: {}

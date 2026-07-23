@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: vertical-pod-autoscaler
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vertical-pod-autoscaler
+    app.kubernetes.io/version: 1.7.0
+    helm.sh/chart: vertical-pod-autoscaler-1.12.0
+  name: system:vpa-status-reader-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:vpa-status-reader
+subjects:
+- kind: ServiceAccount
+  name: vertical-pod-autoscaler-updater
+  namespace: kube-system

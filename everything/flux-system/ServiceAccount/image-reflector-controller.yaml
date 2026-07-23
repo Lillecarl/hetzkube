@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app.kubernetes.io/component: image-reflector-controller
-    app.kubernetes.io/instance: flux-system
-    app.kubernetes.io/part-of: flux
-  name: image-reflector-controller
-  namespace: flux-system

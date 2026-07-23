@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: admission-controller
+    app.kubernetes.io/component-instance: vertical-pod-autoscaler-admission-controller
+    app.kubernetes.io/instance: vertical-pod-autoscaler
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vertical-pod-autoscaler
+    app.kubernetes.io/version: 1.7.0
+    helm.sh/chart: vertical-pod-autoscaler-1.12.0
+  name: vertical-pod-autoscaler-admission-controller
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: admission-controller
+      app.kubernetes.io/instance: vertical-pod-autoscaler
+      app.kubernetes.io/name: vertical-pod-autoscaler
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: admission-controller
+        app.kubernetes.io/instance: vertical-pod-autoscaler
+        app.kubernetes.io/name: vertical-pod-autoscaler
+    spec:
+      containers:
+      - args:
+        - --v=4
+        - --port=8000
+        - --address=:8944
+        - --register-webhook=false
+        - --client-ca-file=/etc/tls-certs/ca.crt
+        - --tls-cert-file=/etc/tls-certs/tls.crt
+        - --tls-private-key=/etc/tls-certs/tls.key
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: registry.k8s.io/autoscaling/vpa-admission-controller:1.7.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /health-check
+            port: http-metrics
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: admission-controller
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        - containerPort: 8944
+          name: http-metrics
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /health-check
+            port: http-metrics
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsGroup: 65532
+          runAsNonRoot: true
+          runAsUser: 65532
+        volumeMounts:
+        - mountPath: /etc/tls-certs
+          name: tls-certs
+          readOnly: true
+      securityContext:
+        fsGroup: 65534
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: vertical-pod-autoscaler-admission-controller
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: vertical-pod-autoscaler-admission-controller-cert

@@ -1,0 +1,12 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: vertical-pod-autoscaler-updater
+  namespace: kube-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: vertical-pod-autoscaler-updater
+  updatePolicy:
+    updateMode: InPlaceOrRecreate
