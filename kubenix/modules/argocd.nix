@@ -207,6 +207,37 @@ in
           ];
         };
       };
+
+      # SSO via Keycloak -- same "auth" realm/PUBLIC client + PKCE pattern
+      # as headlamp (kubenix/modules/headlamp.nix), client registered in
+      # tf/keycloak/default.nix. ArgoCD has its own built-in OIDC support
+      # (no Dex needed) via argocd-cm's oidc.config.
+      kubernetes.resources.argocd.ConfigMap.argocd-cm.data = {
+        url = "https://${cfg.hostname}";
+        "oidc.config" = lib.generators.toYAML { } {
+          name = "Keycloak";
+          issuer = "https://${lib.head config.keycloak.hostnames}/realms/auth";
+          clientID = "argocd";
+          usePKCE = true;
+          # "groups" is NOT a real Keycloak scope here (matches headlamp's
+          # scope list, kubenix/modules/headlamp.nix) -- the "groups" claim
+          # comes from the client's own protocol mapper
+          # (keycloak_openid_user_realm_role_protocol_mapper.argocd in
+          # tf/keycloak/default.nix, add_to_id_token=true), which is always
+          # included regardless of requested scopes. Requesting a "groups"
+          # scope that isn't assigned to the client 400s at Keycloak with
+          # "invalid_scope: Invalid scopes: ... groups".
+          requestedScopes = [
+            "openid"
+            "profile"
+            "email"
+          ];
+        };
+      };
+      # Same realm-role-as-"groups"-claim mapping used for the "kubernetes"
+      # OIDC client's cluster-admin binding (keycloak.nix) -- the "admin"
+      # realm role, not an actual Keycloak group.
+      kubernetes.resources.argocd.ConfigMap.argocd-rbac-cm.data."policy.csv" = "g, admin, role:admin";
     })
   ];
 }

@@ -32,6 +32,17 @@
       Namespace = 10;
       CustomResourceDefinition = 15;
       Secret = 20;
+      # Applying a Mutating/ValidatingWebhookConfiguration registers it with
+      # the apiserver immediately -- every object that lands in the same
+      # (default, unlisted-kind) barrier as one of these but happens to be
+      # ordered after it in that barrier's list gets intercepted by a
+      # webhook whose backend may not exist yet (a fresh `ekn kubeapply
+      # --target bootstrap` run, or ekn validate's harness, which never has
+      # one running at all). Giving these their own barrier strictly after
+      # the default 100 bucket means every other object is already applied
+      # before any webhook can intercept anything.
+      MutatingWebhookConfiguration = 200;
+      ValidatingWebhookConfiguration = 200;
     };
     preDeployScript = # bash
       ''

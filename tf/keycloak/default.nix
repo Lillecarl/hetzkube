@@ -220,6 +220,29 @@ in
       full_path = false;
     };
 
+    resource.keycloak_openid_client.argocd = mkKC {
+      client_id = "argocd";
+      name = "ArgoCD";
+
+      valid_redirect_uris = [
+        "https://argocd.lillecarl.com/auth/callback"
+      ];
+
+      standard_flow_enabled = true;
+      direct_access_grants_enabled = false;
+      service_accounts_enabled = false;
+      access_type = "PUBLIC";
+      access_token_lifespan = "28800"; # 8 hour tokens
+    };
+
+    resource.keycloak_openid_user_realm_role_protocol_mapper.argocd = mkKC {
+      client_id = config.resource.keycloak_openid_client.argocd "id";
+      name = "groups";
+
+      claim_name = "groups";
+      multivalued = true;
+    };
+
     resource.keycloak_openid_client.pgadmin =
       let
         host = "pgadmin.lillecarl.com";

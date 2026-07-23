@@ -88,6 +88,21 @@ in
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${clusterName} = { };
+    # ClusterAPI core + the kubeadm bootstrap/control-plane providers + the
+    # Hetzner infra provider (CAPH) are installed out-of-band via
+    # `clusterctl init` (not part of kubenix's own manifest generation), but
+    # vpa.nix declares VerticalPodAutoscaler objects targeting Deployments in
+    # these namespaces -- without declaring the namespaces themselves here
+    # too, `ekn validate`'s empty ephemeral cluster (which only ever has
+    # what this manifest declares) 404s applying them, and the real
+    # manifest set is implicitly relying on `clusterctl init` having already
+    # run first rather than being self-sufficient.
+    kubernetes.resources.none.Namespace = {
+      capi-system = { };
+      capi-kubeadm-bootstrap-system = { };
+      capi-kubeadm-control-plane-system = { };
+      caph-system = { };
+    };
     kubernetes.resources.${clusterName} = {
       ExternalSecret.hcloud = hlib.eso.mkToken "name:hcloud-token";
 
