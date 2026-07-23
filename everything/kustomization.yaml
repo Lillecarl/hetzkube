@@ -454,6 +454,10 @@ resources:
 - none/MutatingWebhookConfiguration/cert-manager-webhook.yaml
 - none/MutatingWebhookConfiguration/cnpg-mutating-webhook-configuration.yaml
 - none/MutatingWebhookConfiguration/vpa-webhook-config.yaml
+- none/Namespace/caph-system.yaml
+- none/Namespace/capi-kubeadm-bootstrap-system.yaml
+- none/Namespace/capi-kubeadm-control-plane-system.yaml
+- none/Namespace/capi-system.yaml
 - none/Namespace/cert-manager.yaml
 - none/Namespace/cilium-secrets.yaml
 - none/Namespace/cnpg-system.yaml
