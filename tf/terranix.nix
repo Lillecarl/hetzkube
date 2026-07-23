@@ -21,13 +21,13 @@
     };
     data.kubernetes_secret_v1.scaleway = {
       metadata = {
-        name = "scaleway-dns-key";
+        name = "scaleway";
         namespace = "kube-system";
       };
     };
     provider.scaleway = {
-      access_key = lib.tfRef "data.kubernetes_secret_v1.scaleway.data.username";
-      secret_key = lib.tfRef "data.kubernetes_secret_v1.scaleway.data.password";
+      access_key = lib.tfRef "data.kubernetes_secret_v1.scaleway.data.SCW_ACCESS_KEY";
+      secret_key = lib.tfRef "data.kubernetes_secret_v1.scaleway.data.SCW_SECRET_KEY";
     };
 
     variable.KUBECONFIG.type = "string";
