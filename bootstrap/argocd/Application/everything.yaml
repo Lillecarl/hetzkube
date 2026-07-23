@@ -140,12 +140,39 @@ spec:
     - /spec/template/spec/strategy/timeout
     kind: HCloudRemediationTemplate
   - group: apps
+    jqPathExpressions:
+    - .spec.template.spec.containers[]?.imagePullPolicy
+    - .spec.template.spec.containers[]?.resources
+    - .spec.template.spec.containers[]?.terminationMessagePath
+    - .spec.template.spec.containers[]?.terminationMessagePolicy
+    - .spec.template.spec.volumes[]?.secret?.defaultMode
+    - .spec.template.spec.volumes[]?.configMap?.defaultMode
     jsonPointers:
     - /spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt
     kind: Deployment
   - group: apps
+    jqPathExpressions:
+    - .spec.template.spec.containers[]?.imagePullPolicy
+    - .spec.template.spec.containers[]?.resources
+    - .spec.template.spec.containers[]?.terminationMessagePath
+    - .spec.template.spec.containers[]?.terminationMessagePolicy
+    - .spec.template.spec.volumes[]?.secret?.defaultMode
+    - .spec.template.spec.volumes[]?.configMap?.defaultMode
+    - .spec.volumeClaimTemplates[]?.apiVersion
+    - .spec.volumeClaimTemplates[]?.kind
+    - .spec.volumeClaimTemplates[]?.status
+    - .spec.volumeClaimTemplates[]?.spec.volumeMode
     jsonPointers:
     - /spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt
+    - /spec/persistentVolumeClaimRetentionPolicy
+    - /spec/podManagementPolicy
+    - /spec/revisionHistoryLimit
+    - /spec/serviceName
+    - /spec/updateStrategy
+    - /spec/template/spec/dnsPolicy
+    - /spec/template/spec/restartPolicy
+    - /spec/template/spec/schedulerName
+    - /spec/template/spec/terminationGracePeriodSeconds
     kind: StatefulSet
   project: default
   source:
