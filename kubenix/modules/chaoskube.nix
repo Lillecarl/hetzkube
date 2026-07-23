@@ -35,7 +35,7 @@ in
             };
             version = lib.mkOption {
               type = lib.types.nonEmptyStr;
-              default = "v0.39.0";
+              default = "v0.39.1";
             };
             args = lib.mkOption {
               type = lib.types.attrsOf lib.types.str;
