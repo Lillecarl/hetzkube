@@ -331,5 +331,37 @@ in
           logoUri = "https://raw.githubusercontent.com/pgadmin-org/pgadmin4/master/web/pgadmin/static/img/logo-256.png";
         };
       };
+
+    # vmalert has no auth of its own (unlike the PUBLIC/PKCE clients above,
+    # which front apps that handle their own login UI) -- it's fronted by
+    # oauth2-proxy instead, which needs a real client secret, hence
+    # CONFIDENTIAL here. One client covers both exposed vmalert instances
+    # (metrics + logs); they're the same app split across two hostnames.
+    resource.keycloak_openid_client.vmalert =
+      let
+        hosts = [
+          "vmalert-metrics.lillecarl.com"
+          "vmalert-logs.lillecarl.com"
+        ];
+      in
+      mkKC {
+        client_id = "vmalert";
+        name = "vmalert";
+        description = "Alert rule evaluation UI for the hetzkube cluster (VictoriaMetrics vmalert), fronted by oauth2-proxy.";
+
+        valid_redirect_uris = map (host: "https://${host}/oauth2/callback") hosts;
+        web_origins = map (host: "https://${host}") hosts;
+
+        standard_flow_enabled = true;
+        direct_access_grants_enabled = false;
+        service_accounts_enabled = false;
+        access_type = "CONFIDENTIAL";
+        access_token_lifespan = "28800"; # 8 hour tokens
+
+        always_display_in_console = true;
+        consent_required = true;
+        display_on_consent_screen = true;
+        consent_screen_text = "view cluster alert rules and evaluation state";
+      };
   };
 }

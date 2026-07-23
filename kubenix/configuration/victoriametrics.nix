@@ -14,10 +14,12 @@
         metrics = {
           enable = true;
           inherit namespace;
+          externalHostname = "vmalert-metrics.lillecarl.com";
         };
         logs = {
           enable = true;
           inherit namespace;
+          externalHostname = "vmalert-logs.lillecarl.com";
         };
         alertmanager = {
           enable = true;

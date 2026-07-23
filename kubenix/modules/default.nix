@@ -30,6 +30,7 @@
     ./metallb.nix
     ./metrics-server.nix
     ./node-exporter.nix
+    ./oauth2-proxy.nix
     ./pgadmin.nix
     ./sealed-secrets.nix
     ./vertical-pod-autoscaler.nix

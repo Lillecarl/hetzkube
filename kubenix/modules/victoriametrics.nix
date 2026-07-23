@@ -25,6 +25,16 @@ in
       namespace = lib.mkOption {
         type = lib.types.nonEmptyStr;
       };
+      externalHostname = lib.mkOption {
+        type = lib.types.nullOr lib.types.nonEmptyStr;
+        default = null;
+        description = ''
+          If set, expose this VMAlert instance's own web UI via a Gateway API
+          HTTPRoute at this hostname, and set vmalert's -external.url so
+          alert Source links (generatorURL) are real, clickable URLs instead
+          of vmalert's internal, unreachable pod hostname.
+        '';
+      };
     };
     logs = {
       enable = lib.mkEnableOption moduleName;
@@ -33,6 +43,11 @@ in
       };
       version = lib.mkOption {
         type = lib.types.str;
+      };
+      externalHostname = lib.mkOption {
+        type = lib.types.nullOr lib.types.nonEmptyStr;
+        default = null;
+        description = "Same as metrics.externalHostname, for the logs VMAlert instance.";
       };
     };
     alertmanager = {
@@ -78,6 +93,34 @@ in
         )
       )
     ];
+
+    # vmalert has no login of its own (unlike grafana/pgadmin/headlamp,
+    # which gate themselves), so exposing it externally goes through
+    # oauth2-proxy + Keycloak (tf/keycloak/default.nix's "vmalert" client)
+    # instead of a bare HTTPRoute straight to it.
+    oauth2-proxy.instances = lib.mkMerge [
+      (lib.mkIf (cfg.metrics.externalHostname != null) {
+        vmalert-metrics = {
+          enable = true;
+          namespace = cfg.metrics.namespace;
+          hostname = cfg.metrics.externalHostname;
+          upstream = "http://vmalert-metrics:8080";
+          clientId = "vmalert";
+          scalewaySecret = "name:vmalert-oauth2-proxy";
+        };
+      })
+      (lib.mkIf (cfg.logs.externalHostname != null) {
+        vmalert-logs = {
+          enable = true;
+          namespace = cfg.logs.namespace;
+          hostname = cfg.logs.externalHostname;
+          upstream = "http://vmalert-logs:8080";
+          clientId = "vmalert";
+          scalewaySecret = "name:vmalert-oauth2-proxy";
+        };
+      })
+    ];
+
     kubernetes.objects = lib.mkMerge [
       (lib.mkIf cfg.metrics.enable {
         ${cfg.metrics.namespace} = {
@@ -231,6 +274,39 @@ in
               notifiers = lib.optional cfg.alertmanager.enable {
                 url = "http://vmalertmanager-alertmanager.${cfg.metrics.namespace}.svc:9093";
               };
+
+              extraArgs = lib.mkIf (cfg.metrics.externalHostname != null) {
+                "external.url" = "https://${cfg.metrics.externalHostname}";
+              };
+            };
+          };
+          HTTPRoute.vmalert-metrics = lib.mkIf (cfg.metrics.externalHostname != null) {
+            spec = {
+              parentRefs = [
+                {
+                  name = "default";
+                  namespace = "kube-system";
+                }
+              ];
+              hostnames = [ cfg.metrics.externalHostname ];
+              rules = [
+                {
+                  matches = [
+                    {
+                      path = {
+                        type = "PathPrefix";
+                        value = "/";
+                      };
+                    }
+                  ];
+                  backendRefs = [
+                    {
+                      name = "oauth2-proxy-vmalert-metrics";
+                      port = 4180;
+                    }
+                  ];
+                }
+              ];
             };
           };
 
@@ -401,6 +477,39 @@ in
               notifiers = lib.optional cfg.alertmanager.enable {
                 url = "http://vmalertmanager-alertmanager.${cfg.metrics.namespace}.svc:9093";
               };
+
+              extraArgs = lib.mkIf (cfg.logs.externalHostname != null) {
+                "external.url" = "https://${cfg.logs.externalHostname}";
+              };
+            };
+          };
+          HTTPRoute.vmalert-logs = lib.mkIf (cfg.logs.externalHostname != null) {
+            spec = {
+              parentRefs = [
+                {
+                  name = "default";
+                  namespace = "kube-system";
+                }
+              ];
+              hostnames = [ cfg.logs.externalHostname ];
+              rules = [
+                {
+                  matches = [
+                    {
+                      path = {
+                        type = "PathPrefix";
+                        value = "/";
+                      };
+                    }
+                  ];
+                  backendRefs = [
+                    {
+                      name = "oauth2-proxy-vmalert-logs";
+                      port = 4180;
+                    }
+                  ];
+                }
+              ];
             };
           };
         };
