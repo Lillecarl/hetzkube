@@ -367,6 +367,7 @@ resources:
 - none/CustomResourceDefinition/clusterpushsecrets.external-secrets.io.yaml
 - none/CustomResourceDefinition/clusters.postgresql.cnpg.io.yaml
 - none/CustomResourceDefinition/clustersecretstores.external-secrets.io.yaml
+- none/CustomResourceDefinition/databaseroles.postgresql.cnpg.io.yaml
 - none/CustomResourceDefinition/databases.postgresql.cnpg.io.yaml
 - none/CustomResourceDefinition/deletingpolicies.policies.kyverno.io.yaml
 - none/CustomResourceDefinition/dnsendpoints.externaldns.k8s.io.yaml
