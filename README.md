@@ -114,7 +114,7 @@ Run this if you wanna deploy all the bells and whistles I'm working on
 (renders manifests to the GitOps branches; ArgoCD picks up the change and
 syncs it -- this repo no longer deploys via kluctl directly):
 ```bash
-nix run --file . kubenix.passthru.ekn -- deploy --file . -A kubenix --push -m "your message"
+nix run --file . pynix -- ekn deploy --file . -A kubenix --push -m "your message"
 ```
 See kubenix/default.nix stage for what's being deployed.
 ## 6 DNS ownership
@@ -132,7 +132,7 @@ nix repl --file default.nix
 Put a decryption key in the image at /etc/nodekey
 
 # Pruning / discriminator
-`ekn kubeapply`/`ekn validate` (not kluctl -- ArgoCD replaced it as the real
+`pynix ekn kubeapply`/`pynix ekn validate` (not kluctl -- ArgoCD replaced it as the real
 deploy mechanism) label every resource they apply:
 ```yaml
 ekn.dev/discriminator: init

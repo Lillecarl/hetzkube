@@ -25,6 +25,10 @@
       url = "github:lillecarl/easykubenix";
       flake = false;
     };
+    nanopynix = {
+      url = "github:lillecarl/nanopynix/develop";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-csi = {
       url = "github:lillecarl/nix-csi/develop";
       flake = false;
