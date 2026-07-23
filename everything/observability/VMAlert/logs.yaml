@@ -7,7 +7,8 @@ spec:
   datasource:
     url: http://vlsingle-logs:9428/select/logsql/query
   evaluationInterval: 30s
-  notifiers: []
+  notifiers:
+  - url: http://vmalertmanager-alertmanager.observability.svc:9093
   remoteWrite:
     url: http://vmsingle-metrics:8429
   ruleSelector:

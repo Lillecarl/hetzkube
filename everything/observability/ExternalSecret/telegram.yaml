@@ -1,0 +1,17 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: telegram
+  namespace: observability
+spec:
+  data:
+  - remoteRef:
+      key: name:telegram-bot-token
+    secretKey: token
+  refreshInterval: 30m0s
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: scaleway
+  target:
+    template:
+      type: Opaque

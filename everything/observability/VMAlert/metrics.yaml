@@ -7,7 +7,8 @@ spec:
   datasource:
     url: http://vmsingle-metrics:8429
   evaluationInterval: 30s
-  notifiers: []
+  notifiers:
+  - url: http://vmalertmanager-alertmanager.observability.svc:9093
   remoteWrite:
     url: http://vmsingle-metrics:8429
   ruleSelector:

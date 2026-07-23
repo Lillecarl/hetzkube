@@ -1,0 +1,23 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlertmanager
+metadata:
+  name: alertmanager
+  namespace: observability
+spec:
+  configNamespaceSelector: {}
+  configSelector: {}
+  port: '9093'
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  selectAllByDefault: true
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

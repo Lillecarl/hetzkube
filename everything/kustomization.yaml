@@ -492,6 +492,7 @@ resources:
 - observability/ExternalSecret/grafana-admin.yaml
 - observability/ExternalSecret/grafana-oidc.yaml
 - observability/ExternalSecret/pg0-grafana.yaml
+- observability/ExternalSecret/telegram.yaml
 - observability/Grafana/grafana.yaml
 - observability/GrafanaDashboard/apiserver.yaml
 - observability/GrafanaDashboard/cluster-total.yaml
@@ -528,6 +529,8 @@ resources:
 - observability/VMAgent/metrics-ingest.yaml
 - observability/VMAlert/logs.yaml
 - observability/VMAlert/metrics.yaml
+- observability/VMAlertmanager/alertmanager.yaml
+- observability/VMAlertmanagerConfig/telegram.yaml
 - observability/VMNodeScrape/cadvisor.yaml
 - observability/VMNodeScrape/kubelet.yaml
 - observability/VMNodeScrape/node-exporter.yaml
