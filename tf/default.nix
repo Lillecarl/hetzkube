@@ -36,38 +36,48 @@ rec {
     (registry.keycloak.keycloak.latestWhere (v: pkgs.lib.versionOlder v "6.0.0"))
     (registry.hashicorp.kubernetes.latestWhere (v: pkgs.lib.versionOlder v "4.0.0"))
     (registry.scaleway.scaleway.latestWhere (v: pkgs.lib.versionOlder v "3.0.0"))
+    (registry.hashicorp.random.latestWhere (v: pkgs.lib.versionOlder v "4.0.0"))
   ];
-  tofu = pkgs.opentofu.withPlugins (_: plugins);
+  tofuUnwrapped = pkgs.opentofu.withPlugins (_: plugins);
 
+  # config.tf.json plus a matching .terraform.lock.hcl, baked in by a real
+  # `tofu init -backend=false` at build time (offline: every provider is
+  # already local via withPlugins, and the real "kubernetes" backend needs a
+  # live cluster anyway, so backend init genuinely happens later, at
+  # runtime). Nothing else lives here -- the writable `.terraform`
+  # provider-install/backend-pointer directory is kept outside the store
+  # (see `run` below, via $TF_DATA_DIR), so this path stays read-only.
   module =
     let
       terranix-config = pkgs.writeText "terranix-config" (builtins.toJSON terranix.config);
     in
     pkgs.runCommand "tofu-initialized"
       {
-        buildInputs = [
-          tofu
+        nativeBuildInputs = [
+          tofuUnwrapped
           pkgs.jq
         ];
-      } # bash
+      }
       ''
-        mkdir $out
-        cd $out
-        jq < ${terranix-config} >> config.tf.json
-        tofu init -backend=false
+        mkdir "$out"
+        jq < ${terranix-config} > "$out/config.tf.json"
+        cd "$out"
+        TF_DATA_DIR=$TMPDIR/.terraform tofu init -backend=false -input=false
       '';
 
+  # Wraps the plugin-bundled tofu so it always operates on `module` (in the
+  # store, read-only) via -chdir, while its own writable state --
+  # provider-install dir and the kubernetes backend's local pointer file --
+  # lives in $TF_DATA_DIR, outside the store, relative to wherever this is
+  # actually invoked from (not the -chdir target, since -chdir changes
+  # directory before anything else runs).
   run = pkgs.writeShellApplication {
     name = "terranix";
-    runtimeInputs = [
-      tofu
-      pkgs.rsync
-    ];
+    runtimeInputs = [ tofuUnwrapped ];
     text = ''
-      set -x
-      # rsync --archive --verbose --chmod=u+w ${module}/ .
-      cp ${module}/{.terraform.lock.hcl,config.tf.json} .
-      exec tofu "$@"
+      export TF_DATA_DIR="''${TF_DATA_DIR:-$PWD/.terraform}"
+      mkdir -p "$TF_DATA_DIR"
+      exec tofu -chdir=${module} "$@"
     '';
   };
 }
