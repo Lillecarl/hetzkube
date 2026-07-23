@@ -26,7 +26,7 @@
       };
       kube-state-metrics = {
         enable = true;
-        version = "2.19.0";
+        version = "2.19.1";
         inherit namespace;
       };
       grafana-operator = {
