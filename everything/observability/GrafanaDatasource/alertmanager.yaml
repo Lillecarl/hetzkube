@@ -6,6 +6,7 @@ metadata:
 spec:
   datasource:
     access: proxy
+    isDefault: true
     jsonData:
       handleGrafanaManagedAlerts: false
       implementation: prometheus
