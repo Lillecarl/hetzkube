@@ -6,6 +6,7 @@ metadata:
 spec:
   configNamespaceSelector: {}
   configSelector: {}
+  disableNamespaceMatcher: true
   port: '9093'
   replicaCount: 1
   resources:
