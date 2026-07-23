@@ -8,6 +8,7 @@
   imports = [
     ./dns.nix
     ./keycloak
+    ./vmalert-secrets.nix
   ];
   config = {
     terraform.backend.kubernetes = {
