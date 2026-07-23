@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  hlib,
   ...
 }:
 let
@@ -32,6 +33,20 @@ in
       };
       version = lib.mkOption {
         type = lib.types.str;
+      };
+    };
+    alertmanager = {
+      enable = lib.mkEnableOption "VMAlertmanager, notified by both VMAlert instances";
+      telegram = {
+        chatId = lib.mkOption {
+          type = lib.types.int;
+          description = "Telegram chat ID alerts are delivered to.";
+        };
+        scalewaySecret = lib.mkOption {
+          type = lib.types.nonEmptyStr;
+          default = "name:telegram-bot-token";
+          description = "Scaleway secret (fetched via ESO) holding the Telegram bot token.";
+        };
       };
     };
   };
@@ -213,7 +228,9 @@ in
 
               evaluationInterval = "30s";
 
-              notifiers = [ ];
+              notifiers = lib.optional cfg.alertmanager.enable {
+                url = "http://vmalertmanager-alertmanager.${cfg.metrics.namespace}.svc:9093";
+              };
             };
           };
 
@@ -381,7 +398,68 @@ in
 
               evaluationInterval = "30s";
 
-              notifiers = [ ];
+              notifiers = lib.optional cfg.alertmanager.enable {
+                url = "http://vmalertmanager-alertmanager.${cfg.metrics.namespace}.svc:9093";
+              };
+            };
+          };
+        };
+      })
+
+      (lib.mkIf cfg.alertmanager.enable {
+        ${cfg.metrics.namespace} = {
+          # Bot token lives in Scaleway (ESO), never in git -- chat_id isn't
+          # secret-shaped in the CRD (plain integer), so it's a Nix option.
+          ExternalSecret.telegram = hlib.eso.mkToken cfg.alertmanager.telegram.scalewaySecret;
+          VMAlertmanager.alertmanager = {
+            spec = {
+              replicaCount = 1;
+              port = "9093";
+              selectAllByDefault = true;
+              configSelector = { };
+              configNamespaceSelector = { };
+              storage.volumeClaimTemplate.spec = {
+                accessModes = [ "ReadWriteOnce" ];
+                resources = {
+                  requests = {
+                    storage = "1Gi";
+                  };
+                };
+              };
+              resources = {
+                requests = {
+                  cpu = "50m";
+                  memory = "64Mi";
+                };
+              };
+            };
+          };
+          VMAlertmanagerConfig.telegram = {
+            spec = {
+              route = {
+                receiver = "telegram";
+                group_by = [
+                  "namespace"
+                  "alertname"
+                ];
+                group_wait = "30s";
+                group_interval = "5m";
+                repeat_interval = "4h";
+              };
+              receivers = [
+                {
+                  name = "telegram";
+                  telegram_configs = [
+                    {
+                      chat_id = cfg.alertmanager.telegram.chatId;
+                      bot_token = {
+                        name = "telegram";
+                        key = "token";
+                      };
+                    }
+                  ];
+                }
+              ];
             };
           };
         };

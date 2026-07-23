@@ -19,6 +19,10 @@
           enable = true;
           inherit namespace;
         };
+        alertmanager = {
+          enable = true;
+          telegram.chatId = 8507658503;
+        };
       };
       node-exporter = {
         enable = true;
