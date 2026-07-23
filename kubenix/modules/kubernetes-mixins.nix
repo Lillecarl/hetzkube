@@ -15,45 +15,56 @@ in
       type = lib.types.str;
       default = "observability";
     };
+    version = lib.mkOption {
+      type = lib.types.nonEmptyStr;
+      default = "1.4.2";
+    };
   };
   config =
     let
-      src = builtins.fetchTree {
-        type = "github";
+      src = pkgs.fetchFromGitHub {
         owner = "kubernetes-monitoring";
         repo = "kubernetes-mixin";
-        ref = "version-1.4.2";
+        rev = "version-${cfg.version}";
+        hash = "sha256-YrZbe4pexkyP8nAQh5vazi5o4Xagf8aqO1fDypDQqN0=";
       };
-      vendor = pkgs.stdenv.mkDerivation {
-        name = "kubernetes-mixin-vendor";
 
-        inherit src;
+      # jsonnet-bundler's transitive dependency closure, pinned from this
+      # tag's jsonnetfile.lock.json. Fetched directly with pkgs.fetchFromGitHub
+      # instead of running `jb install` inside a network-accessing
+      # fixed-output derivation, so bumping the mixin version can't silently
+      # change what gets fetched under one opaque recursive hash -- each
+      # upstream source is its own visible, individually-pinned fetch.
+      grafonnet = pkgs.fetchFromGitHub {
+        owner = "grafana";
+        repo = "grafonnet";
+        rev = "82a19822e54a0a12a51e24dbd48fcde717dc0864";
+        hash = "sha256-gdxoiF9bAwybhmqWserCSnV6RGhYBZHgZ8PnK3e3RdE=";
+      };
+      docsonnet = pkgs.fetchFromGitHub {
+        owner = "jsonnet-libs";
+        repo = "docsonnet";
+        rev = "6ac6c69685b8c29c54515448eaca583da2d88150";
+        hash = "sha256-Uy86lIQbFjebNiAAp0dJ8rAtv16j4V4pXMPcl+llwBA=";
+      };
+      xtd = pkgs.fetchFromGitHub {
+        owner = "jsonnet-libs";
+        repo = "xtd";
+        rev = "63d430b69a95741061c2f7fc9d84b1a778511d9c";
+        hash = "sha256-BEzPY8veh1dFpSmla/zwbYiThQunfXlGHKrCIxS/z0o=";
+      };
 
-        nativeBuildInputs = with pkgs; [
-          jsonnet-bundler
-          git
-          cacert
-        ];
-
-        buildPhase = ''
-          cp $src/jsonnetfile.json jsonnetfile.json
-          cp $src/jsonnetfile.lock.json jsonnetfile.lock.json
-
-          export HOME=$TMPDIR
-          jb install
-        '';
-
-        installPhase = ''
-          mv vendor $out
-        '';
-
-        outputHashMode = "recursive";
-        outputHash = "sha256-wO7fVh46S/dCa0dbYptNR6jM3iy4o6V7WvhhH/lbQUw=";
+      # jsonnet-bundler installs each dependency at vendor/<host>/<owner>/<repo>/<subdir>
+      vendor = pkgs.linkFarm "kubernetes-mixin-vendor" {
+        "github.com/grafana/grafonnet/gen/grafonnet-latest" = "${grafonnet}/gen/grafonnet-latest";
+        "github.com/grafana/grafonnet/gen/grafonnet-v11.1.0" = "${grafonnet}/gen/grafonnet-v11.1.0";
+        "github.com/jsonnet-libs/docsonnet/doc-util" = "${docsonnet}/doc-util";
+        "github.com/jsonnet-libs/xtd" = xtd;
       };
 
       package = pkgs.stdenv.mkDerivation {
         pname = "kubernetes-mixin";
-        version = "unstable";
+        version = cfg.version;
 
         inherit src;
 
