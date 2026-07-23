@@ -135,7 +135,14 @@ in
                 spec = {
                   parentRefs = [
                     {
-                      name = "cilium";
+                      # Must match the Gateway object's own metadata.name
+                      # ("default", see gatewayAPI.defaultListener above) --
+                      # not its gatewayClassName ("cilium"). This was wrong
+                      # for the lifetime of this object: with no Gateway
+                      # actually named "cilium", the route never resolved a
+                      # parent at all (status was empty) and this
+                      # HTTP->HTTPS redirect never actually attached/worked.
+                      name = "default";
                       namespace = "kube-system";
                       sectionName = "http";
                     }
@@ -148,6 +155,17 @@ in
                           requestRedirect = {
                             scheme = "https";
                             statusCode = 301;
+                          };
+                        }
+                      ];
+                      # Explicit catch-all match -- Gateway API defaults this
+                      # in when a rule omits `matches` entirely, which is
+                      # exactly the diff ArgoCD kept flagging as OutOfSync.
+                      matches = [
+                        {
+                          path = {
+                            type = "PathPrefix";
+                            value = "/";
                           };
                         }
                       ];
