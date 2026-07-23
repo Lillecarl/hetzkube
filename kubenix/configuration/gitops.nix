@@ -77,13 +77,209 @@ in
         # ArgoCD has no equivalent respect for that annotation, so without
         # this, syncing "everything" would blow away Cilium's live-generated
         # cert material with whatever stale value is in kubernetes.generated.
-        ignoreDifferences = map (name: {
-          group = "";
-          kind = "Secret";
-          namespace = "kube-system";
-          inherit name;
-          jsonPointers = [ "/data" ];
-        }) [ "cilium-ca" "hubble-server-certs" "hubble-relay-client-certs" ];
+        ignoreDifferences =
+          map (name: {
+            group = "";
+            kind = "Secret";
+            namespace = "kube-system";
+            inherit name;
+            jsonPointers = [ "/data" ];
+          }) [ "cilium-ca" "hubble-server-certs" "hubble-relay-client-certs" ]
+          # The rest of these are all the same shape of problem: a
+          # CRD's own admission webhook/controller fills in structural
+          # defaults (or writes back real runtime state) for fields our
+          # declared manifest leaves unset/terser, so the object is
+          # permanently "OutOfSync" even though there's no meaningful
+          # drift -- confirmed via `ekn clusterdiff` showing zero
+          # difference from ekn's own server-side-apply-dry-run
+          # perspective, only ArgoCD's own field-manager-tracked
+          # comparison disagreeing. Every path here was taken from a
+          # live object's actual defaulted value (`kubectl get -o
+          # yaml`), not guessed -- narrowly scoped to exactly the
+          # default-filled/controller-owned fields, never a whole
+          # `/spec`, so a real future Nix-driven change to any *other*
+          # field on these kinds still syncs normally.
+          ++ [
+            # ExternalSecret (external-secrets.io): the ESO webhook fills in
+            # per-item defaults on create.
+            {
+              group = "external-secrets.io";
+              kind = "ExternalSecret";
+              jqPathExpressions = [
+                ".spec.data[]?.remoteRef.conversionStrategy"
+                ".spec.data[]?.remoteRef.decodingStrategy"
+                ".spec.data[]?.remoteRef.metadataPolicy"
+                ".spec.data[]?.remoteRef.nullBytePolicy"
+              ];
+              jsonPointers = [
+                "/spec/target/creationPolicy"
+                "/spec/target/deletionPolicy"
+                "/spec/target/template/engineVersion"
+                "/spec/target/template/mergePolicy"
+              ];
+            }
+            # Gateway API (gateway.networking.k8s.io): the CRD schema
+            # defaults group/kind/weight on object references when omitted.
+            {
+              group = "gateway.networking.k8s.io";
+              kind = "Gateway";
+              jqPathExpressions = [ ".spec.listeners[]?.tls?.certificateRefs[]?.group" ];
+            }
+            {
+              group = "gateway.networking.k8s.io";
+              kind = "HTTPRoute";
+              jqPathExpressions = [
+                ".spec.parentRefs[]?.group"
+                ".spec.parentRefs[]?.kind"
+                ".spec.rules[]?.backendRefs[]?.group"
+                ".spec.rules[]?.backendRefs[]?.kind"
+                ".spec.rules[]?.backendRefs[]?.weight"
+              ];
+            }
+            # grafana-operator's Grafana CR embeds an HTTPRoute-shaped spec
+            # subject to the same Gateway API defaulting, and separately
+            # writes the resolved/running Grafana version back into spec.
+            {
+              group = "grafana.integreatly.org";
+              kind = "Grafana";
+              jqPathExpressions = [
+                ".spec.httpRoute.spec.parentRefs[]?.group"
+                ".spec.httpRoute.spec.parentRefs[]?.kind"
+                ".spec.httpRoute.spec.rules[]?.backendRefs[]?.group"
+                ".spec.httpRoute.spec.rules[]?.backendRefs[]?.kind"
+                ".spec.httpRoute.spec.rules[]?.backendRefs[]?.weight"
+              ];
+              jsonPointers = [ "/spec/version" ];
+            }
+            # Kyverno ClusterPolicy: the policy admission webhook fills in
+            # rule-engine defaults left unset in our declared policies.
+            {
+              group = "kyverno.io";
+              kind = "ClusterPolicy";
+              jqPathExpressions = [ ".spec.rules[]?.skipBackgroundRequests" ];
+              jsonPointers = [
+                "/spec/admission"
+                "/spec/background"
+                "/spec/emitWarning"
+                "/spec/validationFailureAction"
+              ];
+            }
+            # CloudNativePG Cluster (postgresql.cnpg.io): CNPG's webhook is
+            # extremely defaulty -- these are exactly the fields it fills in
+            # beyond what we declare (instances/storage/managed.roles/
+            # enablePDB/enableSuperuserAccess), left out on purpose so a real
+            # change to any of *those* still syncs.
+            {
+              group = "postgresql.cnpg.io";
+              kind = "Cluster";
+              jqPathExpressions = [
+                ".spec.managed.roles[]?.connectionLimit"
+                ".spec.managed.roles[]?.ensure"
+                ".spec.managed.roles[]?.inherit"
+              ];
+              jsonPointers = [
+                "/spec/affinity"
+                "/spec/bootstrap"
+                "/spec/failoverDelay"
+                "/spec/imageName"
+                "/spec/logLevel"
+                "/spec/maxSyncReplicas"
+                "/spec/minSyncReplicas"
+                "/spec/monitoring"
+                "/spec/postgresGID"
+                "/spec/postgresUID"
+                "/spec/postgresql"
+                "/spec/primaryUpdateMethod"
+                "/spec/primaryUpdateStrategy"
+                "/spec/probes"
+                "/spec/replicationSlots"
+                "/spec/resources"
+                "/spec/smartShutdownTimeout"
+                "/spec/startDelay"
+                "/spec/stopDelay"
+                "/spec/switchoverDelay"
+                "/spec/storage/resizeInUseVolumes"
+              ];
+            }
+            # ClusterAPI/CAPH (cluster.x-k8s.io, controlplane.cluster.x-k8s.io,
+            # infrastructure.cluster.x-k8s.io): same structural-default story,
+            # PLUS two genuinely controller/human-owned fields that must never
+            # be statically declared: Cluster.spec.controlPlaneEndpoint (set
+            # by CAPI once the control plane is up) and
+            # KubeadmControlPlane.spec.rolloutAfter (the field the documented
+            # "Re-roll the Control-Plane" procedure patches by hand to
+            # trigger a rollout -- if this were declared in Nix instead of
+            # ignored, the next automated selfHeal sync would revert a manual
+            # re-roll trigger right back to the stale Nix value).
+            {
+              group = "cluster.x-k8s.io";
+              kind = "Cluster";
+              jsonPointers = [
+                "/spec/controlPlaneEndpoint"
+                "/spec/controlPlaneRef/namespace"
+                "/spec/infrastructureRef/namespace"
+              ];
+            }
+            {
+              group = "cluster.x-k8s.io";
+              kind = "MachineDeployment";
+              jsonPointers = [
+                "/spec/minReadySeconds"
+                "/spec/progressDeadlineSeconds"
+                "/spec/revisionHistoryLimit"
+                "/spec/selector"
+                "/spec/strategy"
+                "/spec/template/metadata/labels"
+                "/spec/template/spec/infrastructureRef/namespace"
+                "/spec/template/spec/bootstrap/configRef/namespace"
+              ];
+            }
+            {
+              group = "cluster.x-k8s.io";
+              kind = "MachineHealthCheck";
+              jqPathExpressions = [ ".spec.unhealthyConditions[]?.timeout" ];
+              jsonPointers = [
+                "/spec/nodeStartupTimeout"
+                "/spec/remediationTemplate/namespace"
+              ];
+            }
+            {
+              group = "controlplane.cluster.x-k8s.io";
+              kind = "KubeadmControlPlane";
+              jsonPointers = [
+                "/spec/kubeadmConfigSpec/clusterConfiguration/dns"
+                "/spec/kubeadmConfigSpec/clusterConfiguration/networking"
+                "/spec/kubeadmConfigSpec/format"
+                "/spec/kubeadmConfigSpec/initConfiguration/localAPIEndpoint"
+                "/spec/kubeadmConfigSpec/initConfiguration/nodeRegistration/imagePullPolicy"
+                "/spec/kubeadmConfigSpec/joinConfiguration/discovery"
+                "/spec/kubeadmConfigSpec/joinConfiguration/nodeRegistration/imagePullPolicy"
+                "/spec/machineTemplate/infrastructureRef/namespace"
+                "/spec/machineTemplate/metadata"
+                "/spec/rolloutAfter"
+                "/spec/rolloutStrategy"
+              ];
+            }
+            {
+              group = "infrastructure.cluster.x-k8s.io";
+              kind = "HCloudRemediationTemplate";
+              jsonPointers = [ "/spec/template/spec/strategy/timeout" ];
+            }
+            # A manual `kubectl rollout restart` (as opposed to one driven by
+            # a real template change) stamps this annotation, which then
+            # perpetually shows as live-only drift since it's owned by
+            # kubectl's own field manager, not argocd-controller's.
+            {
+              group = "apps";
+              kind = "Deployment";
+              jsonPointers = [ "/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt" ];
+            }
+            {
+              group = "apps";
+              kind = "StatefulSet";
+              jsonPointers = [ "/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt" ];
+            }
+          ];
       };
     };
 
