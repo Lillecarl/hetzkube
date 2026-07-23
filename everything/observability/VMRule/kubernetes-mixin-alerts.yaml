@@ -22,6 +22,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubePodNotReady
       annotations:
         description: Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-ready
@@ -36,6 +37,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeDeploymentGenerationMismatch
       annotations:
         description: Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment
@@ -48,6 +50,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeDeploymentReplicasMismatch
       annotations:
         description: Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has
@@ -61,6 +64,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeDeploymentRolloutStuck
       annotations:
         description: Rollout of deployment {{ $labels.namespace }}/{{ $labels.deployment
@@ -75,6 +79,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeStatefulSetReplicasMismatch
       annotations:
         description: StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
@@ -88,6 +93,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeStatefulSetGenerationMismatch
       annotations:
         description: StatefulSet generation for {{ $labels.namespace }}/{{ $labels.statefulset
@@ -100,6 +106,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeStatefulSetUpdateNotRolledOut
       annotations:
         description: StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
@@ -115,6 +122,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeDaemonSetRolloutStuck
       annotations:
         description: DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
@@ -133,6 +141,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeContainerWaiting
       annotations:
         description: 'pod/{{ $labels.pod }} in namespace {{ $labels.namespace }} on
@@ -147,6 +156,7 @@ spec:
       for: 1h
       labels:
         severity: warning
+      record: ''
     - alert: KubeDaemonSetNotScheduled
       annotations:
         description: '{{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
@@ -159,6 +169,7 @@ spec:
       for: 10m
       labels:
         severity: warning
+      record: ''
     - alert: KubeDaemonSetMisScheduled
       annotations:
         description: '{{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
@@ -172,6 +183,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeJobNotCompleted
       annotations:
         description: Job {{ $labels.namespace }}/{{ $labels.job_name }} is taking
@@ -182,6 +194,7 @@ spec:
         \ and\nkube_job_status_active{job=\"kube-state-metrics\"} > 0) > 43200\n"
       labels:
         severity: warning
+      record: ''
     - alert: KubeJobFailed
       annotations:
         description: Job {{ $labels.namespace }}/{{ $labels.job_name }} failed to
@@ -194,6 +207,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeHpaReplicasMismatch
       annotations:
         description: HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
@@ -211,6 +225,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeHpaMaxedOut
       annotations:
         description: HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
@@ -222,6 +237,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubePdbNotEnoughHealthyPods
       annotations:
         description: PDB {{ $labels.namespace }}/{{ $labels.poddisruptionbudget }}
@@ -235,6 +251,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
   - name: kubernetes-resources
     rules:
     - alert: KubeCPUOvercommit
@@ -253,6 +270,7 @@ spec:
       for: 10m
       labels:
         severity: warning
+      record: ''
     - alert: KubeMemoryOvercommit
       annotations:
         description: Cluster has overcommitted memory resource requests for Pods by
@@ -269,6 +287,7 @@ spec:
       for: 10m
       labels:
         severity: warning
+      record: ''
     - alert: KubeCPUQuotaOvercommit
       annotations:
         description: Cluster has overcommitted CPU resource requests for Namespaces.
@@ -280,6 +299,7 @@ spec:
       for: 5m
       labels:
         severity: warning
+      record: ''
     - alert: KubeMemoryQuotaOvercommit
       annotations:
         description: Cluster has overcommitted memory resource requests for Namespaces.
@@ -291,6 +311,7 @@ spec:
       for: 5m
       labels:
         severity: warning
+      record: ''
     - alert: KubeQuotaAlmostFull
       annotations:
         description: Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage
@@ -304,6 +325,7 @@ spec:
       for: 15m
       labels:
         severity: info
+      record: ''
     - alert: KubeQuotaFullyUsed
       annotations:
         description: Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage
@@ -317,6 +339,7 @@ spec:
       for: 15m
       labels:
         severity: info
+      record: ''
     - alert: KubeQuotaExceeded
       annotations:
         description: Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage
@@ -330,6 +353,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: CPUThrottlingHigh
       annotations:
         description: '{{ $value | humanizePercentage }} throttling of CPU in namespace
@@ -348,6 +372,7 @@ spec:
       for: 15m
       labels:
         severity: info
+      record: ''
   - name: kubernetes-storage
     rules:
     - alert: KubePersistentVolumeFillingUp
@@ -365,6 +390,7 @@ spec:
       for: 1m
       labels:
         severity: critical
+      record: ''
     - alert: KubePersistentVolumeFillingUp
       annotations:
         description: Based on recent sampling, the PersistentVolume claimed by {{
@@ -381,6 +407,7 @@ spec:
       for: 1h
       labels:
         severity: warning
+      record: ''
     - alert: KubePersistentVolumeInodesFillingUp
       annotations:
         description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim
@@ -396,6 +423,7 @@ spec:
       for: 1m
       labels:
         severity: critical
+      record: ''
     - alert: KubePersistentVolumeInodesFillingUp
       annotations:
         description: Based on recent sampling, the PersistentVolume claimed by {{
@@ -413,6 +441,7 @@ spec:
       for: 1h
       labels:
         severity: warning
+      record: ''
     - alert: KubePersistentVolumeErrors
       annotations:
         description: The persistent volume {{ $labels.persistentvolume }} {{ with
@@ -427,6 +456,7 @@ spec:
       for: 5m
       labels:
         severity: critical
+      record: ''
   - name: kubernetes-system
     rules:
     - alert: KubeVersionMismatch
@@ -442,6 +472,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeClientErrors
       annotations:
         description: Kubernetes API server client '{{ $labels.job }}/{{ $labels.instance
@@ -454,6 +485,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
   - name: kube-apiserver-slos
     rules:
     - alert: KubeAPIErrorBudgetBurn
@@ -473,6 +505,7 @@ spec:
         long: 1h
         severity: critical
         short: 5m
+      record: ''
     - alert: KubeAPIErrorBudgetBurn
       annotations:
         description: The API server is burning too much error budget.
@@ -490,6 +523,7 @@ spec:
         long: 6h
         severity: critical
         short: 30m
+      record: ''
     - alert: KubeAPIErrorBudgetBurn
       annotations:
         description: The API server is burning too much error budget.
@@ -507,6 +541,7 @@ spec:
         long: 1d
         severity: warning
         short: 2h
+      record: ''
     - alert: KubeAPIErrorBudgetBurn
       annotations:
         description: The API server is burning too much error budget.
@@ -524,6 +559,7 @@ spec:
         long: 3d
         severity: warning
         short: 6h
+      record: ''
   - name: kubernetes-system-apiserver
     rules:
     - alert: KubeClientCertificateExpiration
@@ -544,6 +580,7 @@ spec:
       for: 5m
       labels:
         severity: warning
+      record: ''
     - alert: KubeClientCertificateExpiration
       annotations:
         description: A client certificate used to authenticate to kubernetes apiserver
@@ -562,6 +599,7 @@ spec:
       for: 5m
       labels:
         severity: critical
+      record: ''
     - alert: KubeAggregatedAPIErrors
       annotations:
         description: Kubernetes aggregated API {{ $labels.instance }}/{{ $labels.name
@@ -575,6 +613,7 @@ spec:
       for: 10m
       labels:
         severity: warning
+      record: ''
     - alert: KubeAggregatedAPIDown
       annotations:
         description: Kubernetes aggregated API {{ $labels.name }}/{{ $labels.namespace
@@ -588,6 +627,7 @@ spec:
       for: 5m
       labels:
         severity: warning
+      record: ''
     - alert: KubeAPIDown
       annotations:
         description: KubeAPI has disappeared from Prometheus target discovery.
@@ -599,6 +639,7 @@ spec:
       for: 15m
       labels:
         severity: critical
+      record: ''
     - alert: KubeAPITerminatedRequests
       annotations:
         description: The kubernetes apiserver has terminated {{ $value | humanizePercentage
@@ -615,6 +656,7 @@ spec:
       for: 5m
       labels:
         severity: warning
+      record: ''
   - name: kubernetes-system-kubelet
     rules:
     - alert: KubeNodeNotReady
@@ -633,6 +675,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeNodePressure
       annotations:
         description: '{{ $labels.node }} has active Condition {{ $labels.condition
@@ -650,6 +693,7 @@ spec:
       for: 10m
       labels:
         severity: info
+      record: ''
     - alert: KubeNodeUnreachable
       annotations:
         description: '{{ $labels.node }} is unreachable and some workloads may be
@@ -664,6 +708,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeletTooManyPods
       annotations:
         description: Kubelet '{{ $labels.node }}' is running at {{ $value | humanizePercentage
@@ -678,6 +723,7 @@ spec:
       for: 15m
       labels:
         severity: info
+      record: ''
     - alert: KubeNodeReadinessFlapping
       annotations:
         description: The readiness status of node {{ $labels.node }} has changed {{
@@ -695,6 +741,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeNodeEviction
       annotations:
         description: Node {{ $labels.node }} is evicting Pods due to {{ $labels.eviction_signal
@@ -708,6 +755,7 @@ spec:
       for: 0s
       labels:
         severity: info
+      record: ''
     - alert: KubeletPlegDurationHigh
       annotations:
         description: The Kubelet Pod Lifecycle Event Generator has a 99th percentile
@@ -721,6 +769,7 @@ spec:
       for: 5m
       labels:
         severity: warning
+      record: ''
     - alert: KubeletPodStartUpLatencyHigh
       annotations:
         description: Kubelet Pod startup 99th percentile latency is {{ $value }} seconds
@@ -734,6 +783,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeletClientCertificateExpiration
       annotations:
         description: Client certificate for Kubelet on node {{ $labels.node }} expires
@@ -745,6 +795,7 @@ spec:
         '
       labels:
         severity: warning
+      record: ''
     - alert: KubeletClientCertificateExpiration
       annotations:
         description: Client certificate for Kubelet on node {{ $labels.node }} expires
@@ -756,6 +807,7 @@ spec:
         '
       labels:
         severity: critical
+      record: ''
     - alert: KubeletServerCertificateExpiration
       annotations:
         description: Server certificate for Kubelet on node {{ $labels.node }} expires
@@ -767,6 +819,7 @@ spec:
         '
       labels:
         severity: warning
+      record: ''
     - alert: KubeletServerCertificateExpiration
       annotations:
         description: Server certificate for Kubelet on node {{ $labels.node }} expires
@@ -778,6 +831,7 @@ spec:
         '
       labels:
         severity: critical
+      record: ''
     - alert: KubeletClientCertificateRenewalErrors
       annotations:
         description: Kubelet on node {{ $labels.node }} has failed to renew its client
@@ -791,6 +845,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeletServerCertificateRenewalErrors
       annotations:
         description: Kubelet on node {{ $labels.node }} has failed to renew its server
@@ -803,6 +858,7 @@ spec:
       for: 15m
       labels:
         severity: warning
+      record: ''
     - alert: KubeletDown
       annotations:
         description: Kubelet has disappeared from Prometheus target discovery.
@@ -814,6 +870,7 @@ spec:
       for: 15m
       labels:
         severity: critical
+      record: ''
   - name: kubernetes-system-scheduler
     rules:
     - alert: KubeSchedulerDown
@@ -827,6 +884,7 @@ spec:
       for: 15m
       labels:
         severity: critical
+      record: ''
   - name: kubernetes-system-controller-manager
     rules:
     - alert: KubeControllerManagerDown
@@ -841,6 +899,7 @@ spec:
       for: 15m
       labels:
         severity: critical
+      record: ''
   - name: kubernetes-system-kube-proxy
     rules:
     - alert: KubeProxyDown
@@ -854,3 +913,4 @@ spec:
       for: 15m
       labels:
         severity: critical
+      record: ''
