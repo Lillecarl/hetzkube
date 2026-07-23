@@ -68,14 +68,16 @@ rec {
   # Wraps the plugin-bundled tofu so it always operates on `module` (in the
   # store, read-only) via -chdir, while its own writable state --
   # provider-install dir and the kubernetes backend's local pointer file --
-  # lives in $TF_DATA_DIR, outside the store, relative to wherever this is
-  # actually invoked from (not the -chdir target, since -chdir changes
-  # directory before anything else runs).
+  # lives in $TF_DATA_DIR, outside the store. Defaults to tf/.terraform
+  # (this directory, baked in at build time) rather than $PWD/.terraform --
+  # -chdir changes directory before anything else runs, so a $PWD-relative
+  # default would land wherever the caller happened to invoke this from
+  # (e.g. the repo root), outside this directory's own .gitignore coverage.
   run = pkgs.writeShellApplication {
     name = "terranix";
     runtimeInputs = [ tofuUnwrapped ];
     text = ''
-      export TF_DATA_DIR="''${TF_DATA_DIR:-$PWD/.terraform}"
+      export TF_DATA_DIR="''${TF_DATA_DIR:-${toString ./.}/.terraform}"
       mkdir -p "$TF_DATA_DIR"
       exec tofu -chdir=${module} "$@"
     '';

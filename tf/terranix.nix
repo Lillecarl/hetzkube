@@ -6,7 +6,6 @@
 }:
 {
   imports = [
-    ./dns.nix
     ./keycloak
     ./vmalert-secrets.nix
   ];
