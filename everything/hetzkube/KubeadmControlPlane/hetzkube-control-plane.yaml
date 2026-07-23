@@ -91,4 +91,4 @@ spec:
       kind: HCloudMachineTemplate
       name: hetzkube-control-plane-v2
   replicas: 1
-  version: v1.36.2
+  version: v1.36.1

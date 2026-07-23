@@ -25,4 +25,4 @@ spec:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
         kind: HCloudMachineTemplate
         name: hetzkube-workers-arm64
-      version: v1.36.2
+      version: v1.36.1
