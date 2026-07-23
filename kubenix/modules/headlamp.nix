@@ -61,11 +61,11 @@ in
       namespace = cfg.namespace;
 
       chart = "${
-        builtins.fetchTree {
-          type = "github";
+        pkgs.fetchFromGitHub {
           owner = "kubernetes-sigs";
           repo = "headlamp";
-          ref = "v${cfg.version}";
+          rev = "v${cfg.version}";
+          hash = "sha256-6TGKBKR0WR4Xv7lGCgMFVG/nc19oMOP5cJcgT0bw6Ag=";
         }
       }/charts/headlamp";
 
