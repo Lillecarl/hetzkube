@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption moduleName;
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
-      default = "0.8.1";
+      default = "0.9.0";
     };
     helmValues = lib.mkOption {
       type = lib.types.anything;
@@ -22,11 +22,11 @@ in
   };
   config =
     let
-      src = builtins.fetchTree {
-        type = "github";
+      src = pkgs.fetchFromGitHub {
         owner = "kubernetes-sigs";
         repo = "metrics-server";
-        ref = "v${cfg.version}";
+        rev = "v${cfg.version}";
+        hash = "sha256-RITmujmqDGHhhX8uOxchJE1jrIIuuhrjB/GgDHwkmo8=";
       };
     in
     lib.mkIf cfg.enable {
