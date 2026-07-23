@@ -7,7 +7,7 @@ metadata:
   namespace: kube-system
 spec:
   parentRefs:
-  - name: cilium
+  - name: default
     namespace: kube-system
     sectionName: http
   rules:
@@ -16,3 +16,7 @@ spec:
         scheme: https
         statusCode: 301
       type: RequestRedirect
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
