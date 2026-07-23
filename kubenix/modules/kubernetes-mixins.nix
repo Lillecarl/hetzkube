@@ -86,6 +86,21 @@ in
           cp dashboards_out/*.json $out/dashboards/
         '';
       };
+
+      # VMRule's CRD schema declares both `alert` and `record` on every rule
+      # (mutually exclusive in practice), so the apiserver defaults whichever
+      # one a rule doesn't set to "" -- normalize our rules the same way so
+      # ArgoCD's diff doesn't perpetually see every single rule as changed.
+      normalizeGroups = lib.map (
+        group:
+        group
+        // {
+          rules = lib.map (rule: {
+            alert = "";
+            record = "";
+          } // rule) group.rules;
+        }
+      );
     in
     lib.mkIf cfg.enable {
       kubernetes.resources.none.Namespace.${cfg.namespace} = { };
@@ -93,13 +108,13 @@ in
         VMRule.kubernetes-mixin-alerts = {
           metadata.labels.role = "metrics";
           spec = {
-            inherit (lib.importJSON "${package}/prometheus_alerts.json") groups;
+            groups = normalizeGroups (lib.importJSON "${package}/prometheus_alerts.json").groups;
           };
         };
         VMRule.kubernetes-mixin-rules = {
           metadata.labels.role = "metrics";
           spec = {
-            inherit (lib.importJSON "${package}/prometheus_rules.json") groups;
+            groups = normalizeGroups (lib.importJSON "${package}/prometheus_rules.json").groups;
           };
         };
         GrafanaDashboard = lib.pipe (lib.filesystem.listFilesRecursive "${package}/dashboards") [
