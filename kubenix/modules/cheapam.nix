@@ -13,6 +13,14 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
+    crossArch.enable = lib.mkEnableOption ''
+      also publishing this CSI volume's ${moduleName} build for the opposite
+      (foreign) architecture via pkgsOff, for a mixed-arch cluster. pkgsOff is
+      a full second nixpkgs evaluation (not real cross-compilation), which
+      measurably slows every eval/deploy (~5 minutes observed) even when
+      nothing on the cluster is that architecture yet -- off by default,
+      enable once you actually have a foreign-arch node needing this volume
+    '';
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources = {
@@ -100,8 +108,12 @@ in
                 nix-csi.csi = {
                   driver = "nixkube";
                   readOnly = true;
-                  volumeAttributes.${pkgs.stdenv.hostPlatform.system} = pkgs.cheapam;
-                  volumeAttributes.${pkgsOff.stdenv.hostPlatform.system} = pkgsOff.cheapam;
+                  volumeAttributes = {
+                    ${pkgs.stdenv.hostPlatform.system} = pkgs.cheapam;
+                  }
+                  // lib.optionalAttrs cfg.crossArch.enable {
+                    ${pkgsOff.stdenv.hostPlatform.system} = pkgsOff.cheapam;
+                  };
                 };
               };
             };

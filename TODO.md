@@ -4,12 +4,26 @@
 
 Take an item, sorted by priority, investigate and fix. Move task to completed with a short action description
 Priority is high to low where high numbers goes first.
+If the TODO list becomes empty, keep a placeholder example alive to maintain structure.
 
 # TODO
 
-## P90 KubeVersionMismatch
-Investigate why KubeVersionMismatch is firing, which components are mismatched?
-If it's an easy fix, fix it. Else move this to completed and write a new task about what to fix.
+## P85 Fix KubeVersionMismatch: kubelet lags capi.version by a minor
+kubelet is sourced from `pkgs.kubernetes` in nixos/kubernetes.nix (currently
+resolves to 1.35.0), while kubenix/modules/capi.nix:87 pins
+`capi.version = "1.36.1"` for the control-plane/worker MachineDeployments
+(apiserver/controller-manager/scheduler images). Nothing ties the two
+together, so they've drifted -- confirmed live on the cluster (kubelets at
+v1.35.0, control-plane pods at v1.36.1), which is exactly what
+kubernetes-mixin's KubeVersionMismatch rule (buckets `kubernetes_build_info`
+by major.minor `git_version`, fires if >1 bucket) detects.
+Align them -- either bump nixpkgs so `pkgs.kubernetes.version` tracks 1.36.x,
+or override the kubelet package version to explicitly follow
+`config.capi.version` -- then roll the nodes. Once aligned, consider adding a
+NixOS assertion (`config.assertions`) comparing the two so this can't
+silently drift again; capi.version was deliberately pinned in a prior commit
+specifically to avoid silent drift, but that only covered the control-plane
+side.
 
 ## P20 Make VictoriaMetrics datasource default for kubernetes-mixin?
 Try to override kubernetes-mixin to render everything on victoriametrics datasources instead of prometheus
@@ -24,9 +38,6 @@ This is a lab cluster, we are always overcommited
 
 ## P13 disable Windows dashboards
 We don't have any Windows in this cluster, disable Windows on kubernetes-mixin
-
-## P10 Investigate if _extra_binding_args can be improved
-This is a code smell, can we rearchitect it?
 
 # COMPLETED
 
@@ -56,3 +67,20 @@ instead of yq. No further change needed.
 Do nothing but move this to completed
 Resolution:
 Moved to completed
+
+## P90 KubeVersionMismatch
+Investigate why KubeVersionMismatch is firing, which components are mismatched?
+If it's an easy fix, fix it. Else move this to completed and write a new task about what to fix.
+Resolution:
+kubernetes-mixin's rule buckets `kubernetes_build_info` by major.minor
+`git_version` and fires when more than one bucket exists cluster-wide.
+Confirmed live: kubelets on both nodes report v1.35.0 (from
+`pkgs.kubernetes` in nixos/kubernetes.nix), while kube-apiserver/
+controller-manager/scheduler pods run v1.36.1 (from
+kubenix/modules/capi.nix's `capi.version` option, deliberately pinned
+independently of nixpkgs by a prior commit to stop nixpkgs bumps from
+silently rolling the control plane). That pin only covers the control-plane
+side -- the kubelet still floats with whatever nixpkgs happens to package --
+so the two silently drifted apart. Not a one-line fix (requires either a
+nixpkgs bump or a version override plus a node roll), so filed as P85 above
+with the specific remediation.
