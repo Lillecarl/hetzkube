@@ -427,30 +427,29 @@ in
     # these kinds exist instead of 404ing on them.
     kubernetes.crds =
       let
-        fetchCrd =
-          url:
-          ekn.lib.parseYAMLStream {
-            src = builtins.fetchTree {
-              type = "file";
-              inherit url;
-            };
-            yamlVersion = "yaml12";
-          };
-        capiRef = "v1.10.7";
-        caphRef = "v1.0.7";
-        capiRaw = path: "https://raw.githubusercontent.com/kubernetes-sigs/cluster-api/${capiRef}/${path}";
-        caphRaw =
-          path: "https://raw.githubusercontent.com/syself/cluster-api-provider-hetzner/${caphRef}/${path}";
+        capiSrc = pkgs.fetchFromGitHub {
+          owner = "kubernetes-sigs";
+          repo = "cluster-api";
+          rev = "v1.10.7";
+          hash = "sha256-mDP6dJTHn2e1mlYfr+GnYiEA22DSaDsyPhfwzhpGf2Q=";
+        };
+        caphSrc = pkgs.fetchFromGitHub {
+          owner = "syself";
+          repo = "cluster-api-provider-hetzner";
+          rev = "v1.0.7";
+          hash = "sha256-whCd73JBNasuFm9gPm03fdFpR28cq0BxdgxmPh+wq+M=";
+        };
+        fetchCrd = path: ekn.lib.parseYAMLStream { src = path; yamlVersion = "yaml12"; };
       in
       lib.concatMap fetchCrd (
-        map capiRaw [
+        map (path: "${capiSrc}/${path}") [
           "config/crd/bases/cluster.x-k8s.io_clusters.yaml"
           "config/crd/bases/cluster.x-k8s.io_machinedeployments.yaml"
           "config/crd/bases/cluster.x-k8s.io_machinehealthchecks.yaml"
           "bootstrap/kubeadm/config/crd/bases/bootstrap.cluster.x-k8s.io_kubeadmconfigtemplates.yaml"
           "controlplane/kubeadm/config/crd/bases/controlplane.cluster.x-k8s.io_kubeadmcontrolplanes.yaml"
         ]
-        ++ map caphRaw [
+        ++ map (path: "${caphSrc}/${path}") [
           "config/crd/bases/infrastructure.cluster.x-k8s.io_hcloudmachinetemplates.yaml"
           "config/crd/bases/infrastructure.cluster.x-k8s.io_hetznerclusters.yaml"
           "config/crd/bases/infrastructure.cluster.x-k8s.io_hcloudremediationtemplates.yaml"
