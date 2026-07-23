@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption moduleName;
     version = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = "0.37.0";
+      default = "0.38.4";
     };
   };
   config = lib.mkIf cfg.enable {
