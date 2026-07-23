@@ -18,7 +18,6 @@
     ./flux.nix
     ./gitops.nix
     ./grafana.nix
-    ./kluctl.nix
     ./kyverno.nix
     ./ncps.nix
     ./nix-csi.nix

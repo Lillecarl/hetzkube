@@ -110,9 +110,11 @@ Move the cluster
 clusterctl move --to-kubeconfig ./tmp/hetzkube.kubeconfig --namespace hetzkube
 ```
 ## 5 Deploy whatever you want bro easykubenix is cool asf
-Run this if you wanna deploy all the bells and whistles I'm working on:
+Run this if you wanna deploy all the bells and whistles I'm working on
+(renders manifests to the GitOps branches; ArgoCD picks up the change and
+syncs it -- this repo no longer deploys via kluctl directly):
 ```bash
-nix run --file . kubenix.deploymentScript --argstr stage full
+nix run --file . kubenix.passthru.ekn -- deploy --file . -A kubenix --push -m "your message"
 ```
 See kubenix/default.nix stage for what's being deployed.
 ## 6 DNS ownership
@@ -129,15 +131,18 @@ nix repl --file default.nix
 # SOPS
 Put a decryption key in the image at /etc/nodekey
 
-# kluctl
-kluctl sets a label on ALL resources it deploys
+# Pruning / discriminator
+`ekn kubeapply`/`ekn validate` (not kluctl -- ArgoCD replaced it as the real
+deploy mechanism) label every resource they apply:
 ```yaml
-kluctl.io/discriminator: init
+ekn.dev/discriminator: init
 ```
-If you run reuse the same discriminator for multiple deployments you're in for
-a bad time, it'll prune all resources with that label that aren't in the list
-of resources you're currently deploying.
+If you reuse the same discriminator for multiple unrelated deployments you're
+in for a bad time, it'll prune all resources with that label that aren't in
+the list of resources you're currently applying.
 
-hetzkube uses the stage name as the discriminator. kluctl will happily overwrite
-the discriminator of your resources so you can "move ownership" easily. But
-beware
+hetzkube uses the stage name as the discriminator (`kubenix/default.nix`'s
+`kluctl.discriminator = stage;` -- still that option name, since it's defined
+by easykubenix's core `kluctl.nix` module, but consumed generically by ekn's
+apply_and_prune, not by the kluctl binary). Overwriting it lets you "move
+ownership" easily. But beware
