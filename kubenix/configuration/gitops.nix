@@ -269,15 +269,57 @@ in
             # a real template change) stamps this annotation, which then
             # perpetually shows as live-only drift since it's owned by
             # kubectl's own field manager, not argocd-controller's.
+            #
+            # The rest of these are plain PodSpec/PodTemplate/StatefulSet
+            # API-server defaults -- turns out ArgoCD does NOT normalize
+            # these away generically the way its CRD-schema-aware defaulting
+            # does for some other kinds; it only looks "handled" for the
+            # Deployments elsewhere in this cluster because those are all
+            # Helm-rendered charts that already declare these fields
+            # explicitly. pgadmin's StatefulSet (kubenix/modules/pgadmin.nix)
+            # is a bare, hand-written Nix declaration that leaves them unset,
+            # so confirmed via a live-vs-rendered diff after clearing the
+            # restartedAt annotation didn't fix the OutOfSync status.
             {
               group = "apps";
               kind = "Deployment";
               jsonPointers = [ "/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt" ];
+              jqPathExpressions = [
+                ".spec.template.spec.containers[]?.imagePullPolicy"
+                ".spec.template.spec.containers[]?.resources"
+                ".spec.template.spec.containers[]?.terminationMessagePath"
+                ".spec.template.spec.containers[]?.terminationMessagePolicy"
+                ".spec.template.spec.volumes[]?.secret?.defaultMode"
+                ".spec.template.spec.volumes[]?.configMap?.defaultMode"
+              ];
             }
             {
               group = "apps";
               kind = "StatefulSet";
-              jsonPointers = [ "/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt" ];
+              jqPathExpressions = [
+                ".spec.template.spec.containers[]?.imagePullPolicy"
+                ".spec.template.spec.containers[]?.resources"
+                ".spec.template.spec.containers[]?.terminationMessagePath"
+                ".spec.template.spec.containers[]?.terminationMessagePolicy"
+                ".spec.template.spec.volumes[]?.secret?.defaultMode"
+                ".spec.template.spec.volumes[]?.configMap?.defaultMode"
+                ".spec.volumeClaimTemplates[]?.apiVersion"
+                ".spec.volumeClaimTemplates[]?.kind"
+                ".spec.volumeClaimTemplates[]?.status"
+                ".spec.volumeClaimTemplates[]?.spec.volumeMode"
+              ];
+              jsonPointers = [
+                "/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"
+                "/spec/persistentVolumeClaimRetentionPolicy"
+                "/spec/podManagementPolicy"
+                "/spec/revisionHistoryLimit"
+                "/spec/serviceName"
+                "/spec/updateStrategy"
+                "/spec/template/spec/dnsPolicy"
+                "/spec/template/spec/restartPolicy"
+                "/spec/template/spec/schedulerName"
+                "/spec/template/spec/terminationGracePeriodSeconds"
+              ];
             }
           ];
       };
