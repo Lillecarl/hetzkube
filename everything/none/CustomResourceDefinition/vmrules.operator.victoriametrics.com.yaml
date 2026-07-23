@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: vm/vm-serving-cert
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.21.0
   name: vmrules.operator.victoriametrics.com
 spec:
   group: operator.victoriametrics.com
@@ -75,6 +75,7 @@ spec:
                       items:
                         properties:
                           alert:
+                            default: ''
                             type: string
                           annotations:
                             additionalProperties:
@@ -93,6 +94,7 @@ spec:
                               type: string
                             type: object
                           record:
+                            default: ''
                             type: string
                           update_entries_limit:
                             type: integer
@@ -107,6 +109,9 @@ spec:
                   - rules
                   type: object
                 type: array
+                x-kubernetes-list-map-keys:
+                - name
+                x-kubernetes-list-type: map
             required:
             - groups
             type: object

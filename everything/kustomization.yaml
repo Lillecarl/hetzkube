@@ -10,9 +10,7 @@ resources:
 - cert-manager/Deployment/cert-manager-cainjector.yaml
 - cert-manager/Deployment/cert-manager-webhook.yaml
 - cert-manager/ExternalSecret/cloudflare.yaml
-- cert-manager/Role/cert-manager-tokenrequest.yaml
 - cert-manager/Role/cert-manager-webhook:dynamic-serving.yaml
-- cert-manager/RoleBinding/cert-manager-tokenrequest.yaml
 - cert-manager/RoleBinding/cert-manager-webhook:dynamic-serving.yaml
 - cert-manager/Service/cert-manager.yaml
 - cert-manager/Service/cert-manager-cainjector.yaml
@@ -329,6 +327,7 @@ resources:
 - none/ClusterSecretStore/scaleway.yaml
 - none/CustomResourceDefinition/acraccesstokens.generators.external-secrets.io.yaml
 - none/CustomResourceDefinition/backups.postgresql.cnpg.io.yaml
+- none/CustomResourceDefinition/beyondtrustworkloadcredentialsdynamicsecrets.generators.external-secrets.io.yaml
 - none/CustomResourceDefinition/certificaterequests.cert-manager.io.yaml
 - none/CustomResourceDefinition/certificates.cert-manager.io.yaml
 - none/CustomResourceDefinition/challenges.acme.cert-manager.io.yaml
@@ -382,6 +381,7 @@ resources:
 - none/CustomResourceDefinition/generatingpolicies.policies.kyverno.io.yaml
 - none/CustomResourceDefinition/generatorstates.generators.external-secrets.io.yaml
 - none/CustomResourceDefinition/githubaccesstokens.generators.external-secrets.io.yaml
+- none/CustomResourceDefinition/gitlabdeploytokens.generators.external-secrets.io.yaml
 - none/CustomResourceDefinition/globalcontextentries.kyverno.io.yaml
 - none/CustomResourceDefinition/grafanaalertrulegroups.grafana.integreatly.org.yaml
 - none/CustomResourceDefinition/grafanacontactpoints.grafana.integreatly.org.yaml
@@ -441,6 +441,7 @@ resources:
 - none/CustomResourceDefinition/vmalertmanagers.operator.victoriametrics.com.yaml
 - none/CustomResourceDefinition/vmalerts.operator.victoriametrics.com.yaml
 - none/CustomResourceDefinition/vmanomalies.operator.victoriametrics.com.yaml
+- none/CustomResourceDefinition/vmanomalyconfigs.operator.victoriametrics.com.yaml
 - none/CustomResourceDefinition/vmauths.operator.victoriametrics.com.yaml
 - none/CustomResourceDefinition/vmclusters.operator.victoriametrics.com.yaml
 - none/CustomResourceDefinition/vmdistributed.operator.victoriametrics.com.yaml

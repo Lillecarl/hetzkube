@@ -205,6 +205,9 @@ rules:
   - vmdistributed
   - vmdistributed/finalizers
   - vmdistributed/status
+  - vmanomalyconfigs
+  - vmanomalyconfigs/finalizers
+  - vmanomalyconfigs/status
   verbs:
   - '*'
 - apiGroups:

@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.20.2
+    app.kubernetes.io/version: v1.21.0
   name: cert-manager
   namespace: cert-manager
 spec:
@@ -27,21 +27,21 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/instance: cert-manager
         app.kubernetes.io/name: cert-manager
-        app.kubernetes.io/version: v1.20.2
+        app.kubernetes.io/version: v1.21.0
     spec:
       containers:
       - args:
         - --v=2
         - --cluster-resource-namespace=$(POD_NAMESPACE)
         - --leader-election-namespace=kube-system
-        - --acme-http01-solver-image=quay.io/jetstack/cert-manager-acmesolver:v1.20.2
+        - --acme-http01-solver-image=quay.io/jetstack/cert-manager-acmesolver:v1.21.0
         - --max-concurrent-challenges=60
         env:
         - name: POD_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: quay.io/jetstack/cert-manager-controller:v1.20.2
+        image: quay.io/jetstack/cert-manager-controller:v1.21.0
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 8
