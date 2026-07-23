@@ -418,6 +418,13 @@ in
               selectAllByDefault = true;
               configSelector = { };
               configNamespaceSelector = { };
+              # Without this, the operator auto-injects a `namespace =
+              # "<config's own namespace>"` matcher on every route derived
+              # from a VMAlertmanagerConfig -- since almost all cluster-health
+              # alerts (node/kubelet/scheduler/etc) come from cluster-scoped
+              # or other-namespace resources, that would silently swallow
+              # nearly everything into the default route instead of Telegram.
+              disableNamespaceMatcher = true;
               storage.volumeClaimTemplate.spec = {
                 accessModes = [ "ReadWriteOnce" ];
                 resources = {
