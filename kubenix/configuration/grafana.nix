@@ -186,6 +186,7 @@ in
             type = "alertmanager";
             url = "http://vmalertmanager-alertmanager.observability.svc.cluster.local:9093";
             access = "proxy";
+            isDefault = true;
             jsonData = {
               implementation = "prometheus";
               handleGrafanaManagedAlerts = false;
