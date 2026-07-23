@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
   kustomize.buildOptions: --enable-alpha-plugins --enable-exec
-  oidc.config: '{"clientID":"argocd","issuer":"https://keycloak.lillecarl.com/realms/auth","name":"Keycloak","requestedScopes":["openid","profile","email","groups"],"usePKCE":true}'
+  oidc.config: '{"clientID":"argocd","issuer":"https://keycloak.lillecarl.com/realms/auth","name":"Keycloak","requestedScopes":["openid","profile","email"],"usePKCE":true}'
   resource.customizations.ignoreResourceUpdates.ConfigMap: "jqPathExpressions:\n  #
     Ignore the cluster-autoscaler status\n  - '.metadata.annotations.\"cluster-autoscaler.kubernetes.io/last-updated\"'\n
     \ # Ignore the annotation of the legacy Leases election\n  - '.metadata.annotations.\"control-plane.alpha.kubernetes.io/leader\"'\n"
