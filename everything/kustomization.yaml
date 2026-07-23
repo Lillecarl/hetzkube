@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+- argocd/HTTPRoute/argocd-server.yaml
 - caph-system/VerticalPodAutoscaler/caph-controller-manager.yaml
 - capi-kubeadm-bootstrap-system/VerticalPodAutoscaler/capi-kubeadm-bootstrap-controller-manager.yaml
 - capi-kubeadm-control-plane-system/VerticalPodAutoscaler/capi-kubeadm-control-plane-controller-manager.yaml
