@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   lib,
   hlib,
   ...
@@ -11,14 +12,22 @@ in
 {
   options.${moduleName} = {
     enable = lib.mkEnableOption moduleName;
-    url = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
-      default = "https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.29/releases/cnpg-1.29.1.yaml";
+    version = lib.mkOption {
+      type = lib.types.nonEmptyStr;
+      default = "1.30.0";
     };
   };
   config = lib.mkIf cfg.enable {
     importyaml.${moduleName} = {
-      src = cfg.url;
+      src =
+        "${
+          pkgs.fetchFromGitHub {
+            owner = "cloudnative-pg";
+            repo = "cloudnative-pg";
+            rev = "release-${lib.versions.majorMinor cfg.version}";
+            hash = "sha256-xk2lQ6LZKt4BY52JhE5O7YlkOWYf5823OlSVeRxdj6Q=";
+          }
+        }/releases/cnpg-${cfg.version}.yaml";
     };
     kubernetes = {
       resources.none.Namespace.database = { };
