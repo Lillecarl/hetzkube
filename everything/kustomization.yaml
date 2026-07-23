@@ -424,6 +424,8 @@ resources:
 - none/CustomResourceDefinition/uuids.generators.external-secrets.io.yaml
 - none/CustomResourceDefinition/validatingpolicies.policies.kyverno.io.yaml
 - none/CustomResourceDefinition/vaultdynamicsecrets.generators.external-secrets.io.yaml
+- none/CustomResourceDefinition/verticalpodautoscalercheckpoints.autoscaling.k8s.io.yaml
+- none/CustomResourceDefinition/verticalpodautoscalers.autoscaling.k8s.io.yaml
 - none/CustomResourceDefinition/vlagents.operator.victoriametrics.com.yaml
 - none/CustomResourceDefinition/vlclusters.operator.victoriametrics.com.yaml
 - none/CustomResourceDefinition/vlogs.operator.victoriametrics.com.yaml

@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       annotations:
-        configHash: 23ba2e7363f1f5d9f6c376e85853c5a0
+        configHash: c0dc236e24a8921c8676528f8904d1dd
       labels:
         app: pgadmin
     spec:
