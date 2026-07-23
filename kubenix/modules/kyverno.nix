@@ -24,46 +24,18 @@ in
     };
   };
   config = lib.mkIf cfg.enable {
-    kubernetes.resources.none.Namespace.${cfg.namespace} = { };
-
-    kubernetes.resources.${cfg.namespace} = {
-      HelmRepository.kyverno = {
-        spec = {
-          interval = "1h";
-          url = "https://kyverno.github.io/kyverno";
-        };
+    helm.releases.kyverno = {
+      namespace = cfg.namespace;
+      chart = builtins.fetchTree {
+        type = "tarball";
+        url = "https://kyverno.github.io/kyverno/kyverno-${cfg.version}.tgz";
       };
-      HelmRelease.kyverno = {
-        spec = {
-          chart = {
-            spec = {
-              chart = "kyverno";
-              version = cfg.version;
-              sourceRef = {
-                kind = "HelmRepository";
-                name = "kyverno";
-                namespace = cfg.namespace;
-              };
-            };
-          };
-          values = lib.recursiveUpdate { } cfg.helmValues;
-          interval = "1h";
-          driftDetection = {
-            mode = "enabled";
-            ignore = [
-              {
-                target = {
-                  kind = "Deployment";
-                };
-                paths = [
-                  "/spec/template/spec/resources/requests"
-                  "/spec/template/spec/containers/*/resources/requests"
-                ];
-              }
-            ];
-          };
-        };
-      };
+      values = lib.recursiveUpdate { } cfg.helmValues;
+      # Chart ships `helm.sh/hook: test` Pods (metrics/liveness/readiness
+      # smoke checks meant only for `helm test`) -- without noHooks they'd
+      # render as permanent static Pod objects that GitOps would keep
+      # deploying on every sync.
+      noHooks = true;
     };
 
     kubernetes = {

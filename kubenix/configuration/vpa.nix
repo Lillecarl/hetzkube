@@ -18,7 +18,7 @@
     lib.mkIf (config.stage == "full") {
       vertical-pod-autoscaler = {
         enable = true;
-        version = "*";
+        version = "1.12.0";
         helmValues = {
           admissionController.certManager.enabled = config.cert-manager.enable;
           updater.extraArgs = [
@@ -37,12 +37,14 @@
       kubernetes.resources.capi-kubeadm-bootstrap-system.VerticalPodAutoscaler = mkVPA "capi-kubeadm-bootstrap-controller-manager" "Deployment";
       kubernetes.resources.capi-kubeadm-control-plane-system.VerticalPodAutoscaler = mkVPA "capi-kubeadm-control-plane-controller-manager" "Deployment";
       kubernetes.resources.capi-system.VerticalPodAutoscaler = mkVPA "capi-controller-manager" "Deployment";
-      kubernetes.resources.flux-system.VerticalPodAutoscaler = lib.mkMerge [
-        (mkVPA "helm-controller" "Deployment")
-        (mkVPA "kustomize-controller" "Deployment")
-        (mkVPA "notification-controller" "Deployment")
-        (mkVPA "source-controller" "Deployment")
-      ];
+      kubernetes.resources.flux-system.VerticalPodAutoscaler = lib.mkIf config.flux.enable (
+        lib.mkMerge [
+          (mkVPA "helm-controller" "Deployment")
+          (mkVPA "kustomize-controller" "Deployment")
+          (mkVPA "notification-controller" "Deployment")
+          (mkVPA "source-controller" "Deployment")
+        ]
+      );
 
       kubernetes.generators = [
         # Deploy VPA objects for all long-lived resource types

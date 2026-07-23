@@ -13,7 +13,17 @@ in
     enable = lib.mkEnableOption moduleName;
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
-      default = "*";
+      default = "5.24.0";
+    };
+    # Chart is only published via OCI (oci://ghcr.io/grafana/helm-charts), no
+    # plain https tarball mirror -- unlike builtins.fetchTree's "tarball"
+    # fetcher used elsewhere, fetchHelm's `helm fetch` needs a fixed
+    # outputHash pinned per version, so this must be updated by hand
+    # (`nix-build` the derivation with a wrong hash and copy the "got:"
+    # value) whenever `version` changes.
+    chartHash = lib.mkOption {
+      type = lib.types.nonEmptyStr;
+      default = "sha256-jULnmFaxi3gsWbCnE26FfML6MOqQ60QCpMuOoSv0hdw=";
     };
     namespace = lib.mkOption {
       type = lib.types.nonEmptyStr;
@@ -22,30 +32,19 @@ in
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
-    kubernetes.resources.${cfg.namespace} = {
-      HelmRepository.grafana = {
-        spec = {
-          type = "oci";
-          interval = "1h";
-          url = "oci://ghcr.io/grafana/helm-charts";
-        };
+    helm.releases.grafana-operator = {
+      namespace = cfg.namespace;
+      chart = pkgs.fetchHelm {
+        chart = "grafana-operator";
+        chartUrl = "oci://ghcr.io/grafana/helm-charts/grafana-operator";
+        version = cfg.version;
+        sha256 = cfg.chartHash;
       };
-      HelmRelease.grafana-operator = {
-        spec = {
-          interval = "1h";
-          chart = {
-            spec = {
-              chart = "grafana-operator";
-              version = cfg.version;
-              sourceRef = {
-                kind = "HelmRepository";
-                name = "grafana";
-                namespace = cfg.namespace;
-              };
-            };
-          };
-        };
-      };
+      # Chart defaults to crds.immutable=true (CRDs live in the special
+      # `crds/` dir, which `helm template` skips unless asked). Flux's
+      # HelmRelease installed them anyway (install.crds="CreateReplace" in
+      # flux.nix's transformer); the local-render equivalent is includeCRDs.
+      includeCRDs = true;
     };
     kubernetes.apiMappings = {
       GrafanaAlertRuleGroup = "grafana.integreatly.org/v1beta1";

@@ -3,7 +3,7 @@
   config = {
     kyverno = {
       enable = true;
-      version = "*";
+      version = "3.8.2";
       helmValues = {
         reportsController = {
           rbac = {

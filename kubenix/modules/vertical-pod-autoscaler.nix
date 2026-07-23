@@ -26,34 +26,18 @@ in
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${cfg.namespace} = { };
 
-    kubernetes.resources.${cfg.namespace} = {
-      HelmRepository.stevehipwell = {
-        spec = {
-          interval = "1h";
-          url = "https://stevehipwell.github.io/helm-charts";
-        };
+    helm.releases.vertical-pod-autoscaler = {
+      namespace = cfg.namespace;
+      chart = builtins.fetchTree {
+        type = "tarball";
+        url = "https://github.com/stevehipwell/helm-charts/releases/download/vertical-pod-autoscaler-${cfg.version}/vertical-pod-autoscaler-${cfg.version}.tgz";
       };
-      HelmRelease.vertical-pod-autoscaler = {
-        spec = {
-          chart = {
-            spec = {
-              chart = "vertical-pod-autoscaler";
-              version = cfg.version;
-              sourceRef = {
-                kind = "HelmRepository";
-                name = "stevehipwell";
-                namespace = cfg.namespace;
-              };
-            };
-          };
-          values = lib.recursiveUpdate { } cfg.helmValues;
-          interval = "1h";
-          driftDetection = {
-            mode = "enabled";
-            ignore = [ ];
-          };
-        };
-      };
+      values = lib.recursiveUpdate { } cfg.helmValues;
+      # CRDs live in the chart's special `crds/` dir, which `helm template`
+      # skips unless asked -- without them the VerticalPodAutoscaler kind
+      # doesn't exist at all (this was previously installed by Flux's
+      # HelmRelease install.crds="CreateReplace").
+      includeCRDs = true;
     };
     kubernetes.apiMappings.VerticalPodAutoscaler = "autoscaling.k8s.io/v1";
     kubernetes.namespacedMappings.VerticalPodAutoscaler = true;

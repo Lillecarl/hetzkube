@@ -46,6 +46,12 @@
     clusterServiceCIDR4 = "10.134.0.0/16"; # 65536
     clusterServiceCIDR6 = "fdce:9c4d:dcba::/112"; # 65536
 
+    # ekn validate's ephemeral kube-apiserver needs to allocate the exact
+    # same ranges as the real cluster -- some Services (coredns) carry an
+    # explicit clusterIP pinned to clusterDNS above, which only validates if
+    # it falls inside --service-cluster-ip-range.
+    validation.serviceSubnet = "${config.clusterServiceCIDR4},${config.clusterServiceCIDR6}";
+
     capi.keyName = "lillecarl@lillecarl.com";
     keycloak.hostnames = [
       "keycloak.lillecarl.com"
@@ -76,6 +82,19 @@
           lib.recursiveUpdate resource {
             spec.ipFamilyPolicy = "RequireDualStack";
           }
+        else
+          resource
+      )
+      # Aggregated APIServices (metrics-server, etc.) need a real backing
+      # Service/Pod to ever respond -- `ekn validate`'s throwaway
+      # etcd+apiserver harness runs neither, so kube-apiserver 503s on them
+      # (or on any discovery call that touches them) regardless of whether
+      # the manifest itself is correct. Skip them there; still applied for
+      # real via GitOps/kubeapply as normal.
+      (
+        resource:
+        if resource.kind or null == "APIService" then
+          lib.recursiveUpdate resource { ekn.novalidate = true; }
         else
           resource
       )

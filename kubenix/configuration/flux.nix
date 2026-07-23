@@ -2,7 +2,11 @@
 {
   config = lib.mkIf (config.stage == "full") {
     flux = {
-      enable = true;
+      # Disabled: Kyverno/VPA/grafana-operator (Flux's only HelmReleases)
+      # moved to kubenix's own local Helm rendering (helm.releases), so
+      # nothing left needs Flux's controllers. Left declared rather than
+      # removed in case it's needed again.
+      enable = false;
       version = "2.8.8";
     };
 
