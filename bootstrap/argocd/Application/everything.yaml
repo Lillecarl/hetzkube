@@ -32,5 +32,8 @@ spec:
     repoURL: https://github.com/Lillecarl/hetzkube.git
     targetRevision: deploy
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
     - ServerSideApply=true
