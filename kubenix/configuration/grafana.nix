@@ -174,6 +174,26 @@ in
         };
       };
 
+      # Alertmanager Datasource -- lets Grafana's own Alerting UI browse and
+      # silence alerts from vmalert's VMAlertmanager. Alerting logic itself
+      # stays entirely in vmalert/VMRule, so Grafana must never manage its
+      # own alert rules against this instance.
+      GrafanaDatasource.alertmanager = {
+        spec = {
+          instanceSelector.matchLabels.dashboards = "grafana";
+          datasource = {
+            name = "Alertmanager";
+            type = "alertmanager";
+            url = "http://vmalertmanager-alertmanager.observability.svc.cluster.local:9093";
+            access = "proxy";
+            jsonData = {
+              implementation = "prometheus";
+              handleGrafanaManagedAlerts = false;
+            };
+          };
+        };
+      };
+
       # VictoriaLogs Datasource
       GrafanaDatasource.vlsingle = {
         spec = {
