@@ -14,6 +14,15 @@ in
     version = lib.mkOption {
       type = lib.types.nonEmptyStr;
     };
+    hostname = lib.mkOption {
+      type = lib.types.nullOr lib.types.nonEmptyStr;
+      default = null;
+      description = ''
+        Public hostname to expose the ArgoCD UI/API on via the shared
+        Gateway (see cilium.nix's gatewayAPI.defaultListener). Null keeps
+        ArgoCD reachable only in-cluster / via port-forward.
+      '';
+    };
     ksops = {
       enable = lib.mkEnableOption "ksops support in argocd-repo-server (Kustomize + SOPS decryption at sync time)";
       secretName = lib.mkOption {
@@ -146,6 +155,58 @@ in
             object
         )
       ];
+    })
+    (lib.mkIf (cfg.hostname != null) {
+      # Gateway `default` (cilium.nix) terminates TLS itself and forwards
+      # plain HTTP to backends -- every other exposed app (headlamp,
+      # keycloak, pgadmin) runs its backend over cleartext HTTP behind it,
+      # so argocd-server needs to stop doing its own internal TLS to match,
+      # rather than the Gateway attempting (and failing) to speak HTTPS to
+      # a plaintext-expecting HTTPRoute backendRef.
+      #
+      # importyaml.nix merges every imported object into
+      # kubernetes.resources.<namespace>.<kind>.<name> via lib.mkMerge, so
+      # a plain declaration here merges straight into install.yaml's
+      # argocd-cmd-params-cm through the ordinary module system -- no
+      # bespoke `overrides` transformer needed for a single top-level key
+      # (unlike the repo-server Deployment patch above, which genuinely
+      # needs one to reach into named/numbered-list-converted nested
+      # fields).
+      kubernetes.resources.argocd.ConfigMap.argocd-cmd-params-cm.data."server.insecure" = "true";
+      # No bootstrap ordering dependency here (unlike the argocd Namespace
+      # itself): the Gateway/cilium's gateway controller don't need
+      # argocd-server to exist first, and argocd-server has to already be
+      # running before this route is useful anyway -- so this stays on the
+      # default "everything" path, applied once ArgoCD is up and syncing.
+      kubernetes.resources.argocd.HTTPRoute.argocd-server = {
+        spec = {
+          parentRefs = [
+            {
+              name = "default";
+              namespace = "kube-system";
+            }
+          ];
+          hostnames = [ cfg.hostname ];
+          rules = [
+            {
+              matches = [
+                {
+                  path = {
+                    type = "PathPrefix";
+                    value = "/";
+                  };
+                }
+              ];
+              backendRefs = [
+                {
+                  name = "argocd-server";
+                  port = 80;
+                }
+              ];
+            }
+          ];
+        };
+      };
     })
   ];
 }

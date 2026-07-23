@@ -5,6 +5,7 @@
       enable = true;
       version = "3.4.5";
       ksops.enable = true;
+      hostname = "argocd.lillecarl.com";
     };
   };
 }
