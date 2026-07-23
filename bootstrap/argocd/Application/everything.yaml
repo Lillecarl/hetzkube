@@ -26,6 +26,127 @@ spec:
     kind: Secret
     name: hubble-relay-client-certs
     namespace: kube-system
+  - group: external-secrets.io
+    jqPathExpressions:
+    - .spec.data[]?.remoteRef.conversionStrategy
+    - .spec.data[]?.remoteRef.decodingStrategy
+    - .spec.data[]?.remoteRef.metadataPolicy
+    - .spec.data[]?.remoteRef.nullBytePolicy
+    jsonPointers:
+    - /spec/target/creationPolicy
+    - /spec/target/deletionPolicy
+    - /spec/target/template/engineVersion
+    - /spec/target/template/mergePolicy
+    kind: ExternalSecret
+  - group: gateway.networking.k8s.io
+    jqPathExpressions:
+    - .spec.listeners[]?.tls?.certificateRefs[]?.group
+    kind: Gateway
+  - group: gateway.networking.k8s.io
+    jqPathExpressions:
+    - .spec.parentRefs[]?.group
+    - .spec.parentRefs[]?.kind
+    - .spec.rules[]?.backendRefs[]?.group
+    - .spec.rules[]?.backendRefs[]?.kind
+    - .spec.rules[]?.backendRefs[]?.weight
+    kind: HTTPRoute
+  - group: grafana.integreatly.org
+    jqPathExpressions:
+    - .spec.httpRoute.spec.parentRefs[]?.group
+    - .spec.httpRoute.spec.parentRefs[]?.kind
+    - .spec.httpRoute.spec.rules[]?.backendRefs[]?.group
+    - .spec.httpRoute.spec.rules[]?.backendRefs[]?.kind
+    - .spec.httpRoute.spec.rules[]?.backendRefs[]?.weight
+    jsonPointers:
+    - /spec/version
+    kind: Grafana
+  - group: kyverno.io
+    jqPathExpressions:
+    - .spec.rules[]?.skipBackgroundRequests
+    jsonPointers:
+    - /spec/admission
+    - /spec/background
+    - /spec/emitWarning
+    - /spec/validationFailureAction
+    kind: ClusterPolicy
+  - group: postgresql.cnpg.io
+    jqPathExpressions:
+    - .spec.managed.roles[]?.connectionLimit
+    - .spec.managed.roles[]?.ensure
+    - .spec.managed.roles[]?.inherit
+    jsonPointers:
+    - /spec/affinity
+    - /spec/bootstrap
+    - /spec/failoverDelay
+    - /spec/imageName
+    - /spec/logLevel
+    - /spec/maxSyncReplicas
+    - /spec/minSyncReplicas
+    - /spec/monitoring
+    - /spec/postgresGID
+    - /spec/postgresUID
+    - /spec/postgresql
+    - /spec/primaryUpdateMethod
+    - /spec/primaryUpdateStrategy
+    - /spec/probes
+    - /spec/replicationSlots
+    - /spec/resources
+    - /spec/smartShutdownTimeout
+    - /spec/startDelay
+    - /spec/stopDelay
+    - /spec/switchoverDelay
+    - /spec/storage/resizeInUseVolumes
+    kind: Cluster
+  - group: cluster.x-k8s.io
+    jsonPointers:
+    - /spec/controlPlaneEndpoint
+    - /spec/controlPlaneRef/namespace
+    - /spec/infrastructureRef/namespace
+    kind: Cluster
+  - group: cluster.x-k8s.io
+    jsonPointers:
+    - /spec/minReadySeconds
+    - /spec/progressDeadlineSeconds
+    - /spec/revisionHistoryLimit
+    - /spec/selector
+    - /spec/strategy
+    - /spec/template/metadata/labels
+    - /spec/template/spec/infrastructureRef/namespace
+    - /spec/template/spec/bootstrap/configRef/namespace
+    kind: MachineDeployment
+  - group: cluster.x-k8s.io
+    jqPathExpressions:
+    - .spec.unhealthyConditions[]?.timeout
+    jsonPointers:
+    - /spec/nodeStartupTimeout
+    - /spec/remediationTemplate/namespace
+    kind: MachineHealthCheck
+  - group: controlplane.cluster.x-k8s.io
+    jsonPointers:
+    - /spec/kubeadmConfigSpec/clusterConfiguration/dns
+    - /spec/kubeadmConfigSpec/clusterConfiguration/networking
+    - /spec/kubeadmConfigSpec/format
+    - /spec/kubeadmConfigSpec/initConfiguration/localAPIEndpoint
+    - /spec/kubeadmConfigSpec/initConfiguration/nodeRegistration/imagePullPolicy
+    - /spec/kubeadmConfigSpec/joinConfiguration/discovery
+    - /spec/kubeadmConfigSpec/joinConfiguration/nodeRegistration/imagePullPolicy
+    - /spec/machineTemplate/infrastructureRef/namespace
+    - /spec/machineTemplate/metadata
+    - /spec/rolloutAfter
+    - /spec/rolloutStrategy
+    kind: KubeadmControlPlane
+  - group: infrastructure.cluster.x-k8s.io
+    jsonPointers:
+    - /spec/template/spec/strategy/timeout
+    kind: HCloudRemediationTemplate
+  - group: apps
+    jsonPointers:
+    - /spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt
+    kind: Deployment
+  - group: apps
+    jsonPointers:
+    - /spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt
+    kind: StatefulSet
   project: default
   source:
     path: everything
