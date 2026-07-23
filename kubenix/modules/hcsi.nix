@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   lib,
   ...
 }:
@@ -12,12 +13,20 @@ in
     enable = lib.mkEnableOption moduleName;
     version = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = "2.21.2";
+      default = "2.22.0";
     };
   };
   config = lib.mkIf cfg.enable {
     importyaml.${moduleName} = {
-      src = "https://raw.githubusercontent.com/hetznercloud/csi-driver/v${cfg.version}/deploy/kubernetes/hcloud-csi.yml";
+      src =
+        "${
+          pkgs.fetchFromGitHub {
+            owner = "hetznercloud";
+            repo = "csi-driver";
+            rev = "v${cfg.version}";
+            hash = "sha256-ouFq1pb60w5acJyzos21wjyFq8O5InxgmGmbzdF9E4A=";
+          }
+        }/deploy/kubernetes/hcloud-csi.yml";
     };
     kubernetes.objects.kube-system.VMServiceScrape = {
       hcloud-csi = {
