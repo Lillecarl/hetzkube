@@ -25,6 +25,6 @@ spec:
         - --minimum-age=6h
         - --no-dry-run
         - --timezone=Europe/Stockholm
-        image: ghcr.io/linki/chaoskube:v0.39.0
+        image: ghcr.io/linki/chaoskube:v0.39.1
         name: chaoskube
       serviceAccountName: chaoskube
