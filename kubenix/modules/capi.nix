@@ -73,6 +73,18 @@ in
     keyName = lib.mkOption {
       type = lib.types.nullOr lib.types.nonEmptyStr;
     };
+    version = lib.mkOption {
+      type = lib.types.nonEmptyStr;
+      description = ''
+        Kubernetes version for the control plane and worker MachineDeployments
+        (without the "v" prefix). Pinned explicitly rather than following
+        `pkgs.kubernetes.version` -- that floats with whatever nixpkgs happens
+        to package, so a routine nixpkgs bump would silently schedule a real
+        rolling node upgrade the next time this got applied. Bump this
+        deliberately instead.
+      '';
+      default = "1.36.1";
+    };
   };
   config = lib.mkIf cfg.enable {
     kubernetes.resources.none.Namespace.${clusterName} = { };
@@ -143,7 +155,7 @@ in
           };
         };
         replicas = 1;
-        version = "v${pkgs.kubernetes.version}"; # beware to make images!
+        version = "v${cfg.version}"; # beware to make images!
       };
       Cluster.${clusterName} = {
         # Both CAPI and CNPG uses the "Cluster" kind, we default to CNPG since
@@ -269,7 +281,7 @@ in
                 kind = "HCloudMachineTemplate";
                 name = "${clusterName}-workers-x86";
               };
-              version = "v${pkgs.kubernetes.version}"; # beware to make images!
+              version = "v${cfg.version}"; # beware to make images!
             };
           };
         };
@@ -331,7 +343,7 @@ in
                 kind = "HCloudMachineTemplate";
                 name = "${clusterName}-workers-arm64";
               };
-              version = "v${pkgs.kubernetes.version}"; # beware to make images!
+              version = "v${cfg.version}"; # beware to make images!
             };
           };
         };
