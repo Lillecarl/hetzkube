@@ -25,11 +25,6 @@ silently drift again; capi.version was deliberately pinned in a prior commit
 specifically to avoid silent drift, but that only covered the control-plane
 side.
 
-## P20 Make VictoriaMetrics datasource default for kubernetes-mixin?
-Try to override kubernetes-mixin to render everything on victoriametrics datasources instead of prometheus
-If possible, make it configureable with an enum option for prometheus and victoriametrics
-If not possible, mark as completed with a failure desription.
-
 ## P15 disable KubeCPUOvercommit
 This is a lab cluster, we are always overcommited
 
@@ -84,3 +79,33 @@ side -- the kubelet still floats with whatever nixpkgs happens to package --
 so the two silently drifted apart. Not a one-line fix (requires either a
 nixpkgs bump or a version override plus a node roll), so filed as P85 above
 with the specific remediation.
+
+## P20 Make VictoriaMetrics datasource default for kubernetes-mixin?
+Try to override kubernetes-mixin to render everything on victoriametrics datasources instead of prometheus
+If possible, make it configureable with an enum option for prometheus and victoriametrics
+If not possible, mark as completed with a failure desription.
+Resolution:
+Possible. Upstream hardcodes the Grafana datasource plugin type as the
+literal string "prometheus" in every dashboard's rendered JSON (the
+`datasource` template variable's plugin-type filter, and every panel
+target's `datasource.type`) with no `_config` knob reaching it, so
+kubenix/modules/kubernetes-mixins.nix now post-processes the *rendered*
+dashboard JSON instead of patching upstream's jsonnet/vendored-grafonnet
+source (source-patching would be brittle against upstream reformatting; the
+rendered JSON schema is stable). Added `kubernetes-mixins.datasourceType`
+(enum "prometheus" | "victoriametrics", default "victoriametrics") and a
+`patchDatasourceType` recursive walker that descends into both attrsets and
+JSON-array-turned-Nix-lists (plain `lib.mapAttrsRecursive` doesn't reach into
+lists, which is where nearly everything in a Grafana dashboard lives --
+panels, targets, templating.list), rewriting only two structurally-anchored
+spots: a `datasource = { type = "prometheus"; ... }` object, and a
+datasource-picker variable's own `query` field (guarded on a sibling
+`type = "datasource"` so real PromQL variables aren't touched). Verified with
+`pynix ekn diff -f . -A kubenix`: only the 22 GrafanaDashboard files with a
+datasource reference changed, VMRule alerts/rules are untouched, and every
+added `datasource` block is either the correct
+`victoriametrics-metrics-datasource` (486 occurrences) or an unrelated
+Grafana built-in `-- Mixed --` ref correctly left alone (249).
+Default "victoriametrics" targets kubenix/configuration/grafana.nix's
+`vmsingle-vm` datasource (the native VictoriaMetrics plugin); "prometheus"
+keeps upstream's default, matching `vmsingle-prom`.

@@ -34,6 +34,29 @@ in
         default.
       '';
     };
+    datasourceType = lib.mkOption {
+      type = lib.types.enum [
+        "prometheus"
+        "victoriametrics"
+      ];
+      default = "victoriametrics";
+      description = ''
+        Which Grafana datasource plugin type the rendered dashboards' data
+        source picker/panels target. Not a `_config` knob -- upstream
+        hardcodes the Grafana datasource plugin type as the literal string
+        `"prometheus"` in every dashboard's rendered JSON (both the
+        `datasource` template variable's plugin-type filter and every panel
+        target's `datasource.type`), so it can't be reached through
+        `jsonnetConfig`'s `_config` overlay. This module post-processes the
+        rendered dashboard JSON (see `patchDatasourceType` below) instead of
+        patching upstream's jsonnet source. `"victoriametrics"` rewrites it
+        to the native `victoriametrics-metrics-datasource` plugin type (see
+        kubenix/configuration/grafana.nix's `vmsingle-vm` datasource);
+        `"prometheus"` keeps the upstream default, matching `vmsingle-prom`
+        (VictoriaMetrics exposed over its Prometheus-compatible API under a
+        Grafana "prometheus"-typed datasource).
+      '';
+    };
   };
   config =
     let
@@ -76,6 +99,47 @@ in
         "github.com/jsonnet-libs/docsonnet/doc-util" = "${docsonnet}/doc-util";
         "github.com/jsonnet-libs/xtd" = xtd;
       };
+
+      datasourceTypeStr = {
+        prometheus = "prometheus";
+        victoriametrics = "victoriametrics-metrics-datasource";
+      }.${cfg.datasourceType};
+
+      # Upstream hardcodes the Grafana datasource plugin type as the literal
+      # string 'prometheus' in every dashboard's rendered JSON -- both the
+      # `datasource` template variable's plugin-type filter and each panel
+      # target's `datasource.type` -- with no `_config` knob to reach it.
+      # Rather than patching upstream's jsonnet source (brittle: depends on
+      # exact source formatting, and needs forking the vendored grafonnet
+      # query builder too), walk the *rendered* dashboard JSON and rewrite
+      # it there, anchored on the stable Grafana dashboard schema instead of
+      # jsonnet implementation details:
+      #  - a `datasource = { type = "prometheus"; uid = ...; }` object
+      #    (panel targets, or a variable's own datasource ref)
+      #  - a datasource-picker variable's own `query` field (only when a
+      #    sibling `type = "datasource"` marks the object as one)
+      # Everything else (a real PromQL variable's `query`, an unrelated
+      # `type` field elsewhere) is left untouched since neither anchor
+      # matches it.
+      patchDatasourceType =
+        value:
+        if lib.isAttrs value then
+          let
+            selfIsDatasourceVar = (value.type or null) == "datasource";
+          in
+          lib.mapAttrs (
+            n: v:
+            if n == "datasource" && lib.isAttrs v && (v.type or null) == "prometheus" then
+              v // { type = datasourceTypeStr; }
+            else if n == "query" && selfIsDatasourceVar && v == "prometheus" then
+              datasourceTypeStr
+            else
+              patchDatasourceType v
+          ) value
+        else if lib.isList value then
+          map patchDatasourceType value
+        else
+          value;
 
       # The mixin's own customization surface: everything upstream exposes
       # for tuning alerts/rules/dashboards lives behind this single `_config`
@@ -168,7 +232,7 @@ in
                     dashboards = "grafana";
                   };
                 };
-                json = builtins.readFile path;
+                json = builtins.toJSON (patchDatasourceType (lib.importJSON path));
               };
             };
           }))
