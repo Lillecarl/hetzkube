@@ -900,17 +900,3 @@ spec:
       labels:
         severity: critical
       record: ''
-  - name: kubernetes-system-kube-proxy
-    rules:
-    - alert: KubeProxyDown
-      annotations:
-        description: KubeProxy has disappeared from Prometheus target discovery.
-        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeproxydown
-        summary: Target disappeared from Prometheus target discovery.
-      expr: 'absent(up{job="kube-proxy"})
-
-        '
-      for: 15m
-      labels:
-        severity: critical
-      record: ''

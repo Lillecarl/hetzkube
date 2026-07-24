@@ -43,8 +43,8 @@ spec:
       patches:
         directory: /etc/kubernetes/patches
       skipPhases:
-      - addon/kube-proxy
       - addon/coredns
+      - addon/kube-proxy
     joinConfiguration:
       nodeRegistration:
         ignorePreflightErrors:

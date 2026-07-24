@@ -36,6 +36,5 @@ spec:
           driver: nixkube
           readOnly: true
           volumeAttributes:
-            aarch64-linux: /nix/store/s7h461pgd3r3yapk6ppl67pfmqfp3y40-python3.14-cheapam-0.1.0
             x86_64-linux: /nix/store/az5032cqxkvplqhxrd24gqbi3q2zr672-python3.14-cheapam-0.1.0
         name: nix-csi
