@@ -34,6 +34,18 @@ in
         default.
       '';
     };
+    disabledAlerts = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = ''
+        Names of individual `alert:` rules to drop from every alert group's
+        `rules` list (unlike `kube-proxy.enable`'s whole-group
+        `dropKubeProxyAlerts`, most groups mix alerts we want to keep with
+        ones we don't -- e.g. `kubernetes-resources` has `KubeCPUOvercommit`
+        next to the quota alerts we still care about). A group left with an
+        empty `rules` list is dropped entirely.
+      '';
+    };
     datasourceType = lib.mkOption {
       type = lib.types.enum [
         "prometheus"
@@ -202,6 +214,20 @@ in
       # that target never exists and the alert fires forever. Drop the whole
       # group rather than leave a permanently-firing false alarm.
       dropKubeProxyAlerts = lib.filter (group: group.name != "kubernetes-system-kube-proxy");
+
+      # This is a lab cluster that's always overcommitted by design, so
+      # individual named alerts (e.g. KubeCPUOvercommit, KubeMemoryOvercommit
+      # -- see cfg.disabledAlerts's callers) get filtered out of whichever
+      # group they live in, rather than the whole group being dropped like
+      # dropKubeProxyAlerts does.
+      dropNamedAlerts =
+        groups:
+        lib.pipe groups [
+          (lib.map (
+            group: group // { rules = lib.filter (rule: !(lib.elem (rule.alert or null) cfg.disabledAlerts)) group.rules; }
+          ))
+          (lib.filter (group: group.rules != [ ]))
+        ];
     in
     lib.mkIf cfg.enable {
       kubernetes.resources.none.Namespace.${cfg.namespace} = { };
@@ -212,8 +238,9 @@ in
             groups =
               let
                 groups = (lib.importJSON "${package}/prometheus_alerts.json").groups;
+                withoutKubeProxy = if config.kube-proxy.enable then groups else dropKubeProxyAlerts groups;
               in
-              normalizeGroups (if config.kube-proxy.enable then groups else dropKubeProxyAlerts groups);
+              normalizeGroups (dropNamedAlerts withoutKubeProxy);
           };
         };
         VMRule.kubernetes-mixin-rules = {

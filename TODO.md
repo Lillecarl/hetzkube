@@ -25,9 +25,6 @@ silently drift again; capi.version was deliberately pinned in a prior commit
 specifically to avoid silent drift, but that only covered the control-plane
 side.
 
-## P15 disable KubeCPUOvercommit
-This is a lab cluster, we are always overcommited
-
 ## P14 disable KubeMemoryOvercommit
 This is a lab cluster, we are always overcommited
 
@@ -109,3 +106,18 @@ Grafana built-in `-- Mixed --` ref correctly left alone (249).
 Default "victoriametrics" targets kubenix/configuration/grafana.nix's
 `vmsingle-vm` datasource (the native VictoriaMetrics plugin); "prometheus"
 keeps upstream's default, matching `vmsingle-prom`.
+
+## P15 disable KubeCPUOvercommit
+This is a lab cluster, we are always overcommited
+Resolution:
+`kubernetes-resources` (the alert group KubeCPUOvercommit lives in) also
+holds alerts we still want (KubeMemoryOvercommit, the quota alerts,
+CPUThrottlingHigh), so a whole-group drop like dropKubeProxyAlerts wasn't
+appropriate here. Added `kubernetes-mixins.disabledAlerts` (list of alert
+names) and a `dropNamedAlerts` filter that removes matching rules from
+whichever group they're in and drops any group left with an empty rules
+list; set in kubenix/configuration/victoriametrics.nix to
+`[ "KubeCPUOvercommit" ]`. Verified with `pynix ekn diff -f . -A kubenix`:
+only the kubernetes-mixin-alerts VMRule changed, and the diff is exactly the
+one KubeCPUOvercommit rule removed -- KubeMemoryOvercommit and every other
+rule in the group untouched.
