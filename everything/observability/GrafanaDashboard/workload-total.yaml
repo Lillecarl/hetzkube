@@ -7,229 +7,60 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  json: "{\n   \"editable\": false,\n   \"links\": [\n      {\n         \"asDropdown\":
-    true,\n         \"includeVars\": true,\n         \"keepTime\": true,\n         \"tags\":
-    [\n            \"kubernetes-mixin\"\n         ],\n         \"targetBlank\": false,\n
-    \        \"title\": \"Kubernetes\",\n         \"type\": \"dashboards\"\n      }\n
-    \  ],\n   \"panels\": [\n      {\n         \"datasource\": {\n            \"type\":
-    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
-    {\n            \"defaults\": {\n               \"color\": {\n                  \"fixedColor\":
-    \"green\",\n                  \"mode\": \"fixed\"\n               },\n               \"unit\":
-    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 0\n         },\n
-    \        \"id\": 1,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"displayMode\": \"basic\",\n            \"showUnfilled\": false\n
-    \        },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\": [\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sort_desc(sum(rate(container_network_receive_bytes_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Current Rate of Bytes Received\",\n         \"type\": \"bargauge\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"color\": {\n                  \"fixedColor\": \"green\",\n
-    \                 \"mode\": \"fixed\"\n               },\n               \"unit\":
-    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 0\n         },\n
-    \        \"id\": 2,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"displayMode\": \"basic\",\n            \"showUnfilled\": false\n
-    \        },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\": [\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sort_desc(sum(rate(container_network_transmit_bytes_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Current Rate of Bytes Transmitted\",\n         \"type\": \"bargauge\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"color\": {\n                  \"fixedColor\": \"green\",\n
-    \                 \"mode\": \"fixed\"\n               },\n               \"unit\":
-    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 9\n         },\n
-    \        \"id\": 3,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"displayMode\": \"basic\",\n            \"showUnfilled\": false\n
-    \        },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\": [\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sort_desc(avg(rate(container_network_receive_bytes_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Average Rate of Bytes Received\",\n         \"type\": \"bargauge\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"color\": {\n                  \"fixedColor\": \"green\",\n
-    \                 \"mode\": \"fixed\"\n               },\n               \"unit\":
-    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 9\n         },\n
-    \        \"id\": 4,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"displayMode\": \"basic\",\n            \"showUnfilled\": false\n
-    \        },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\": [\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sort_desc(avg(rate(container_network_transmit_bytes_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Average Rate of Bytes Transmitted\",\n         \"type\": \"bargauge\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 18\n         },\n
-    \        \"id\": 5,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sort_desc(sum(rate(container_network_receive_bytes_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Receive Bandwidth\",\n         \"type\": \"timeseries\"\n      },\n      {\n
-    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 18\n         },\n
-    \        \"id\": 6,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sort_desc(sum(rate(container_network_transmit_bytes_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Transmit Bandwidth\",\n         \"type\": \"timeseries\"\n      },\n      {\n
-    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 27\n         },\n
-    \        \"id\": 7,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sort_desc(sum(rate(container_network_receive_packets_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Rate of Received Packets\",\n         \"type\": \"timeseries\"\n      },\n      {\n
-    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 27\n         },\n
-    \        \"id\": 8,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sort_desc(sum(rate(container_network_transmit_packets_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Rate of Transmitted Packets\",\n         \"type\": \"timeseries\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 36\n         },\n
-    \        \"id\": 9,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sort_desc(sum(rate(container_network_receive_packets_dropped_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Rate of Received Packets Dropped\",\n         \"type\": \"timeseries\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    9,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 36\n         },\n
-    \        \"id\": 10,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sort_desc(sum(rate(container_network_transmit_packets_dropped_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\"}[$__rate_interval])\\n*
-    on (cluster, namespace, pod)\\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",namespace=~\\\"$namespace\\\",
-    workload=~\\\"$workload\\\", workload_type=~\\\"$type\\\"}) by (pod))\\n\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"Rate of Transmitted Packets Dropped\",\n         \"type\": \"timeseries\"\n
-    \     }\n   ],\n   \"refresh\": \"10s\",\n   \"schemaVersion\": 39,\n   \"tags\":
-    [\n      \"kubernetes-mixin\"\n   ],\n   \"templating\": {\n      \"list\": [\n
-    \        {\n            \"current\": {\n               \"selected\": true,\n               \"text\":
-    \"default\",\n               \"value\": \"default\"\n            },\n            \"hide\":
-    0,\n            \"label\": \"Data source\",\n            \"name\": \"datasource\",\n
-    \           \"query\": \"prometheus\",\n            \"regex\": \"\",\n            \"type\":
-    \"datasource\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
-    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
-    2,\n            \"label\": \"cluster\",\n            \"name\": \"cluster\",\n
-    \           \"query\": \"label_values(kube_pod_info{job=\\\"kube-state-metrics\\\"},
-    cluster)\",\n            \"refresh\": 2,\n            \"sort\": 1,\n            \"type\":
-    \"query\"\n         },\n         {\n            \"allValue\": \".+\",\n            \"current\":
-    {\n               \"selected\": false,\n               \"text\": \"kube-system\",\n
-    \              \"value\": \"kube-system\"\n            },\n            \"datasource\":
-    {\n               \"type\": \"prometheus\",\n               \"uid\": \"${datasource}\"\n
-    \           },\n            \"hide\": 0,\n            \"includeAll\": true,\n
-    \           \"label\": \"namespace\",\n            \"name\": \"namespace\",\n
-    \           \"query\": \"label_values(container_network_receive_packets_total{cluster=\\\"$cluster\\\"},
-    namespace)\",\n            \"refresh\": 2,\n            \"sort\": 1,\n            \"type\":
-    \"query\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
-    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
-    0,\n            \"label\": \"workload\",\n            \"name\": \"workload\",\n
-    \           \"query\": \"label_values(namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",
-    namespace=~\\\"$namespace\\\", workload=~\\\".+\\\"}, workload)\",\n            \"refresh\":
-    2,\n            \"sort\": 1,\n            \"type\": \"query\"\n         },\n         {\n
-    \           \"allValue\": \".+\",\n            \"datasource\": {\n               \"type\":
-    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
-    0,\n            \"includeAll\": true,\n            \"label\": \"workload_type\",\n
-    \           \"name\": \"type\",\n            \"query\": \"label_values(namespace_workload_pod:kube_pod_owner:relabel{cluster=\\\"$cluster\\\",
-    namespace=~\\\"$namespace\\\", workload=~\\\"$workload\\\"}, workload_type)\",\n
-    \           \"refresh\": 2,\n            \"sort\": 1,\n            \"type\": \"query\"\n
-    \        }\n      ]\n   },\n   \"time\": {\n      \"from\": \"now-1h\",\n      \"to\":
-    \"now\"\n   },\n   \"timezone\": \"UTC\",\n   \"title\": \"Kubernetes / Networking
-    / Workload\",\n   \"uid\": \"728bf77cc1166d2f3133bf25846876cc\"\n}\n"
+  json: '{"editable":false,"links":[{"asDropdown":true,"includeVars":true,"keepTime":true,"tags":["kubernetes-mixin"],"targetBlank":false,"title":"Kubernetes","type":"dashboards"}],"panels":[{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"color":{"fixedColor":"green","mode":"fixed"},"unit":"bps"}},"gridPos":{"h":9,"w":12,"x":0,"y":0},"id":1,"interval":"1m","options":{"displayMode":"basic","showUnfilled":false},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum(rate(container_network_receive_bytes_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Current
+    Rate of Bytes Received","type":"bargauge"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"color":{"fixedColor":"green","mode":"fixed"},"unit":"bps"}},"gridPos":{"h":9,"w":12,"x":12,"y":0},"id":2,"interval":"1m","options":{"displayMode":"basic","showUnfilled":false},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum(rate(container_network_transmit_bytes_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Current
+    Rate of Bytes Transmitted","type":"bargauge"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"color":{"fixedColor":"green","mode":"fixed"},"unit":"bps"}},"gridPos":{"h":9,"w":12,"x":0,"y":9},"id":3,"interval":"1m","options":{"displayMode":"basic","showUnfilled":false},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(avg(rate(container_network_receive_bytes_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Average
+    Rate of Bytes Received","type":"bargauge"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"color":{"fixedColor":"green","mode":"fixed"},"unit":"bps"}},"gridPos":{"h":9,"w":12,"x":12,"y":9},"id":4,"interval":"1m","options":{"displayMode":"basic","showUnfilled":false},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(avg(rate(container_network_transmit_bytes_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Average
+    Rate of Bytes Transmitted","type":"bargauge"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"bps"}},"gridPos":{"h":9,"w":12,"x":0,"y":18},"id":5,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum(rate(container_network_receive_bytes_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Receive
+    Bandwidth","type":"timeseries"},{"datasource":{"type":"datasource","uid":"-- Mixed
+    --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"bps"}},"gridPos":{"h":9,"w":12,"x":12,"y":18},"id":6,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum(rate(container_network_transmit_bytes_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Transmit
+    Bandwidth","type":"timeseries"},{"datasource":{"type":"datasource","uid":"-- Mixed
+    --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"pps"}},"gridPos":{"h":9,"w":12,"x":0,"y":27},"id":7,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum(rate(container_network_receive_packets_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Rate
+    of Received Packets","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"pps"}},"gridPos":{"h":9,"w":12,"x":12,"y":27},"id":8,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum(rate(container_network_transmit_packets_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Rate
+    of Transmitted Packets","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"pps"}},"gridPos":{"h":9,"w":12,"x":0,"y":36},"id":9,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum(rate(container_network_receive_packets_dropped_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Rate
+    of Received Packets Dropped","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"pps"}},"gridPos":{"h":9,"w":12,"x":12,"y":36},"id":10,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum(rate(container_network_transmit_packets_dropped_total{job=\"cadvisor\",
+    cluster=\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval])\n* on (cluster,
+    namespace, pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",namespace=~\"$namespace\",
+    workload=~\"$workload\", workload_type=~\"$type\"}) by (pod))\n","legendFormat":"__auto"}],"title":"Rate
+    of Transmitted Packets Dropped","type":"timeseries"}],"refresh":"10s","schemaVersion":39,"tags":["kubernetes-mixin"],"templating":{"list":[{"current":{"selected":true,"text":"default","value":"default"},"hide":0,"label":"Data
+    source","name":"datasource","query":"victoriametrics-metrics-datasource","regex":"","type":"datasource"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":2,"label":"cluster","name":"cluster","query":"label_values(kube_pod_info{job=\"kube-state-metrics\"},
+    cluster)","refresh":2,"sort":1,"type":"query"},{"allValue":".+","current":{"selected":false,"text":"kube-system","value":"kube-system"},"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":0,"includeAll":true,"label":"namespace","name":"namespace","query":"label_values(container_network_receive_packets_total{cluster=\"$cluster\"},
+    namespace)","refresh":2,"sort":1,"type":"query"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":0,"label":"workload","name":"workload","query":"label_values(namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",
+    namespace=~\"$namespace\", workload=~\".+\"}, workload)","refresh":2,"sort":1,"type":"query"},{"allValue":".+","datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":0,"includeAll":true,"label":"workload_type","name":"type","query":"label_values(namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\",
+    namespace=~\"$namespace\", workload=~\"$workload\"}, workload_type)","refresh":2,"sort":1,"type":"query"}]},"time":{"from":"now-1h","to":"now"},"timezone":"UTC","title":"Kubernetes
+    / Networking / Workload","uid":"728bf77cc1166d2f3133bf25846876cc"}'

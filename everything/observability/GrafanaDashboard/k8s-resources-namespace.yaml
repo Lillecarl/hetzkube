@@ -7,625 +7,165 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  json: "{\n   \"editable\": false,\n   \"links\": [\n      {\n         \"asDropdown\":
-    true,\n         \"includeVars\": true,\n         \"keepTime\": true,\n         \"tags\":
-    [\n            \"kubernetes-mixin\"\n         ],\n         \"targetBlank\": false,\n
-    \        \"title\": \"Kubernetes\",\n         \"type\": \"dashboards\"\n      }\n
-    \  ],\n   \"panels\": [\n      {\n         \"datasource\": {\n            \"type\":
-    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
-    {\n            \"defaults\": {\n               \"unit\": \"percentunit\"\n            }\n
-    \        },\n         \"gridPos\": {\n            \"h\": 3,\n            \"w\":
-    6,\n            \"x\": 0,\n            \"y\": 0\n         },\n         \"id\":
-    1,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"colorMode\":
-    \"none\"\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(max by (cluster, namespace, pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) / sum(kube_pod_container_resource_requests{job=\\\"kube-state-metrics\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\", resource=\\\"cpu\\\"})\",\n
-    \              \"instant\": true\n            }\n         ],\n         \"title\":
-    \"CPU Utilisation (from requests)\",\n         \"type\": \"stat\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"unit\": \"percentunit\"\n            }\n         },\n         \"gridPos\":
-    {\n            \"h\": 3,\n            \"w\": 6,\n            \"x\": 6,\n            \"y\":
-    0\n         },\n         \"id\": 2,\n         \"interval\": \"1m\",\n         \"options\":
-    {\n            \"colorMode\": \"none\"\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) / sum(kube_pod_container_resource_limits{job=\\\"kube-state-metrics\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\", resource=\\\"cpu\\\"})\",\n
-    \              \"instant\": true\n            }\n         ],\n         \"title\":
-    \"CPU Utilisation (from limits)\",\n         \"type\": \"stat\"\n      },\n      {\n
-    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"unit\": \"percentunit\"\n            }\n         },\n         \"gridPos\":
-    {\n            \"h\": 3,\n            \"w\": 6,\n            \"x\": 12,\n            \"y\":
-    0\n         },\n         \"id\": 3,\n         \"interval\": \"1m\",\n         \"options\":
-    {\n            \"colorMode\": \"none\"\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(container_memory_working_set_bytes{job=\\\"cadvisor\\\", cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\",container!=\\\"\\\", image!=\\\"\\\"})) / sum(kube_pod_container_resource_requests{job=\\\"kube-state-metrics\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\", resource=\\\"memory\\\"})\",\n
-    \              \"instant\": true\n            }\n         ],\n         \"title\":
-    \"Memory Utilisation (from requests)\",\n         \"type\": \"stat\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"unit\": \"percentunit\"\n            }\n         },\n         \"gridPos\":
-    {\n            \"h\": 3,\n            \"w\": 6,\n            \"x\": 18,\n            \"y\":
-    0\n         },\n         \"id\": 4,\n         \"interval\": \"1m\",\n         \"options\":
-    {\n            \"colorMode\": \"none\"\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(container_memory_working_set_bytes{job=\\\"cadvisor\\\", cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\",container!=\\\"\\\", image!=\\\"\\\"})) / sum(kube_pod_container_resource_limits{job=\\\"kube-state-metrics\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\", resource=\\\"memory\\\"})\",\n
-    \              \"instant\": true\n            }\n         ],\n         \"title\":
-    \"Memory Utilisation (from limits)\",\n         \"type\": \"stat\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               }\n            },\n
-    \           \"overrides\": [\n               {\n                  \"matcher\":
-    {\n                     \"id\": \"byFrameRefID\",\n                     \"options\":
-    \"B\"\n                  },\n                  \"properties\": [\n                     {\n
-    \                       \"id\": \"custom.lineStyle\",\n                        \"value\":
-    {\n                           \"fill\": \"dash\"\n                        }\n
-    \                    },\n                     {\n                        \"id\":
-    \"custom.lineWidth\",\n                        \"value\": 2\n                     },\n
-    \                    {\n                        \"id\": \"color\",\n                        \"value\":
-    {\n                           \"fixedColor\": \"red\",\n                           \"mode\":
-    \"fixed\"\n                        }\n                     }\n                  ]\n
-    \              },\n               {\n                  \"matcher\": {\n                     \"id\":
-    \"byFrameRefID\",\n                     \"options\": \"C\"\n                  },\n
-    \                 \"properties\": [\n                     {\n                        \"id\":
-    \"custom.lineStyle\",\n                        \"value\": {\n                           \"fill\":
-    \"dash\"\n                        }\n                     },\n                     {\n
-    \                       \"id\": \"custom.lineWidth\",\n                        \"value\":
-    2\n                     },\n                     {\n                        \"id\":
-    \"color\",\n                        \"value\": {\n                           \"fixedColor\":
-    \"orange\",\n                           \"mode\": \"fixed\"\n                        }\n
-    \                    }\n                  ]\n               }\n            ]\n
-    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
-    24,\n            \"x\": 0,\n            \"y\": 7\n         },\n         \"id\":
-    5,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
-    {\n               \"asTable\": true,\n               \"calcs\": [\n                  \"lastNotNull\"\n
-    \              ],\n               \"displayMode\": \"table\",\n               \"placement\":
-    \"right\",\n               \"showLegend\": true\n            },\n            \"tooltip\":
-    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"legendFormat\":
-    \"__auto\"\n            },\n            {\n               \"datasource\": {\n
-    \                 \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"scalar(max(kube_resourcequota{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", type=\\\"hard\\\",resource=\\\"requests.cpu\\\"}))\",\n
-    \              \"legendFormat\": \"quota - requests\"\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"scalar(max(kube_resourcequota{cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\",
-    type=\\\"hard\\\",resource=\\\"limits.cpu\\\"}))\",\n               \"legendFormat\":
-    \"quota - limits\"\n            }\n         ],\n         \"title\": \"CPU Usage\",\n
-    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
-    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
-    \        },\n         \"fieldConfig\": {\n            \"overrides\": [\n               {\n
-    \                 \"matcher\": {\n                     \"id\": \"byRegexp\",\n
-    \                    \"options\": \"/%/\"\n                  },\n                  \"properties\":
-    [\n                     {\n                        \"id\": \"unit\",\n                        \"value\":
-    \"percentunit\"\n                     }\n                  ]\n               },\n
-    \              {\n                  \"matcher\": {\n                     \"id\":
-    \"byName\",\n                     \"options\": \"Pod\"\n                  },\n
-    \                 \"properties\": [\n                     {\n                        \"id\":
-    \"links\",\n                        \"value\": [\n                           {\n
-    \                             \"title\": \"Drill down to pods\",\n                              \"url\":
-    \"/d/6581e46e4e5c7ba40a07646395ef7b23/k8s-resources-pod?${datasource:queryparam}&var-cluster=$cluster&var-namespace=$namespace&var-pod=${__data.fields.Pod}\"\n
-    \                          }\n                        ]\n                     }\n
-    \                 ]\n               }\n            ]\n         },\n         \"gridPos\":
-    {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\":
-    14\n         },\n         \"id\": 6,\n         \"pluginVersion\": \"v11.1.0\",\n
-    \        \"targets\": [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(max by (cluster, namespace, pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod) / sum(max by (cluster, namespace, pod,
-    container)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod) / sum(max by (cluster, namespace, pod,
-    container)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            }\n         ],\n         \"title\":
-    \"CPU Quota\",\n         \"transformations\": [\n            {\n               \"id\":
-    \"joinByField\",\n               \"options\": {\n                  \"byField\":
-    \"pod\",\n                  \"mode\": \"outer\"\n               }\n            },\n
-    \           {\n               \"id\": \"organize\",\n               \"options\":
-    {\n                  \"excludeByName\": {\n                     \"Time\": true,\n
-    \                    \"Time 1\": true,\n                     \"Time 2\": true,\n
-    \                    \"Time 3\": true,\n                     \"Time 4\": true,\n
-    \                    \"Time 5\": true\n                  },\n                  \"indexByName\":
-    {\n                     \"Time 1\": 0,\n                     \"Time 2\": 1,\n
-    \                    \"Time 3\": 2,\n                     \"Time 4\": 3,\n                     \"Time
-    5\": 4,\n                     \"Value #A\": 6,\n                     \"Value #B\":
-    7,\n                     \"Value #C\": 8,\n                     \"Value #D\":
-    9,\n                     \"Value #E\": 10,\n                     \"pod\": 5\n
-    \                 },\n                  \"renameByName\": {\n                     \"Value
-    #A\": \"CPU Usage\",\n                     \"Value #B\": \"CPU Requests\",\n                     \"Value
-    #C\": \"CPU Requests %\",\n                     \"Value #D\": \"CPU Limits\",\n
-    \                    \"Value #E\": \"CPU Limits %\",\n                     \"pod\":
-    \"Pod\"\n                  }\n               }\n            }\n         ],\n         \"type\":
-    \"table\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
-    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
-    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
-    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
-    true\n               },\n               \"unit\": \"bytes\"\n            },\n
-    \           \"overrides\": [\n               {\n                  \"matcher\":
-    {\n                     \"id\": \"byFrameRefID\",\n                     \"options\":
-    \"B\"\n                  },\n                  \"properties\": [\n                     {\n
-    \                       \"id\": \"custom.lineStyle\",\n                        \"value\":
-    {\n                           \"fill\": \"dash\"\n                        }\n
-    \                    },\n                     {\n                        \"id\":
-    \"custom.lineWidth\",\n                        \"value\": 2\n                     },\n
-    \                    {\n                        \"id\": \"color\",\n                        \"value\":
-    {\n                           \"fixedColor\": \"red\",\n                           \"mode\":
-    \"fixed\"\n                        }\n                     }\n                  ]\n
-    \              },\n               {\n                  \"matcher\": {\n                     \"id\":
-    \"byFrameRefID\",\n                     \"options\": \"C\"\n                  },\n
-    \                 \"properties\": [\n                     {\n                        \"id\":
-    \"custom.lineStyle\",\n                        \"value\": {\n                           \"fill\":
-    \"dash\"\n                        }\n                     },\n                     {\n
-    \                       \"id\": \"custom.lineWidth\",\n                        \"value\":
-    2\n                     },\n                     {\n                        \"id\":
-    \"color\",\n                        \"value\": {\n                           \"fixedColor\":
-    \"orange\",\n                           \"mode\": \"fixed\"\n                        }\n
-    \                    }\n                  ]\n               }\n            ]\n
-    \        },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
-    24,\n            \"x\": 0,\n            \"y\": 21\n         },\n         \"id\":
-    7,\n         \"interval\": \"1m\",\n         \"options\": {\n            \"legend\":
-    {\n               \"asTable\": true,\n               \"calcs\": [\n                  \"lastNotNull\"\n
-    \              ],\n               \"displayMode\": \"table\",\n               \"placement\":
-    \"right\",\n               \"showLegend\": true\n            },\n            \"tooltip\":
-    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(container_memory_working_set_bytes{job=\\\"cadvisor\\\", cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", container!=\\\"\\\", image!=\\\"\\\"})) by (pod)\",\n
-    \              \"legendFormat\": \"__auto\"\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"scalar(max(kube_resourcequota{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", type=\\\"hard\\\",resource=\\\"requests.memory\\\"}))\",\n
-    \              \"legendFormat\": \"quota - requests\"\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"scalar(max(kube_resourcequota{cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\",
-    type=\\\"hard\\\",resource=\\\"limits.memory\\\"}))\",\n               \"legendFormat\":
-    \"quota - limits\"\n            }\n         ],\n         \"title\": \"Memory Usage
-    (w/o cache)\",\n         \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
-    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
-    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"unit\":
-    \"bytes\"\n            },\n            \"overrides\": [\n               {\n                  \"matcher\":
-    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
-    \"/%/\"\n                  },\n                  \"properties\": [\n                     {\n
-    \                       \"id\": \"unit\",\n                        \"value\":
-    \"percentunit\"\n                     }\n                  ]\n               },\n
-    \              {\n                  \"matcher\": {\n                     \"id\":
-    \"byName\",\n                     \"options\": \"Pod\"\n                  },\n
-    \                 \"properties\": [\n                     {\n                        \"id\":
-    \"links\",\n                        \"value\": [\n                           {\n
-    \                             \"title\": \"Drill down to pods\",\n                              \"url\":
-    \"/d/6581e46e4e5c7ba40a07646395ef7b23/k8s-resources-pod?${datasource:queryparam}&var-cluster=$cluster&var-namespace=$namespace&var-pod=${__data.fields.Pod}\"\n
-    \                          }\n                        ]\n                     }\n
-    \                 ]\n               }\n            ]\n         },\n         \"gridPos\":
-    {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\":
-    28\n         },\n         \"id\": 8,\n         \"pluginVersion\": \"v11.1.0\",\n
-    \        \"targets\": [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(max by (cluster, namespace, pod, container)(container_memory_working_set_bytes{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\", container!=\\\"\\\", image!=\\\"\\\"}))
-    by (pod)\",\n               \"format\": \"table\",\n               \"instant\":
-    true\n            },\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(max by (cluster, namespace, pod, container)(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(container_memory_working_set_bytes{job=\\\"cadvisor\\\", cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\",container!=\\\"\\\", image!=\\\"\\\"})) by (pod)
-    / sum(max by (cluster, namespace, pod, container)(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(container_memory_working_set_bytes{job=\\\"cadvisor\\\", cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\",container!=\\\"\\\", image!=\\\"\\\"})) by (pod)
-    / sum(max by (cluster, namespace, pod, container)(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"})) by (pod)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(max by (cluster, namespace,
-    pod, container)(container_memory_rss{job=\\\"cadvisor\\\", cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\",container!=\\\"\\\"})) by (pod)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(max by (cluster, namespace, pod, container)(container_memory_cache{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\",container!=\\\"\\\"}))
-    by (pod)\",\n               \"format\": \"table\",\n               \"instant\":
-    true\n            },\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(max by (cluster, namespace, pod, container)(container_memory_swap{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\",container!=\\\"\\\"}))
-    by (pod)\",\n               \"format\": \"table\",\n               \"instant\":
-    true\n            }\n         ],\n         \"title\": \"Memory Quota\",\n         \"transformations\":
-    [\n            {\n               \"id\": \"joinByField\",\n               \"options\":
-    {\n                  \"byField\": \"pod\",\n                  \"mode\": \"outer\"\n
-    \              }\n            },\n            {\n               \"id\": \"organize\",\n
-    \              \"options\": {\n                  \"excludeByName\": {\n                     \"Time\":
-    true,\n                     \"Time 1\": true,\n                     \"Time 2\":
-    true,\n                     \"Time 3\": true,\n                     \"Time 4\":
-    true,\n                     \"Time 5\": true,\n                     \"Time 6\":
-    true,\n                     \"Time 7\": true,\n                     \"Time 8\":
-    true\n                  },\n                  \"indexByName\": {\n                     \"Time
-    1\": 0,\n                     \"Time 2\": 1,\n                     \"Time 3\":
-    2,\n                     \"Time 4\": 3,\n                     \"Time 5\": 4,\n
-    \                    \"Time 6\": 5,\n                     \"Time 7\": 6,\n                     \"Time
-    8\": 7,\n                     \"Value #A\": 9,\n                     \"Value #B\":
-    10,\n                     \"Value #C\": 11,\n                     \"Value #D\":
-    12,\n                     \"Value #E\": 13,\n                     \"Value #F\":
-    14,\n                     \"Value #G\": 15,\n                     \"Value #H\":
-    16,\n                     \"pod\": 8\n                  },\n                  \"renameByName\":
-    {\n                     \"Value #A\": \"Memory Usage\",\n                     \"Value
-    #B\": \"Memory Requests\",\n                     \"Value #C\": \"Memory Requests
-    %\",\n                     \"Value #D\": \"Memory Limits\",\n                     \"Value
-    #E\": \"Memory Limits %\",\n                     \"Value #F\": \"Memory Usage
-    (RSS)\",\n                     \"Value #G\": \"Memory Usage (Cache)\",\n                     \"Value
-    #H\": \"Memory Usage (Swap)\",\n                     \"pod\": \"Pod\"\n                  }\n
-    \              }\n            }\n         ],\n         \"type\": \"table\"\n      },\n
-    \     {\n         \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"overrides\":
-    [\n               {\n                  \"matcher\": {\n                     \"id\":
-    \"byRegexp\",\n                     \"options\": \"/Bandwidth/\"\n                  },\n
-    \                 \"properties\": [\n                     {\n                        \"id\":
-    \"unit\",\n                        \"value\": \"bps\"\n                     }\n
-    \                 ]\n               },\n               {\n                  \"matcher\":
-    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
-    \"/Packets/\"\n                  },\n                  \"properties\": [\n                     {\n
-    \                       \"id\": \"unit\",\n                        \"value\":
-    \"pps\"\n                     }\n                  ]\n               },\n               {\n
-    \                 \"matcher\": {\n                     \"id\": \"byName\",\n                     \"options\":
-    \"Pod\"\n                  },\n                  \"properties\": [\n                     {\n
-    \                       \"id\": \"links\",\n                        \"value\":
-    [\n                           {\n                              \"title\": \"Drill
-    down to pods\",\n                              \"url\": \"/d/6581e46e4e5c7ba40a07646395ef7b23/k8s-resources-pod?${datasource:queryparam}&var-cluster=$cluster&var-namespace=$namespace&var-pod=${__data.fields.Pod}\"\n
-    \                          }\n                        ]\n                     }\n
-    \                 ]\n               }\n            ]\n         },\n         \"gridPos\":
-    {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\":
-    35\n         },\n         \"id\": 9,\n         \"pluginVersion\": \"v11.1.0\",\n
-    \        \"targets\": [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_receive_bytes_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"format\": \"table\",\n               \"instant\": true\n
-    \           },\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_transmit_bytes_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"format\": \"table\",\n               \"instant\": true\n
-    \           },\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_receive_packets_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"format\": \"table\",\n               \"instant\": true\n
-    \           },\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_transmit_packets_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"format\": \"table\",\n               \"instant\": true\n
-    \           },\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_receive_packets_dropped_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"format\": \"table\",\n               \"instant\": true\n
-    \           },\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_transmit_packets_dropped_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"format\": \"table\",\n               \"instant\": true\n
-    \           }\n         ],\n         \"title\": \"Current Network Usage\",\n         \"transformations\":
-    [\n            {\n               \"id\": \"joinByField\",\n               \"options\":
-    {\n                  \"byField\": \"pod\",\n                  \"mode\": \"outer\"\n
-    \              }\n            },\n            {\n               \"id\": \"organize\",\n
-    \              \"options\": {\n                  \"excludeByName\": {\n                     \"Time\":
-    true,\n                     \"Time 1\": true,\n                     \"Time 2\":
-    true,\n                     \"Time 3\": true,\n                     \"Time 4\":
-    true,\n                     \"Time 5\": true,\n                     \"Time 6\":
-    true\n                  },\n                  \"indexByName\": {\n                     \"Time
-    1\": 0,\n                     \"Time 2\": 1,\n                     \"Time 3\":
-    2,\n                     \"Time 4\": 3,\n                     \"Time 5\": 4,\n
-    \                    \"Time 6\": 5,\n                     \"Value #A\": 7,\n                     \"Value
-    #B\": 8,\n                     \"Value #C\": 9,\n                     \"Value
-    #D\": 10,\n                     \"Value #E\": 11,\n                     \"Value
-    #F\": 12,\n                     \"pod\": 6\n                  },\n                  \"renameByName\":
-    {\n                     \"Value #A\": \"Current Receive Bandwidth\",\n                     \"Value
-    #B\": \"Current Transmit Bandwidth\",\n                     \"Value #C\": \"Rate
-    of Received Packets\",\n                     \"Value #D\": \"Rate of Transmitted
-    Packets\",\n                     \"Value #E\": \"Rate of Received Packets Dropped\",\n
-    \                    \"Value #F\": \"Rate of Transmitted Packets Dropped\",\n
-    \                    \"pod\": \"Pod\"\n                  }\n               }\n
-    \           }\n         ],\n         \"type\": \"table\"\n      },\n      {\n
-    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    7,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 42\n         },\n
-    \        \"id\": 10,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_receive_bytes_total{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"}[$__rate_interval])) by (pod)\",\n               \"legendFormat\":
-    \"__auto\"\n            }\n         ],\n         \"title\": \"Receive Bandwidth\",\n
-    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
-    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
-    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
-    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
-    \                 \"spanNulls\": true\n               },\n               \"unit\":
-    \"bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    7,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 42\n         },\n
-    \        \"id\": 11,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_transmit_bytes_total{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\"}[$__rate_interval])) by (pod)\",\n               \"legendFormat\":
-    \"__auto\"\n            }\n         ],\n         \"title\": \"Transmit Bandwidth\",\n
-    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
-    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
-    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
-    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
-    \                 \"spanNulls\": true\n               },\n               \"unit\":
-    \"pps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    7,\n            \"w\": 12,\n            \"x\": 0,\n            \"y\": 49\n         },\n
-    \        \"id\": 12,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(rate(container_network_receive_packets_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"legendFormat\": \"__auto\"\n            }\n         ],\n
-    \        \"title\": \"Rate of Received Packets\",\n         \"type\": \"timeseries\"\n
-    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
-    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
-    \           \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
-    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
-    true\n               },\n               \"unit\": \"pps\"\n            }\n         },\n
-    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
-    12,\n            \"y\": 49\n         },\n         \"id\": 13,\n         \"interval\":
-    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
-    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
-    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
-    \              \"showLegend\": true\n            },\n            \"tooltip\":
-    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(rate(container_network_transmit_packets_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"legendFormat\": \"__auto\"\n            }\n         ],\n
-    \        \"title\": \"Rate of Transmitted Packets\",\n         \"type\": \"timeseries\"\n
-    \     },\n      {\n         \"datasource\": {\n            \"type\": \"datasource\",\n
-    \           \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n
-    \           \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
-    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
-    true\n               },\n               \"unit\": \"pps\"\n            }\n         },\n
-    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
-    0,\n            \"y\": 56\n         },\n         \"id\": 14,\n         \"interval\":
-    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
-    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
-    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
-    \              \"showLegend\": true\n            },\n            \"tooltip\":
-    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(rate(container_network_receive_packets_dropped_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"legendFormat\": \"__auto\"\n            }\n         ],\n
-    \        \"title\": \"Rate of Received Packets Dropped\",\n         \"type\":
-    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
-    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
-    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
-    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
-    true\n               },\n               \"unit\": \"pps\"\n            }\n         },\n
-    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
-    12,\n            \"y\": 56\n         },\n         \"id\": 15,\n         \"interval\":
-    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
-    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
-    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
-    \              \"showLegend\": true\n            },\n            \"tooltip\":
-    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(rate(container_network_transmit_packets_dropped_total{job=\\\"cadvisor\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])) by
-    (pod)\",\n               \"legendFormat\": \"__auto\"\n            }\n         ],\n
-    \        \"title\": \"Rate of Transmitted Packets Dropped\",\n         \"type\":
-    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
-    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
-    {\n            \"defaults\": {\n               \"custom\": {\n                  \"fillOpacity\":
-    10,\n                  \"showPoints\": \"never\",\n                  \"spanNulls\":
-    true\n               },\n               \"unit\": \"iops\"\n            }\n         },\n
-    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 12,\n            \"x\":
-    0,\n            \"y\": 63\n         },\n         \"id\": 16,\n         \"interval\":
-    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
-    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
-    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
-    \              \"showLegend\": true\n            },\n            \"tooltip\":
-    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"ceil(sum by(pod) (rate(container_fs_reads_total{container!=\\\"\\\",
-    device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]) + rate(container_fs_writes_total{container!=\\\"\\\",
-    device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])))\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"IOPS(Reads+Writes)\",\n         \"type\": \"timeseries\"\n      },\n      {\n
-    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"Bps\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    7,\n            \"w\": 12,\n            \"x\": 12,\n            \"y\": 63\n         },\n
-    \        \"id\": 17,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum by(pod) (rate(container_fs_reads_bytes_total{container!=\\\"\\\",
-    device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]) + rate(container_fs_writes_bytes_total{container!=\\\"\\\",
-    device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]))\",\n
-    \              \"legendFormat\": \"__auto\"\n            }\n         ],\n         \"title\":
-    \"ThroughPut(Read+Write)\",\n         \"type\": \"timeseries\"\n      },\n      {\n
-    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"overrides\":
-    [\n               {\n                  \"matcher\": {\n                     \"id\":
-    \"byRegexp\",\n                     \"options\": \"/IOPS/\"\n                  },\n
-    \                 \"properties\": [\n                     {\n                        \"id\":
-    \"unit\",\n                        \"value\": \"iops\"\n                     }\n
-    \                 ]\n               },\n               {\n                  \"matcher\":
-    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
-    \"/Throughput/\"\n                  },\n                  \"properties\": [\n
-    \                    {\n                        \"id\": \"unit\",\n                        \"value\":
-    \"bps\"\n                     }\n                  ]\n               },\n               {\n
-    \                 \"matcher\": {\n                     \"id\": \"byName\",\n                     \"options\":
-    \"Pod\"\n                  },\n                  \"properties\": [\n                     {\n
-    \                       \"id\": \"links\",\n                        \"value\":
-    [\n                           {\n                              \"title\": \"Drill
-    down to pods\",\n                              \"url\": \"/d/6581e46e4e5c7ba40a07646395ef7b23/k8s-resources-pod?${datasource:queryparam}&var-cluster=$cluster&var-namespace=$namespace&var-pod=${__data.fields.Pod}\"\n
-    \                          }\n                        ]\n                     }\n
-    \                 ]\n               }\n            ]\n         },\n         \"gridPos\":
-    {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\":
-    70\n         },\n         \"id\": 18,\n         \"pluginVersion\": \"v11.1.0\",\n
-    \        \"targets\": [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum by(pod) (rate(container_fs_reads_total{job=\\\"cadvisor\\\",
-    device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    container!=\\\"\\\", cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]))\",\n
-    \              \"format\": \"table\",\n               \"instant\": true\n            },\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum by(pod) (rate(container_fs_writes_total{job=\\\"cadvisor\\\", device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    container!=\\\"\\\", cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]))\",\n
-    \              \"format\": \"table\",\n               \"instant\": true\n            },\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum by(pod) (rate(container_fs_reads_total{job=\\\"cadvisor\\\", device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    container!=\\\"\\\", cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])
-    + rate(container_fs_writes_total{job=\\\"cadvisor\\\", device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    container!=\\\"\\\", cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]))\",\n
-    \              \"format\": \"table\",\n               \"instant\": true\n            },\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum by(pod) (rate(container_fs_reads_bytes_total{job=\\\"cadvisor\\\", device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    container!=\\\"\\\", cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]))\",\n
-    \              \"format\": \"table\",\n               \"instant\": true\n            },\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum by(pod) (rate(container_fs_writes_bytes_total{job=\\\"cadvisor\\\", device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    container!=\\\"\\\", cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]))\",\n
-    \              \"format\": \"table\",\n               \"instant\": true\n            },\n
-    \           {\n               \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum by(pod) (rate(container_fs_reads_bytes_total{job=\\\"cadvisor\\\", device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    container!=\\\"\\\", cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval])
-    + rate(container_fs_writes_bytes_total{job=\\\"cadvisor\\\", device=~\\\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\\\",
-    container!=\\\"\\\", cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\"}[$__rate_interval]))\",\n
-    \              \"format\": \"table\",\n               \"instant\": true\n            }\n
-    \        ],\n         \"title\": \"Current Storage IO\",\n         \"transformations\":
-    [\n            {\n               \"id\": \"joinByField\",\n               \"options\":
-    {\n                  \"byField\": \"pod\",\n                  \"mode\": \"outer\"\n
-    \              }\n            },\n            {\n               \"id\": \"organize\",\n
-    \              \"options\": {\n                  \"excludeByName\": {\n                     \"Time\":
-    true,\n                     \"Time 1\": true,\n                     \"Time 2\":
-    true,\n                     \"Time 3\": true,\n                     \"Time 4\":
-    true,\n                     \"Time 5\": true,\n                     \"Time 6\":
-    true\n                  },\n                  \"indexByName\": {\n                     \"Time
-    1\": 0,\n                     \"Time 2\": 1,\n                     \"Time 3\":
-    2,\n                     \"Time 4\": 3,\n                     \"Time 5\": 4,\n
-    \                    \"Time 6\": 5,\n                     \"Value #A\": 7,\n                     \"Value
-    #B\": 8,\n                     \"Value #C\": 9,\n                     \"Value
-    #D\": 10,\n                     \"Value #E\": 11,\n                     \"Value
-    #F\": 12,\n                     \"pod\": 6\n                  },\n                  \"renameByName\":
-    {\n                     \"Value #A\": \"IOPS(Reads)\",\n                     \"Value
-    #B\": \"IOPS(Writes)\",\n                     \"Value #C\": \"IOPS(Reads + Writes)\",\n
-    \                    \"Value #D\": \"Throughput(Read)\",\n                     \"Value
-    #E\": \"Throughput(Write)\",\n                     \"Value #F\": \"Throughput(Read
-    + Write)\",\n                     \"pod\": \"Pod\"\n                  }\n               }\n
-    \           }\n         ],\n         \"type\": \"table\"\n      }\n   ],\n   \"refresh\":
-    \"10s\",\n   \"schemaVersion\": 39,\n   \"tags\": [\n      \"kubernetes-mixin\"\n
-    \  ],\n   \"templating\": {\n      \"list\": [\n         {\n            \"current\":
-    {\n               \"selected\": true,\n               \"text\": \"default\",\n
-    \              \"value\": \"default\"\n            },\n            \"hide\": 0,\n
-    \           \"label\": \"Data source\",\n            \"name\": \"datasource\",\n
-    \           \"query\": \"prometheus\",\n            \"regex\": \"\",\n            \"type\":
-    \"datasource\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
-    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
-    0,\n            \"label\": \"cluster\",\n            \"name\": \"cluster\",\n
-    \           \"query\": \"label_values(up{job=\\\"kube-state-metrics\\\"}, cluster)\",\n
-    \           \"refresh\": 2,\n            \"sort\": 1,\n            \"type\": \"query\"\n
-    \        },\n         {\n            \"datasource\": {\n               \"type\":
-    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
-    0,\n            \"label\": \"namespace\",\n            \"name\": \"namespace\",\n
-    \           \"query\": \"label_values(kube_namespace_status_phase{job=\\\"kube-state-metrics\\\",
-    cluster=\\\"$cluster\\\"}, namespace)\",\n            \"refresh\": 2,\n            \"sort\":
-    1,\n            \"type\": \"query\"\n         }\n      ]\n   },\n   \"time\":
-    {\n      \"from\": \"now-1h\",\n      \"to\": \"now\"\n   },\n   \"timezone\":
-    \"UTC\",\n   \"title\": \"Kubernetes / Compute Resources / Namespace (Pods)\",\n
-    \  \"uid\": \"85a562078cdf77779eaa1add43ccec1e\"\n}\n"
+  json: '{"editable":false,"links":[{"asDropdown":true,"includeVars":true,"keepTime":true,"tags":["kubernetes-mixin"],"targetBlank":false,"title":"Kubernetes","type":"dashboards"}],"panels":[{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"unit":"percentunit"}},"gridPos":{"h":3,"w":6,"x":0,"y":0},"id":1,"interval":"1m","options":{"colorMode":"none"},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) / sum(kube_pod_container_resource_requests{job=\"kube-state-metrics\",
+    cluster=\"$cluster\", namespace=\"$namespace\", resource=\"cpu\"})","instant":true}],"title":"CPU
+    Utilisation (from requests)","type":"stat"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"unit":"percentunit"}},"gridPos":{"h":3,"w":6,"x":6,"y":0},"id":2,"interval":"1m","options":{"colorMode":"none"},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) / sum(kube_pod_container_resource_limits{job=\"kube-state-metrics\",
+    cluster=\"$cluster\", namespace=\"$namespace\", resource=\"cpu\"})","instant":true}],"title":"CPU
+    Utilisation (from limits)","type":"stat"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"unit":"percentunit"}},"gridPos":{"h":3,"w":6,"x":12,"y":0},"id":3,"interval":"1m","options":{"colorMode":"none"},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_working_set_bytes{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\", image!=\"\"}))
+    / sum(kube_pod_container_resource_requests{job=\"kube-state-metrics\", cluster=\"$cluster\",
+    namespace=\"$namespace\", resource=\"memory\"})","instant":true}],"title":"Memory
+    Utilisation (from requests)","type":"stat"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"unit":"percentunit"}},"gridPos":{"h":3,"w":6,"x":18,"y":0},"id":4,"interval":"1m","options":{"colorMode":"none"},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_working_set_bytes{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\", image!=\"\"}))
+    / sum(kube_pod_container_resource_limits{job=\"kube-state-metrics\", cluster=\"$cluster\",
+    namespace=\"$namespace\", resource=\"memory\"})","instant":true}],"title":"Memory
+    Utilisation (from limits)","type":"stat"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true}},"overrides":[{"matcher":{"id":"byFrameRefID","options":"B"},"properties":[{"id":"custom.lineStyle","value":{"fill":"dash"}},{"id":"custom.lineWidth","value":2},{"id":"color","value":{"fixedColor":"red","mode":"fixed"}}]},{"matcher":{"id":"byFrameRefID","options":"C"},"properties":[{"id":"custom.lineStyle","value":{"fill":"dash"}},{"id":"custom.lineWidth","value":2},{"id":"color","value":{"fixedColor":"orange","mode":"fixed"}}]}]},"gridPos":{"h":7,"w":24,"x":0,"y":7},"id":5,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","legendFormat":"__auto"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"scalar(max(kube_resourcequota{cluster=\"$cluster\",
+    namespace=\"$namespace\", type=\"hard\",resource=\"requests.cpu\"}))","legendFormat":"quota
+    - requests"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"scalar(max(kube_resourcequota{cluster=\"$cluster\",
+    namespace=\"$namespace\", type=\"hard\",resource=\"limits.cpu\"}))","legendFormat":"quota
+    - limits"}],"title":"CPU Usage","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"overrides":[{"matcher":{"id":"byRegexp","options":"/%/"},"properties":[{"id":"unit","value":"percentunit"}]},{"matcher":{"id":"byName","options":"Pod"},"properties":[{"id":"links","value":[{"title":"Drill
+    down to pods","url":"/d/6581e46e4e5c7ba40a07646395ef7b23/k8s-resources-pod?${datasource:queryparam}&var-cluster=$cluster&var-namespace=$namespace&var-pod=${__data.fields.Pod}"}]}]}]},"gridPos":{"h":7,"w":24,"x":0,"y":14},"id":6,"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod) / sum(max by (cluster, namespace, pod, container)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod) / sum(max by (cluster, namespace, pod, container)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true}],"title":"CPU
+    Quota","transformations":[{"id":"joinByField","options":{"byField":"pod","mode":"outer"}},{"id":"organize","options":{"excludeByName":{"Time":true,"Time
+    1":true,"Time 2":true,"Time 3":true,"Time 4":true,"Time 5":true},"indexByName":{"Time
+    1":0,"Time 2":1,"Time 3":2,"Time 4":3,"Time 5":4,"Value #A":6,"Value #B":7,"Value
+    #C":8,"Value #D":9,"Value #E":10,"pod":5},"renameByName":{"Value #A":"CPU Usage","Value
+    #B":"CPU Requests","Value #C":"CPU Requests %","Value #D":"CPU Limits","Value
+    #E":"CPU Limits %","pod":"Pod"}}}],"type":"table"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"bytes"},"overrides":[{"matcher":{"id":"byFrameRefID","options":"B"},"properties":[{"id":"custom.lineStyle","value":{"fill":"dash"}},{"id":"custom.lineWidth","value":2},{"id":"color","value":{"fixedColor":"red","mode":"fixed"}}]},{"matcher":{"id":"byFrameRefID","options":"C"},"properties":[{"id":"custom.lineStyle","value":{"fill":"dash"}},{"id":"custom.lineWidth","value":2},{"id":"color","value":{"fixedColor":"orange","mode":"fixed"}}]}]},"gridPos":{"h":7,"w":24,"x":0,"y":21},"id":7,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_working_set_bytes{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\", container!=\"\", image!=\"\"}))
+    by (pod)","legendFormat":"__auto"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"scalar(max(kube_resourcequota{cluster=\"$cluster\",
+    namespace=\"$namespace\", type=\"hard\",resource=\"requests.memory\"}))","legendFormat":"quota
+    - requests"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"scalar(max(kube_resourcequota{cluster=\"$cluster\",
+    namespace=\"$namespace\", type=\"hard\",resource=\"limits.memory\"}))","legendFormat":"quota
+    - limits"}],"title":"Memory Usage (w/o cache)","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"unit":"bytes"},"overrides":[{"matcher":{"id":"byRegexp","options":"/%/"},"properties":[{"id":"unit","value":"percentunit"}]},{"matcher":{"id":"byName","options":"Pod"},"properties":[{"id":"links","value":[{"title":"Drill
+    down to pods","url":"/d/6581e46e4e5c7ba40a07646395ef7b23/k8s-resources-pod?${datasource:queryparam}&var-cluster=$cluster&var-namespace=$namespace&var-pod=${__data.fields.Pod}"}]}]}]},"gridPos":{"h":7,"w":24,"x":0,"y":28},"id":8,"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_working_set_bytes{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\", container!=\"\", image!=\"\"}))
+    by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_working_set_bytes{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\", image!=\"\"}))
+    by (pod) / sum(max by (cluster, namespace, pod, container)(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_working_set_bytes{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\", image!=\"\"}))
+    by (pod) / sum(max by (cluster, namespace, pod, container)(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{cluster=\"$cluster\",
+    namespace=\"$namespace\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_rss{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_cache{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\"})) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(max
+    by (cluster, namespace, pod, container)(container_memory_swap{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\"})) by (pod)","format":"table","instant":true}],"title":"Memory
+    Quota","transformations":[{"id":"joinByField","options":{"byField":"pod","mode":"outer"}},{"id":"organize","options":{"excludeByName":{"Time":true,"Time
+    1":true,"Time 2":true,"Time 3":true,"Time 4":true,"Time 5":true,"Time 6":true,"Time
+    7":true,"Time 8":true},"indexByName":{"Time 1":0,"Time 2":1,"Time 3":2,"Time 4":3,"Time
+    5":4,"Time 6":5,"Time 7":6,"Time 8":7,"Value #A":9,"Value #B":10,"Value #C":11,"Value
+    #D":12,"Value #E":13,"Value #F":14,"Value #G":15,"Value #H":16,"pod":8},"renameByName":{"Value
+    #A":"Memory Usage","Value #B":"Memory Requests","Value #C":"Memory Requests %","Value
+    #D":"Memory Limits","Value #E":"Memory Limits %","Value #F":"Memory Usage (RSS)","Value
+    #G":"Memory Usage (Cache)","Value #H":"Memory Usage (Swap)","pod":"Pod"}}}],"type":"table"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"overrides":[{"matcher":{"id":"byRegexp","options":"/Bandwidth/"},"properties":[{"id":"unit","value":"bps"}]},{"matcher":{"id":"byRegexp","options":"/Packets/"},"properties":[{"id":"unit","value":"pps"}]},{"matcher":{"id":"byName","options":"Pod"},"properties":[{"id":"links","value":[{"title":"Drill
+    down to pods","url":"/d/6581e46e4e5c7ba40a07646395ef7b23/k8s-resources-pod?${datasource:queryparam}&var-cluster=$cluster&var-namespace=$namespace&var-pod=${__data.fields.Pod}"}]}]}]},"gridPos":{"h":7,"w":24,"x":0,"y":35},"id":9,"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_receive_bytes_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_transmit_bytes_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_receive_packets_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_transmit_packets_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_receive_packets_dropped_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_transmit_packets_dropped_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","format":"table","instant":true}],"title":"Current
+    Network Usage","transformations":[{"id":"joinByField","options":{"byField":"pod","mode":"outer"}},{"id":"organize","options":{"excludeByName":{"Time":true,"Time
+    1":true,"Time 2":true,"Time 3":true,"Time 4":true,"Time 5":true,"Time 6":true},"indexByName":{"Time
+    1":0,"Time 2":1,"Time 3":2,"Time 4":3,"Time 5":4,"Time 6":5,"Value #A":7,"Value
+    #B":8,"Value #C":9,"Value #D":10,"Value #E":11,"Value #F":12,"pod":6},"renameByName":{"Value
+    #A":"Current Receive Bandwidth","Value #B":"Current Transmit Bandwidth","Value
+    #C":"Rate of Received Packets","Value #D":"Rate of Transmitted Packets","Value
+    #E":"Rate of Received Packets Dropped","Value #F":"Rate of Transmitted Packets
+    Dropped","pod":"Pod"}}}],"type":"table"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"bps"}},"gridPos":{"h":7,"w":12,"x":0,"y":42},"id":10,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_receive_bytes_total{cluster=\"$cluster\",
+    namespace=\"$namespace\"}[$__rate_interval])) by (pod)","legendFormat":"__auto"}],"title":"Receive
+    Bandwidth","type":"timeseries"},{"datasource":{"type":"datasource","uid":"-- Mixed
+    --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"bps"}},"gridPos":{"h":7,"w":12,"x":12,"y":42},"id":11,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_transmit_bytes_total{cluster=\"$cluster\",
+    namespace=\"$namespace\"}[$__rate_interval])) by (pod)","legendFormat":"__auto"}],"title":"Transmit
+    Bandwidth","type":"timeseries"},{"datasource":{"type":"datasource","uid":"-- Mixed
+    --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"pps"}},"gridPos":{"h":7,"w":12,"x":0,"y":49},"id":12,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_receive_packets_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","legendFormat":"__auto"}],"title":"Rate
+    of Received Packets","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"pps"}},"gridPos":{"h":7,"w":12,"x":12,"y":49},"id":13,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_transmit_packets_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","legendFormat":"__auto"}],"title":"Rate
+    of Transmitted Packets","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"pps"}},"gridPos":{"h":7,"w":12,"x":0,"y":56},"id":14,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_receive_packets_dropped_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","legendFormat":"__auto"}],"title":"Rate
+    of Received Packets Dropped","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"pps"}},"gridPos":{"h":7,"w":12,"x":12,"y":56},"id":15,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(rate(container_network_transmit_packets_dropped_total{job=\"cadvisor\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])) by (pod)","legendFormat":"__auto"}],"title":"Rate
+    of Transmitted Packets Dropped","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"iops"}},"gridPos":{"h":7,"w":12,"x":0,"y":63},"id":16,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"ceil(sum
+    by(pod) (rate(container_fs_reads_total{container!=\"\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]) + rate(container_fs_writes_total{container!=\"\",
+    device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\", cluster=\"$cluster\",
+    namespace=\"$namespace\"}[$__rate_interval])))","legendFormat":"__auto"}],"title":"IOPS(Reads+Writes)","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"Bps"}},"gridPos":{"h":7,"w":12,"x":12,"y":63},"id":17,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum
+    by(pod) (rate(container_fs_reads_bytes_total{container!=\"\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]) + rate(container_fs_writes_bytes_total{container!=\"\",
+    device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\", cluster=\"$cluster\",
+    namespace=\"$namespace\"}[$__rate_interval]))","legendFormat":"__auto"}],"title":"ThroughPut(Read+Write)","type":"timeseries"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"overrides":[{"matcher":{"id":"byRegexp","options":"/IOPS/"},"properties":[{"id":"unit","value":"iops"}]},{"matcher":{"id":"byRegexp","options":"/Throughput/"},"properties":[{"id":"unit","value":"bps"}]},{"matcher":{"id":"byName","options":"Pod"},"properties":[{"id":"links","value":[{"title":"Drill
+    down to pods","url":"/d/6581e46e4e5c7ba40a07646395ef7b23/k8s-resources-pod?${datasource:queryparam}&var-cluster=$cluster&var-namespace=$namespace&var-pod=${__data.fields.Pod}"}]}]}]},"gridPos":{"h":7,"w":24,"x":0,"y":70},"id":18,"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum
+    by(pod) (rate(container_fs_reads_total{job=\"cadvisor\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum
+    by(pod) (rate(container_fs_writes_total{job=\"cadvisor\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum
+    by(pod) (rate(container_fs_reads_total{job=\"cadvisor\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])
+    + rate(container_fs_writes_total{job=\"cadvisor\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum
+    by(pod) (rate(container_fs_reads_bytes_total{job=\"cadvisor\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum
+    by(pod) (rate(container_fs_writes_bytes_total{job=\"cadvisor\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum
+    by(pod) (rate(container_fs_reads_bytes_total{job=\"cadvisor\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval])
+    + rate(container_fs_writes_bytes_total{job=\"cadvisor\", device=~\"(/dev.+)|mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+\",
+    container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\"}[$__rate_interval]))","format":"table","instant":true}],"title":"Current
+    Storage IO","transformations":[{"id":"joinByField","options":{"byField":"pod","mode":"outer"}},{"id":"organize","options":{"excludeByName":{"Time":true,"Time
+    1":true,"Time 2":true,"Time 3":true,"Time 4":true,"Time 5":true,"Time 6":true},"indexByName":{"Time
+    1":0,"Time 2":1,"Time 3":2,"Time 4":3,"Time 5":4,"Time 6":5,"Value #A":7,"Value
+    #B":8,"Value #C":9,"Value #D":10,"Value #E":11,"Value #F":12,"pod":6},"renameByName":{"Value
+    #A":"IOPS(Reads)","Value #B":"IOPS(Writes)","Value #C":"IOPS(Reads + Writes)","Value
+    #D":"Throughput(Read)","Value #E":"Throughput(Write)","Value #F":"Throughput(Read
+    + Write)","pod":"Pod"}}}],"type":"table"}],"refresh":"10s","schemaVersion":39,"tags":["kubernetes-mixin"],"templating":{"list":[{"current":{"selected":true,"text":"default","value":"default"},"hide":0,"label":"Data
+    source","name":"datasource","query":"victoriametrics-metrics-datasource","regex":"","type":"datasource"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":0,"label":"cluster","name":"cluster","query":"label_values(up{job=\"kube-state-metrics\"},
+    cluster)","refresh":2,"sort":1,"type":"query"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":0,"label":"namespace","name":"namespace","query":"label_values(kube_namespace_status_phase{job=\"kube-state-metrics\",
+    cluster=\"$cluster\"}, namespace)","refresh":2,"sort":1,"type":"query"}]},"time":{"from":"now-1h","to":"now"},"timezone":"UTC","title":"Kubernetes
+    / Compute Resources / Namespace (Pods)","uid":"85a562078cdf77779eaa1add43ccec1e"}'

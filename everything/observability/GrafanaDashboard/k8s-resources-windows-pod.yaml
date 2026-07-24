@@ -7,202 +7,51 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  json: "{\n   \"editable\": false,\n   \"panels\": [\n      {\n         \"datasource\":
-    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
-    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
-    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
-    \                 \"spanNulls\": true\n               }\n            }\n         },\n
-    \        \"gridPos\": {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\":
-    0,\n            \"y\": 0\n         },\n         \"id\": 1,\n         \"interval\":
-    \"1m\",\n         \"options\": {\n            \"legend\": {\n               \"asTable\":
-    true,\n               \"calcs\": [\n                  \"lastNotNull\"\n               ],\n
-    \              \"displayMode\": \"table\",\n               \"placement\": \"right\",\n
-    \              \"showLegend\": true\n            },\n            \"tooltip\":
-    {\n               \"mode\": \"single\"\n            }\n         },\n         \"pluginVersion\":
-    \"v11.1.0\",\n         \"targets\": [\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(namespace_pod_container:windows_container_cpu_usage_seconds_total:sum_rate{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"legendFormat\":
-    \"__auto\"\n            }\n         ],\n         \"title\": \"CPU Usage\",\n         \"type\":
-    \"timeseries\"\n      },\n      {\n         \"datasource\": {\n            \"type\":
-    \"datasource\",\n            \"uid\": \"-- Mixed --\"\n         },\n         \"fieldConfig\":
-    {\n            \"overrides\": [\n               {\n                  \"matcher\":
-    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
-    \"/%/\"\n                  },\n                  \"properties\": [\n                     {\n
-    \                       \"id\": \"unit\",\n                        \"value\":
-    \"percentunit\"\n                     }\n                  ]\n               },\n
-    \              {\n                  \"matcher\": {\n                     \"id\":
-    \"byName\",\n                     \"options\": \"Namespace\"\n                  },\n
-    \                 \"properties\": [\n                     {\n                        \"id\":
-    \"links\",\n                        \"value\": [\n                           {\n
-    \                             \"title\": \"Drill down to pods\",\n                              \"url\":
-    \"/d/490b402361724ab1d4c45666c1fa9b6f/k8s-resources-windows-namespace?${datasource:queryparam}&var-cluster=$cluster&var-namespace=${__data.fields.Namespace}\"\n
-    \                          }\n                        ]\n                     }\n
-    \                 ]\n               }\n            ]\n         },\n         \"gridPos\":
-    {\n            \"h\": 7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\":
-    7\n         },\n         \"id\": 2,\n         \"pluginVersion\": \"v11.1.0\",\n
-    \        \"targets\": [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(namespace_pod_container:windows_container_cpu_usage_seconds_total:sum_rate{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(kube_pod_windows_container_resource_cpu_cores_request{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(namespace_pod_container:windows_container_cpu_usage_seconds_total:sum_rate{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container) / sum(kube_pod_windows_container_resource_cpu_cores_request{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(kube_pod_windows_container_resource_cpu_cores_limit{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(namespace_pod_container:windows_container_cpu_usage_seconds_total:sum_rate{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container) / sum(kube_pod_windows_container_resource_cpu_cores_limit{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            }\n         ],\n         \"title\":
-    \"CPU Quota\",\n         \"transformations\": [\n            {\n               \"id\":
-    \"joinByField\",\n               \"options\": {\n                  \"byField\":
-    \"container\",\n                  \"mode\": \"outer\"\n               }\n            },\n
-    \           {\n               \"id\": \"organize\",\n               \"options\":
-    {\n                  \"excludeByName\": {\n                     \"Time\": true,\n
-    \                    \"Time 1\": true,\n                     \"Time 2\": true,\n
-    \                    \"Time 3\": true,\n                     \"Time 4\": true,\n
-    \                    \"Time 5\": true\n                  },\n                  \"indexByName\":
-    {\n                     \"Time 1\": 0,\n                     \"Time 2\": 1,\n
-    \                    \"Time 3\": 2,\n                     \"Time 4\": 3,\n                     \"Time
-    5\": 4,\n                     \"Value #A\": 6,\n                     \"Value #B\":
-    7,\n                     \"Value #C\": 8,\n                     \"Value #D\":
-    9,\n                     \"Value #E\": 10,\n                     \"container\":
-    5\n                  },\n                  \"renameByName\": {\n                     \"Value
-    #A\": \"CPU Usage\",\n                     \"Value #B\": \"CPU Requests\",\n                     \"Value
-    #C\": \"CPU Requests %\",\n                     \"Value #D\": \"CPU Limits\",\n
-    \                    \"Value #E\": \"CPU Limits %\",\n                     \"container\":
-    \"Container\"\n                  }\n               }\n            }\n         ],\n
-    \        \"type\": \"table\"\n      },\n      {\n         \"datasource\": {\n
-    \           \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
-    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"custom\":
-    {\n                  \"fillOpacity\": 10,\n                  \"showPoints\": \"never\",\n
-    \                 \"spanNulls\": true\n               },\n               \"unit\":
-    \"decbytes\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\": 14\n         },\n
-    \        \"id\": 3,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sum(windows_container_private_working_set_usage{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"legendFormat\":
-    \"__auto\"\n            }\n         ],\n         \"title\": \"Memory Usage\",\n
-    \        \"type\": \"timeseries\"\n      },\n      {\n         \"datasource\":
-    {\n            \"type\": \"datasource\",\n            \"uid\": \"-- Mixed --\"\n
-    \        },\n         \"fieldConfig\": {\n            \"defaults\": {\n               \"unit\":
-    \"bytes\"\n            },\n            \"overrides\": [\n               {\n                  \"matcher\":
-    {\n                     \"id\": \"byRegexp\",\n                     \"options\":
-    \"/%/\"\n                  },\n                  \"properties\": [\n                     {\n
-    \                       \"id\": \"unit\",\n                        \"value\":
-    \"percentunit\"\n                     }\n                  ]\n               }\n
-    \           ]\n         },\n         \"gridPos\": {\n            \"h\": 7,\n            \"w\":
-    24,\n            \"x\": 0,\n            \"y\": 21\n         },\n         \"id\":
-    4,\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\": [\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(windows_container_private_working_set_usage{cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\",
-    pod=\\\"$pod\\\"}) by (container)\",\n               \"format\": \"table\",\n
-    \              \"instant\": true\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sum(kube_pod_windows_container_resource_memory_request{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(windows_container_private_working_set_usage{cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\",
-    pod=\\\"$pod\\\"}) by (container) / sum(kube_pod_windows_container_resource_memory_request{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(kube_pod_windows_container_resource_memory_limit{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            },\n            {\n
-    \              \"datasource\": {\n                  \"type\": \"prometheus\",\n
-    \                 \"uid\": \"${datasource}\"\n               },\n               \"expr\":
-    \"sum(windows_container_private_working_set_usage{cluster=\\\"$cluster\\\", namespace=\\\"$namespace\\\",
-    pod=\\\"$pod\\\"}) by (container) / sum(kube_pod_windows_container_resource_memory_limit{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}) by (container)\",\n               \"format\":
-    \"table\",\n               \"instant\": true\n            }\n         ],\n         \"title\":
-    \"Memory Quota\",\n         \"transformations\": [\n            {\n               \"id\":
-    \"joinByField\",\n               \"options\": {\n                  \"byField\":
-    \"container\",\n                  \"mode\": \"outer\"\n               }\n            },\n
-    \           {\n               \"id\": \"organize\",\n               \"options\":
-    {\n                  \"excludeByName\": {\n                     \"Time\": true,\n
-    \                    \"Time 1\": true,\n                     \"Time 2\": true,\n
-    \                    \"Time 3\": true,\n                     \"Time 4\": true,\n
-    \                    \"Time 5\": true\n                  },\n                  \"indexByName\":
-    {\n                     \"Time 1\": 0,\n                     \"Time 2\": 1,\n
-    \                    \"Time 3\": 2,\n                     \"Time 4\": 3,\n                     \"Time
-    5\": 4,\n                     \"Value #A\": 6,\n                     \"Value #B\":
-    7,\n                     \"Value #C\": 8,\n                     \"Value #D\":
-    9,\n                     \"Value #E\": 10,\n                     \"container\":
-    5\n                  },\n                  \"renameByName\": {\n                     \"Value
-    #A\": \"Memory Usage\",\n                     \"Value #B\": \"Memory Requests\",\n
-    \                    \"Value #C\": \"Memory Requests %\",\n                     \"Value
-    #D\": \"Memory Limits\",\n                     \"Value #E\": \"Memory Limits %\",\n
-    \                    \"container\": \"Container\"\n                  }\n               }\n
-    \           }\n         ],\n         \"type\": \"table\"\n      },\n      {\n
-    \        \"datasource\": {\n            \"type\": \"datasource\",\n            \"uid\":
-    \"-- Mixed --\"\n         },\n         \"fieldConfig\": {\n            \"defaults\":
-    {\n               \"custom\": {\n                  \"fillOpacity\": 10,\n                  \"showPoints\":
-    \"never\",\n                  \"spanNulls\": true\n               },\n               \"unit\":
-    \"bytes\"\n            }\n         },\n         \"gridPos\": {\n            \"h\":
-    7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\": 28\n         },\n
-    \        \"id\": 5,\n         \"interval\": \"1m\",\n         \"options\": {\n
-    \           \"legend\": {\n               \"asTable\": true,\n               \"calcs\":
-    [\n                  \"lastNotNull\"\n               ],\n               \"displayMode\":
-    \"table\",\n               \"placement\": \"right\",\n               \"showLegend\":
-    true\n            },\n            \"tooltip\": {\n               \"mode\": \"single\"\n
-    \           }\n         },\n         \"pluginVersion\": \"v11.1.0\",\n         \"targets\":
-    [\n            {\n               \"datasource\": {\n                  \"type\":
-    \"prometheus\",\n                  \"uid\": \"${datasource}\"\n               },\n
-    \              \"expr\": \"sort_desc(sum by (container) (rate(windows_container_network_received_bytes_total{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}[$__rate_interval])))\",\n               \"legendFormat\":
-    \"Received : {{ container }}\"\n            },\n            {\n               \"datasource\":
-    {\n                  \"type\": \"prometheus\",\n                  \"uid\": \"${datasource}\"\n
-    \              },\n               \"expr\": \"sort_desc(sum by (container) (rate(windows_container_network_transmitted_bytes_total{cluster=\\\"$cluster\\\",
-    namespace=\\\"$namespace\\\", pod=\\\"$pod\\\"}[$__rate_interval])))\",\n               \"legendFormat\":
-    \"Transmitted : {{ container }}\"\n            }\n         ],\n         \"title\":
-    \"Network I/O\",\n         \"type\": \"timeseries\"\n      }\n   ],\n   \"refresh\":
-    \"10s\",\n   \"schemaVersion\": 39,\n   \"tags\": [\n      \"kubernetes-mixin\"\n
-    \  ],\n   \"templating\": {\n      \"list\": [\n         {\n            \"current\":
-    {\n               \"selected\": true,\n               \"text\": \"default\",\n
-    \              \"value\": \"default\"\n            },\n            \"hide\": 0,\n
-    \           \"label\": \"Data source\",\n            \"name\": \"datasource\",\n
-    \           \"query\": \"prometheus\",\n            \"regex\": \"\",\n            \"type\":
-    \"datasource\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
-    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
-    2,\n            \"label\": \"cluster\",\n            \"name\": \"cluster\",\n
-    \           \"query\": \"label_values(up{job=\\\"kubernetes-windows-exporter\\\"},
-    cluster)\",\n            \"refresh\": 2,\n            \"sort\": 1,\n            \"type\":
-    \"query\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
-    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
-    0,\n            \"label\": \"namespace\",\n            \"name\": \"namespace\",\n
-    \           \"query\": \"label_values(windows_pod_container_available{cluster=\\\"$cluster\\\"},
-    namespace)\",\n            \"refresh\": 2,\n            \"sort\": 1,\n            \"type\":
-    \"query\"\n         },\n         {\n            \"datasource\": {\n               \"type\":
-    \"prometheus\",\n               \"uid\": \"${datasource}\"\n            },\n            \"hide\":
-    0,\n            \"label\": \"pod\",\n            \"name\": \"pod\",\n            \"query\":
-    \"label_values(windows_pod_container_available{cluster=\\\"$cluster\\\",namespace=\\\"$namespace\\\"},
-    pod)\",\n            \"refresh\": 2,\n            \"sort\": 1,\n            \"type\":
-    \"query\"\n         }\n      ]\n   },\n   \"time\": {\n      \"from\": \"now-1h\",\n
-    \     \"to\": \"now\"\n   },\n   \"timezone\": \"utc\",\n   \"title\": \"Kubernetes
-    / Compute Resources / Pod(Windows)\",\n   \"uid\": \"40597a704a610e936dc6ed374a7ce023\"\n}\n"
+  json: '{"editable":false,"panels":[{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true}}},"gridPos":{"h":7,"w":24,"x":0,"y":0},"id":1,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(namespace_pod_container:windows_container_cpu_usage_seconds_total:sum_rate{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","legendFormat":"__auto"}],"title":"CPU
+    Usage","type":"timeseries"},{"datasource":{"type":"datasource","uid":"-- Mixed
+    --"},"fieldConfig":{"overrides":[{"matcher":{"id":"byRegexp","options":"/%/"},"properties":[{"id":"unit","value":"percentunit"}]},{"matcher":{"id":"byName","options":"Namespace"},"properties":[{"id":"links","value":[{"title":"Drill
+    down to pods","url":"/d/490b402361724ab1d4c45666c1fa9b6f/k8s-resources-windows-namespace?${datasource:queryparam}&var-cluster=$cluster&var-namespace=${__data.fields.Namespace}"}]}]}]},"gridPos":{"h":7,"w":24,"x":0,"y":7},"id":2,"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(namespace_pod_container:windows_container_cpu_usage_seconds_total:sum_rate{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(kube_pod_windows_container_resource_cpu_cores_request{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(namespace_pod_container:windows_container_cpu_usage_seconds_total:sum_rate{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container) / sum(kube_pod_windows_container_resource_cpu_cores_request{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(kube_pod_windows_container_resource_cpu_cores_limit{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(namespace_pod_container:windows_container_cpu_usage_seconds_total:sum_rate{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container) / sum(kube_pod_windows_container_resource_cpu_cores_limit{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true}],"title":"CPU
+    Quota","transformations":[{"id":"joinByField","options":{"byField":"container","mode":"outer"}},{"id":"organize","options":{"excludeByName":{"Time":true,"Time
+    1":true,"Time 2":true,"Time 3":true,"Time 4":true,"Time 5":true},"indexByName":{"Time
+    1":0,"Time 2":1,"Time 3":2,"Time 4":3,"Time 5":4,"Value #A":6,"Value #B":7,"Value
+    #C":8,"Value #D":9,"Value #E":10,"container":5},"renameByName":{"Value #A":"CPU
+    Usage","Value #B":"CPU Requests","Value #C":"CPU Requests %","Value #D":"CPU Limits","Value
+    #E":"CPU Limits %","container":"Container"}}}],"type":"table"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"decbytes"}},"gridPos":{"h":7,"w":24,"x":0,"y":14},"id":3,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(windows_container_private_working_set_usage{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","legendFormat":"__auto"}],"title":"Memory
+    Usage","type":"timeseries"},{"datasource":{"type":"datasource","uid":"-- Mixed
+    --"},"fieldConfig":{"defaults":{"unit":"bytes"},"overrides":[{"matcher":{"id":"byRegexp","options":"/%/"},"properties":[{"id":"unit","value":"percentunit"}]}]},"gridPos":{"h":7,"w":24,"x":0,"y":21},"id":4,"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(windows_container_private_working_set_usage{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(kube_pod_windows_container_resource_memory_request{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(windows_container_private_working_set_usage{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container) / sum(kube_pod_windows_container_resource_memory_request{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(kube_pod_windows_container_resource_memory_limit{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sum(windows_container_private_working_set_usage{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container) / sum(kube_pod_windows_container_resource_memory_limit{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}) by (container)","format":"table","instant":true}],"title":"Memory
+    Quota","transformations":[{"id":"joinByField","options":{"byField":"container","mode":"outer"}},{"id":"organize","options":{"excludeByName":{"Time":true,"Time
+    1":true,"Time 2":true,"Time 3":true,"Time 4":true,"Time 5":true},"indexByName":{"Time
+    1":0,"Time 2":1,"Time 3":2,"Time 4":3,"Time 5":4,"Value #A":6,"Value #B":7,"Value
+    #C":8,"Value #D":9,"Value #E":10,"container":5},"renameByName":{"Value #A":"Memory
+    Usage","Value #B":"Memory Requests","Value #C":"Memory Requests %","Value #D":"Memory
+    Limits","Value #E":"Memory Limits %","container":"Container"}}}],"type":"table"},{"datasource":{"type":"datasource","uid":"--
+    Mixed --"},"fieldConfig":{"defaults":{"custom":{"fillOpacity":10,"showPoints":"never","spanNulls":true},"unit":"bytes"}},"gridPos":{"h":7,"w":24,"x":0,"y":28},"id":5,"interval":"1m","options":{"legend":{"asTable":true,"calcs":["lastNotNull"],"displayMode":"table","placement":"right","showLegend":true},"tooltip":{"mode":"single"}},"pluginVersion":"v11.1.0","targets":[{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum
+    by (container) (rate(windows_container_network_received_bytes_total{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval])))","legendFormat":"Received
+    : {{ container }}"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"expr":"sort_desc(sum
+    by (container) (rate(windows_container_network_transmitted_bytes_total{cluster=\"$cluster\",
+    namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval])))","legendFormat":"Transmitted
+    : {{ container }}"}],"title":"Network I/O","type":"timeseries"}],"refresh":"10s","schemaVersion":39,"tags":["kubernetes-mixin"],"templating":{"list":[{"current":{"selected":true,"text":"default","value":"default"},"hide":0,"label":"Data
+    source","name":"datasource","query":"victoriametrics-metrics-datasource","regex":"","type":"datasource"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":2,"label":"cluster","name":"cluster","query":"label_values(up{job=\"kubernetes-windows-exporter\"},
+    cluster)","refresh":2,"sort":1,"type":"query"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":0,"label":"namespace","name":"namespace","query":"label_values(windows_pod_container_available{cluster=\"$cluster\"},
+    namespace)","refresh":2,"sort":1,"type":"query"},{"datasource":{"type":"victoriametrics-metrics-datasource","uid":"${datasource}"},"hide":0,"label":"pod","name":"pod","query":"label_values(windows_pod_container_available{cluster=\"$cluster\",namespace=\"$namespace\"},
+    pod)","refresh":2,"sort":1,"type":"query"}]},"time":{"from":"now-1h","to":"now"},"timezone":"utc","title":"Kubernetes
+    / Compute Resources / Pod(Windows)","uid":"40597a704a610e936dc6ed374a7ce023"}'
