@@ -25,9 +25,6 @@ silently drift again; capi.version was deliberately pinned in a prior commit
 specifically to avoid silent drift, but that only covered the control-plane
 side.
 
-## P14 disable KubeMemoryOvercommit
-This is a lab cluster, we are always overcommited
-
 ## P13 disable Windows dashboards
 We don't have any Windows in this cluster, disable Windows on kubernetes-mixin
 
@@ -121,3 +118,13 @@ list; set in kubenix/configuration/victoriametrics.nix to
 only the kubernetes-mixin-alerts VMRule changed, and the diff is exactly the
 one KubeCPUOvercommit rule removed -- KubeMemoryOvercommit and every other
 rule in the group untouched.
+
+## P14 disable KubeMemoryOvercommit
+This is a lab cluster, we are always overcommited
+Resolution:
+Same mechanism as P15 -- added "KubeMemoryOvercommit" to
+kubenix/configuration/victoriametrics.nix's `kubernetes-mixins.disabledAlerts`
+list. Verified with `pynix ekn diff -f . -A kubenix`: only the
+kubernetes-mixin-alerts VMRule changed, and the diff is exactly the one
+KubeMemoryOvercommit rule removed -- the quota alerts and everything else in
+the group untouched.

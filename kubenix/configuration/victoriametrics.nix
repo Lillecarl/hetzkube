@@ -41,8 +41,12 @@
       kubernetes-mixins = {
         enable = true;
         # This is a lab cluster, we are always overcommitted -- KubeCPUOvercommit
-        # would otherwise fire permanently for a condition that's normal here.
-        disabledAlerts = [ "KubeCPUOvercommit" ];
+        # and KubeMemoryOvercommit would otherwise fire permanently for a
+        # condition that's normal here.
+        disabledAlerts = [
+          "KubeCPUOvercommit"
+          "KubeMemoryOvercommit"
+        ];
       };
     };
 }
