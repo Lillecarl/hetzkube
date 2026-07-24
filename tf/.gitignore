@@ -1,0 +1,3 @@
+.terraform
+config.tf.json
+terraform.tfstate*

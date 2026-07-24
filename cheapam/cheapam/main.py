@@ -1,0 +1,159 @@
+import asyncio
+import logging
+import signal
+from typing import cast
+from urllib.parse import urlparse
+
+import kr8s
+import yaml
+from kr8s.asyncio.objects import ConfigMap, Node
+from asyncio import Event, sleep
+
+from . import config
+from .external_resources import update_external_resources
+from .ipam import reconcile_ipam
+from .services import reconcile_lb_services
+
+logger = logging.getLogger(__name__)
+
+
+async def get_cluster_hostname() -> str:
+    """
+    Retrieves the API server hostname from the cluster-info ConfigMap.
+
+    Returns:
+        The cluster hostname.
+    """
+    cluster_info = await ConfigMap.get("cluster-info", "kube-public")
+    kubeconfig_data = yaml.safe_load(cluster_info.data["kubeconfig"])
+    server_url = kubeconfig_data["clusters"][0]["cluster"]["server"]
+    return urlparse(server_url).hostname
+
+
+async def reconciliation_worker(event: Event, cluster_hostname: str) -> None:
+    """
+    Waits for an event, then triggers a full reconciliation.
+
+    Args:
+        event: The event to wait for.
+        cluster_hostname: The cluster's hostname.
+    """
+    while True:
+        await event.wait()
+        logger.info(f"Change detected, waiting {config.DEBOUNCE_DELAY_SECONDS}s for debounce period...")
+        await sleep(config.DEBOUNCE_DELAY_SECONDS)
+        event.clear()
+
+        logger.info("--- Debounce period over. Starting full reconciliation. ---")
+        try:
+            all_nodes = [cast(Node, node) async for node in kr8s.asyncio.get("nodes")]
+            all_services = [svc async for svc in kr8s.asyncio.get("services", namespace=kr8s.ALL)]
+            await reconcile_ipam(all_nodes, event)
+            await reconcile_lb_services([s.raw for s in all_services], [n.raw for n in all_nodes])
+            await update_external_resources(all_nodes, cluster_hostname, event)
+        except Exception as e:
+            logger.error(f"Error during reconciliation: {e}")
+        logger.info("--- Full reconciliation complete. Awaiting next change. ---")
+
+
+async def node_watcher(event: Event) -> None:
+    """
+    Watches for node changes and sets an event to trigger reconciliation.
+
+    Args:
+        event: The event to set on changes.
+    """
+    while True:
+        try:
+            async for evt, node in kr8s.asyncio.watch("nodes"):
+                logger.info(f"Node '{node.name}' event: '{evt}'. Triggering reconciliation.")
+                event.set()
+        except Exception as e:
+            logger.error(f"Error in watch loop: {e}. Reconnecting in 10 seconds.")
+            await sleep(10)
+
+
+async def service_watcher(event: Event) -> None:
+    """
+    Watches for service changes and sets an event to trigger reconciliation.
+
+    Args:
+        event: The event to set on changes.
+    """
+    while True:
+        try:
+            async for evt, svc in kr8s.asyncio.watch("services", namespace=kr8s.ALL):
+                logger.info(f"Service '{svc.name}' event: '{evt}'. Triggering reconciliation.")
+                event.set()
+        except Exception as e:
+            logger.error(f"Error in service watch loop: {e}. Reconnecting in 10 seconds.")
+            await sleep(10)
+
+
+class CheapamApp:
+    """Main application class for the cheapam IPAM/CCM combo."""
+
+    def __init__(self):
+        self.cluster_hostname: str = ""
+
+    async def setup(self) -> None:
+        """Sets up the application, including fetching cluster hostname."""
+        self.cluster_hostname = await get_cluster_hostname()
+        if self.cluster_hostname:
+            logger.info(f"Operating on cluster: {self.cluster_hostname}")
+
+    async def run(self) -> None:
+        """Runs the main application loop with signal handling."""
+        await self.setup()
+
+        # 1. Setup events and loop
+        loop = asyncio.get_running_loop()
+        reconciliation_needed = Event()
+        stop_event = Event()
+
+        # 2. Define signal handler
+        def signal_handler():
+            logger.info("Signal received, initiating shutdown...")
+            stop_event.set()
+
+        # 3. Register handlers for SIGTERM (K8s) and SIGINT (Local)
+        for sig in (signal.SIGTERM, signal.SIGINT):
+            loop.add_signal_handler(sig, signal_handler)
+
+        # 4. Start background tasks
+        node_watcher_task = asyncio.create_task(node_watcher(reconciliation_needed))
+        svc_watcher_task = asyncio.create_task(service_watcher(reconciliation_needed))
+        worker_task = asyncio.create_task(
+            reconciliation_worker(reconciliation_needed, self.cluster_hostname)
+        )
+
+        # 5. Wait until a signal is received
+        logger.info("Application started. Waiting for signals.")
+        await stop_event.wait()
+
+        # 6. Graceful cleanup
+        logger.info("Stopping tasks...")
+        node_watcher_task.cancel()
+        svc_watcher_task.cancel()
+        worker_task.cancel()
+
+        # Wait for tasks to finish cancelling (suppress CancelledError)
+        await asyncio.gather(node_watcher_task, svc_watcher_task, worker_task, return_exceptions=True)
+        logger.info("Shutdown complete.")
+
+def cli():
+    """Main command-line entrypoint."""
+    app = CheapamApp()
+    try:
+        asyncio.run(app.run())
+    except (KeyboardInterrupt, SystemExit) as e:
+        if isinstance(e, SystemExit) and e.code == 0:
+            logger.info("Exiting normally.")
+        elif isinstance(e, SystemExit):
+            logger.error(f"Exiting due to fatal error (code {e.code}).")
+        else:
+            logger.info("Exiting.")
+
+
+if __name__ == "__main__":
+    cli()

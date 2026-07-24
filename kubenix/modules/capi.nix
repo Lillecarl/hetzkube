@@ -1,0 +1,458 @@
+{
+  config,
+  pkgs,
+  lib,
+  hlib,
+  ekn,
+  ...
+}:
+let
+  moduleName = "capi";
+  clusterName = config.clusterName;
+  cfg = config.${moduleName};
+
+  # Commands to run before kubeadm that initializes the node properly
+  # ClusterAPI wants a list but we don't want a list
+  preKubeadmCommands = [
+    ''
+      #! /usr/bin/env bash
+      set -x
+      export PATH=/run/current-system/sw/bin:$PATH
+      # Clone latest config
+      git clone https://github.com/lillecarl/hetzkube.git /etc/hetzkube
+      # Get node info
+      nix run --file /etc/hetzkube pkgs.hetzInfo
+      # Rebuild with new config, TODO: split image and prod configs
+      nixos-rebuild switch --file /etc/hetzkube/ --attr nixosConfigurations.image-$(nix eval --raw --impure --expr builtins.currentSystem)
+    ''
+  ];
+
+  # A more chill contol-plane taint, let all nodes work!
+  cpTaints = [
+    {
+      effect = "PreferNoSchedule";
+      key = "node-role.kubernetes.io/control-plane";
+    }
+  ];
+  # Remove these and use patching instead?
+  featureGates = "ImageVolume=true,KubeletPSI=true,ContainerRestartRules=true";
+  nodeRegistration = {
+    kubeletExtraArgs = {
+      cloud-provider = "external";
+    };
+    ignorePreflightErrors = [ "Swap" ];
+  };
+  files = [
+    {
+      path = "/etc/kubernetes/patches/kubeletconfiguration+strategic.json";
+      owner = "root:root";
+      permissions = "0644";
+      content = builtins.toJSON {
+        apiVersion = "kubelet.config.k8s.io/v1beta1";
+        kind = "KubeletConfiguration";
+        inherit (config) clusterDNS;
+        imageMaximumGCAge = "12h";
+        shutdownGracePeriod = "30s";
+        shutdownGracePeriodCriticalPods = "10s";
+        resolvConf = "/etc/resolv.conf";
+        featureGates = {
+          ImageVolume = true;
+          KubeletPSI = true;
+          ContainerRestartRules = true;
+        };
+        failSwapOn = false;
+        cgroupDriver = "systemd";
+        cloudProvider = "external";
+      };
+    }
+  ];
+  dc = "hel1";
+in
+{
+  options.${moduleName} = {
+    enable = lib.mkEnableOption "capi";
+    keyName = lib.mkOption {
+      type = lib.types.nullOr lib.types.nonEmptyStr;
+    };
+    version = lib.mkOption {
+      type = lib.types.nonEmptyStr;
+      description = ''
+        Kubernetes version for the control plane and worker MachineDeployments
+        (without the "v" prefix). Pinned explicitly rather than following
+        `pkgs.kubernetes.version` -- that floats with whatever nixpkgs happens
+        to package, so a routine nixpkgs bump would silently schedule a real
+        rolling node upgrade the next time this got applied. Bump this
+        deliberately instead.
+      '';
+      default = "1.36.1";
+    };
+  };
+  config = lib.mkIf cfg.enable {
+    kubernetes.resources.none.Namespace.${clusterName} = { };
+    # ClusterAPI core + the kubeadm bootstrap/control-plane providers + the
+    # Hetzner infra provider (CAPH) are installed out-of-band via
+    # `clusterctl init` (not part of kubenix's own manifest generation), but
+    # vpa.nix declares VerticalPodAutoscaler objects targeting Deployments in
+    # these namespaces -- without declaring the namespaces themselves here
+    # too, `ekn validate`'s empty ephemeral cluster (which only ever has
+    # what this manifest declares) 404s applying them, and the real
+    # manifest set is implicitly relying on `clusterctl init` having already
+    # run first rather than being self-sufficient.
+    kubernetes.resources.none.Namespace = {
+      capi-system = { };
+      capi-kubeadm-bootstrap-system = { };
+      capi-kubeadm-control-plane-system = { };
+      caph-system = { };
+    };
+    kubernetes.resources.${clusterName} = {
+      ExternalSecret.hcloud = hlib.eso.mkToken "name:hcloud-token";
+
+      # Contol plane
+      KubeadmControlPlane."${clusterName}-control-plane".spec = {
+        kubeadmConfigSpec = {
+          clusterConfiguration = {
+            apiServer = {
+              certSANs = [
+                "127.0.0.1"
+                "localhost"
+                config.clusterHost
+              ];
+              extraArgs = {
+                feature-gates = featureGates;
+                oidc-issuer-url = "https://${lib.head config.keycloak.hostnames}/realms/auth";
+                oidc-client-id = "kubernetes";
+                oidc-username-claim = "sub";
+                oidc-groups-claim = "groups";
+              };
+            };
+            controllerManager.extraArgs = {
+              feature-gates = featureGates;
+              allocate-node-cidrs = "false";
+              controllers = pkgs.lib.strings.concatStringsSep "," [
+                "*"
+                "bootstrapsigner"
+                "tokencleaner"
+                "-nodeipam"
+              ];
+            };
+            scheduler.extraArgs.feature-gates = featureGates;
+            etcd = { };
+          };
+          inherit preKubeadmCommands files;
+          initConfiguration = {
+            skipPhases = [
+              "addon/coredns" # Deployed by us
+            ] ++ lib.optional (!config.kube-proxy.enable) "addon/kube-proxy";
+            nodeRegistration = nodeRegistration // {
+              taints = cpTaints;
+            };
+            patches.directory = "/etc/kubernetes/patches";
+          };
+          joinConfiguration = {
+            nodeRegistration = nodeRegistration // {
+              taints = cpTaints;
+            };
+            patches.directory = "/etc/kubernetes/patches";
+          };
+          postKubeadmCommands = [
+            ''
+              #! /usr/bin/env bash
+              # Install admin config to node
+              install -D --mode=0600 --owner=hetzkube /etc/kubernetes/admin.conf /home/hetzkube/.kube/config
+            ''
+          ];
+        };
+        machineTemplate = {
+          infrastructureRef = {
+            apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
+            kind = "HCloudMachineTemplate";
+            name = "${clusterName}-control-plane-v2";
+          };
+        };
+        replicas = 1;
+        version = "v${cfg.version}"; # beware to make images!
+      };
+      Cluster.${clusterName} = {
+        # Both CAPI and CNPG uses the "Cluster" kind, we default to CNPG since
+        # it's more "end-user" facing than CAPI. To get CAPI clusters apiVersion
+        # must be set manually.
+        apiVersion = "cluster.x-k8s.io/v1beta1";
+        metadata.labels.clusterName = clusterName;
+        spec = {
+          clusterNetwork = {
+            pods.cidrBlocks = config.clusterPodCIDR;
+            services.cidrBlocks = config.clusterServiceCIDR;
+          };
+          controlPlaneRef = {
+            apiVersion = "controlplane.cluster.x-k8s.io/v1beta1";
+            kind = "KubeadmControlPlane";
+            name = "${clusterName}-control-plane";
+          };
+          infrastructureRef = {
+            apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
+            kind = "HetznerCluster";
+            name = clusterName;
+          };
+        };
+      };
+      HetznerCluster.${clusterName}.spec = {
+        controlPlaneRegions = [ dc ];
+        # No LB for control-plane
+        controlPlaneEndpoint.host = config.clusterHost;
+        controlPlaneLoadBalancer.enabled = false;
+        controlPlaneEndpoint.port = 6443;
+        # No private networking
+        hcloudNetwork.enabled = false;
+        hcloudPlacementGroups = lib.mkNamedList {
+          control-plane.type = "spread";
+          workers.type = "spread";
+        };
+        hetznerSecretRef = {
+          key.hcloudToken = "hcloud";
+          name = "hetzner";
+        };
+        # We already have SSH keys provisioned with Nix, CAPI doesn't need them.
+        sshKeys = lib.mkIf (cfg.keyName != null) {
+          hcloud = [ { name = cfg.keyName; } ];
+        };
+      };
+      MachineHealthCheck."${clusterName}-control-plane-unhealthy-5m".spec = {
+        inherit clusterName;
+        maxUnhealthy = "100%";
+        nodeStartupTimeout = "15m";
+        remediationTemplate = {
+          apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
+          kind = "HCloudRemediationTemplate";
+          name = "control-plane-remediation-request";
+        };
+        selector = {
+          matchLabels = {
+            "cluster.x-k8s.io/control-plane" = "";
+          };
+        };
+        unhealthyConditions = [
+          {
+            status = "Unknown";
+            timeout = "180s";
+            type = "Ready";
+          }
+          {
+            status = "False";
+            timeout = "180s";
+            type = "Ready";
+          }
+        ];
+      };
+      HCloudMachineTemplate."${clusterName}-control-plane-v2".spec.template.spec = {
+        imageName = "2505-x86";
+        placementGroupName = "control-plane";
+        type = "cx33";
+      };
+      HCloudRemediationTemplate."control-plane-remediation-request".spec.template.spec = {
+        strategy = {
+          retryLimit = 1;
+          timeout = "180s";
+          type = "Reboot";
+        };
+      };
+
+      # Worker config
+      #
+      # Share Kubeadm configuration between different worker configurations
+      KubeadmConfigTemplate."${clusterName}-workers".spec.template.spec = {
+        joinConfiguration = {
+          nodeRegistration = nodeRegistration;
+          patches.directory = "/etc/kubernetes/patches";
+        };
+        inherit preKubeadmCommands files;
+      };
+      HCloudRemediationTemplate."worker-remediation-request".spec.template.spec.strategy = {
+        retryLimit = 1;
+        timeout = "180s";
+        type = "Reboot";
+      };
+
+      # x86 pool
+      MachineDeployment."${clusterName}-workers-x86" = {
+        metadata.labels.nodepool = "${clusterName}-workers-x86";
+        spec = {
+          inherit clusterName;
+          replicas = 1;
+          selector = { };
+          template = {
+            metadata.labels.nodepool = "${clusterName}-workers-x86";
+            spec = {
+              bootstrap = {
+                configRef = {
+                  apiVersion = "bootstrap.cluster.x-k8s.io/v1beta1";
+                  kind = "KubeadmConfigTemplate";
+                  name = "${clusterName}-workers";
+                };
+              };
+              inherit clusterName;
+              failureDomain = dc;
+              infrastructureRef = {
+                apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
+                kind = "HCloudMachineTemplate";
+                name = "${clusterName}-workers-x86";
+              };
+              version = "v${cfg.version}"; # beware to make images!
+            };
+          };
+        };
+      };
+      MachineHealthCheck."${clusterName}-workers-x86-unhealthy-5m".spec = {
+        inherit clusterName;
+        maxUnhealthy = "100%";
+        nodeStartupTimeout = "10m";
+        remediationTemplate = {
+          apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
+          kind = "HCloudRemediationTemplate";
+          name = "worker-remediation-request";
+        };
+        selector = {
+          matchLabels = {
+            nodepool = "${clusterName}-workers-x86";
+          };
+        };
+        unhealthyConditions = [
+          {
+            status = "Unknown";
+            timeout = "180s";
+            type = "Ready";
+          }
+          {
+            status = "False";
+            timeout = "180s";
+            type = "Ready";
+          }
+        ];
+      };
+      HCloudMachineTemplate."${clusterName}-workers-x86".spec.template.spec = {
+        imageName = "2505-x86";
+        placementGroupName = "workers";
+        type = "cx33";
+      };
+
+      # arm64 pool
+      MachineDeployment."${clusterName}-workers-arm64" = {
+        metadata.labels.nodepool = "${clusterName}-workers-arm64";
+        spec = {
+          inherit clusterName;
+          replicas = 0;
+          selector = { };
+          template = {
+            metadata.labels.nodepool = "${clusterName}-workers-arm64";
+            spec = {
+              bootstrap = {
+                configRef = {
+                  apiVersion = "bootstrap.cluster.x-k8s.io/v1beta1";
+                  kind = "KubeadmConfigTemplate";
+                  name = "${clusterName}-workers";
+                };
+              };
+              inherit clusterName;
+              failureDomain = dc;
+              infrastructureRef = {
+                apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
+                kind = "HCloudMachineTemplate";
+                name = "${clusterName}-workers-arm64";
+              };
+              version = "v${cfg.version}"; # beware to make images!
+            };
+          };
+        };
+      };
+      MachineHealthCheck."${clusterName}-workers-arm64-unhealthy-5m".spec = {
+        inherit clusterName;
+        maxUnhealthy = "100%";
+        nodeStartupTimeout = "10m";
+        remediationTemplate = {
+          apiVersion = "infrastructure.cluster.x-k8s.io/v1beta1";
+          kind = "HCloudRemediationTemplate";
+          name = "worker-remediation-request";
+        };
+        selector = {
+          matchLabels = {
+            nodepool = "${clusterName}-workers-arm64";
+          };
+        };
+        unhealthyConditions = [
+          {
+            status = "Unknown";
+            timeout = "180s";
+            type = "Ready";
+          }
+          {
+            status = "False";
+            timeout = "180s";
+            type = "Ready";
+          }
+        ];
+      };
+      HCloudMachineTemplate."${clusterName}-workers-arm64".spec.template.spec = {
+        imageName = "2505-arm";
+        placementGroupName = "workers";
+        type = "cax11";
+      };
+    };
+    kubernetes.apiMappings = {
+      # Collides with CloudnativePG
+      # Cluster = "cluster.x-k8s.io/v1beta1";
+      HCloudMachineTemplate = "infrastructure.cluster.x-k8s.io/v1beta1";
+      HCloudRemediationTemplate = "infrastructure.cluster.x-k8s.io/v1beta1";
+      HetznerCluster = "infrastructure.cluster.x-k8s.io/v1beta1";
+      KubeadmConfigTemplate = "bootstrap.cluster.x-k8s.io/v1beta1";
+      KubeadmControlPlane = "controlplane.cluster.x-k8s.io/v1beta1";
+      MachineDeployment = "cluster.x-k8s.io/v1beta1";
+      MachineHealthCheck = "cluster.x-k8s.io/v1beta1";
+    };
+    kubernetes.namespacedMappings = {
+      Cluster = true;
+      HCloudMachineTemplate = true;
+      HCloudRemediationTemplate = true;
+      HetznerCluster = true;
+      KubeadmConfigTemplate = true;
+      KubeadmControlPlane = true;
+      MachineDeployment = true;
+      MachineHealthCheck = true;
+    };
+
+    # clusterctl init owns these CRDs out-of-band on the real cluster, so we
+    # never want them going through GitOps -- kubernetes.crds bypasses the
+    # generators/transformers pipeline entirely (never gets an
+    # ekn.gitOpsTarget, never lands in any gitopsTarget), while still showing
+    # up in kubernetes.generated so `ekn validate`'s ephemeral harness knows
+    # these kinds exist instead of 404ing on them.
+    kubernetes.crds =
+      let
+        capiSrc = pkgs.fetchFromGitHub {
+          owner = "kubernetes-sigs";
+          repo = "cluster-api";
+          rev = "v1.10.7";
+          hash = "sha256-mDP6dJTHn2e1mlYfr+GnYiEA22DSaDsyPhfwzhpGf2Q=";
+        };
+        caphSrc = pkgs.fetchFromGitHub {
+          owner = "syself";
+          repo = "cluster-api-provider-hetzner";
+          rev = "v1.0.7";
+          hash = "sha256-whCd73JBNasuFm9gPm03fdFpR28cq0BxdgxmPh+wq+M=";
+        };
+        fetchCrd = path: ekn.lib.parseYAMLStream { src = path; yamlVersion = "yaml12"; };
+      in
+      lib.concatMap fetchCrd (
+        map (path: "${capiSrc}/${path}") [
+          "config/crd/bases/cluster.x-k8s.io_clusters.yaml"
+          "config/crd/bases/cluster.x-k8s.io_machinedeployments.yaml"
+          "config/crd/bases/cluster.x-k8s.io_machinehealthchecks.yaml"
+          "bootstrap/kubeadm/config/crd/bases/bootstrap.cluster.x-k8s.io_kubeadmconfigtemplates.yaml"
+          "controlplane/kubeadm/config/crd/bases/controlplane.cluster.x-k8s.io_kubeadmcontrolplanes.yaml"
+        ]
+        ++ map (path: "${caphSrc}/${path}") [
+          "config/crd/bases/infrastructure.cluster.x-k8s.io_hcloudmachinetemplates.yaml"
+          "config/crd/bases/infrastructure.cluster.x-k8s.io_hetznerclusters.yaml"
+          "config/crd/bases/infrastructure.cluster.x-k8s.io_hcloudremediationtemplates.yaml"
+        ]
+      );
+  };
+}

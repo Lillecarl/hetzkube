@@ -1,0 +1,92 @@
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+let
+  moduleName = "headlamp";
+  cfg = config.${moduleName};
+in
+{
+  options.${moduleName} = {
+    enable = lib.mkEnableOption moduleName;
+    namespace = lib.mkOption {
+      type = lib.types.str;
+      default = moduleName;
+    };
+    version = lib.mkOption {
+      type = lib.types.str;
+    };
+    hostname = lib.mkOption {
+      type = lib.types.str;
+    };
+    helmValues = lib.mkOption {
+      type = lib.types.anything;
+      default = { };
+    };
+  };
+  config = lib.mkIf cfg.enable {
+    kubernetes.resources.none.Namespace.${cfg.namespace} = { };
+    kubernetes.resources.${cfg.namespace}.HTTPRoute.headlamp = {
+      spec = {
+        parentRefs = [
+          {
+            name = "default";
+            namespace = "kube-system";
+          }
+        ];
+        hostnames = [ cfg.hostname ];
+        rules = [
+          {
+            matches = [
+              {
+                path = {
+                  type = "PathPrefix";
+                  value = "/";
+                };
+              }
+            ];
+            backendRefs = [
+              {
+                name = "headlamp";
+                port = 80;
+              }
+            ];
+          }
+        ];
+      };
+    };
+    helm.releases.${moduleName} = {
+      namespace = cfg.namespace;
+
+      chart = "${
+        pkgs.fetchFromGitHub {
+          owner = "kubernetes-sigs";
+          repo = "headlamp";
+          rev = "v${cfg.version}";
+          hash = "sha256-6TGKBKR0WR4Xv7lGCgMFVG/nc19oMOP5cJcgT0bw6Ag=";
+        }
+      }/charts/headlamp";
+
+      values = lib.recursiveUpdate {
+        image.tag = "v${cfg.version}";
+        env = [
+          {
+            name = "OIDC_VALIDATOR_CLIENT_ID";
+            value = "kubernetes";
+          }
+        ];
+        ingress.enabled = false;
+        config = {
+          oidc = {
+            clientID = "headlamp";
+            issuerURL = "https://${lib.head config.keycloak.hostnames}/realms/auth";
+            scopes = "openid,email,profile,offline_access";
+            usePKCE = true;
+          };
+        };
+      } cfg.helmValues;
+    };
+  };
+}
