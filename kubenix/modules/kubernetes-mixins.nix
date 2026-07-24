@@ -39,11 +39,47 @@ in
       default = [ ];
       description = ''
         Names of individual `alert:` rules to drop from every alert group's
-        `rules` list (unlike `kube-proxy.enable`'s whole-group
-        `dropKubeProxyAlerts`, most groups mix alerts we want to keep with
-        ones we don't -- e.g. `kubernetes-resources` has `KubeCPUOvercommit`
-        next to the quota alerts we still care about). A group left with an
-        empty `rules` list is dropped entirely.
+        `rules` list (unlike `disabledRuleGroups`'s whole-group drop, most
+        groups mix alerts we want to keep with ones we don't -- e.g.
+        `kubernetes-resources` has `KubeCPUOvercommit` next to the quota
+        alerts we still care about). A group left with an empty `rules` list
+        is dropped entirely.
+      '';
+    };
+    disabledRuleGroups = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = ''
+        Names of whole alert/recording-rule `groups` to drop entirely --
+        shared by both `VMRule.kubernetes-mixin-alerts` and
+        `VMRule.kubernetes-mixin-rules`. Use this when an *entire* group is
+        irrelevant; for dropping individual alerts out of an
+        otherwise-relevant group, use `disabledAlerts` instead. Empty by
+        default -- unlike `disabledDashboards`, there's nothing Windows-only
+        to default-disable here: this mixin version's `rules/rules.libsonnet`
+        never imports `rules/windows.libsonnet`, so no alert or
+        recording-rule group actually has "windows" in its name (verified
+        against the rendered `prometheus_alerts.json`/`prometheus_rules.json`
+        -- Windows-only content only shows up in the dashboards).
+        `kube-proxy.enable = false` additionally (and separately) drops the
+        `kubernetes-system-kube-proxy` alert group through this same
+        mechanism.
+      '';
+    };
+    disabledDashboards = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [
+        "k8s-resources-windows-cluster"
+        "k8s-resources-windows-namespace"
+        "k8s-resources-windows-pod"
+        "k8s-windows-cluster-rsrc-use"
+        "k8s-windows-node-rsrc-use"
+      ];
+      description = ''
+        Names (rendered JSON filename minus `.json`) of dashboards to drop
+        entirely. Upstream has no `_config` knob to skip building a
+        dashboard, so these are filtered out after rendering. Defaults to
+        the 5 Windows dashboards, since this repo has no Windows nodes.
       '';
     };
     datasourceType = lib.mkOption {
@@ -208,18 +244,24 @@ in
         }
       );
 
-      # The mixin has no config knob to disable its KubeProxyDown alert (it
-      # unconditionally warns on `absent(up{job="kube-proxy"})`) -- when
-      # kube-proxy isn't expected to run at all (Cilium's eBPF replacement),
-      # that target never exists and the alert fires forever. Drop the whole
-      # group rather than leave a permanently-firing false alarm.
-      dropKubeProxyAlerts = lib.filter (group: group.name != "kubernetes-system-kube-proxy");
+      # Generalizes what used to be a single-purpose kube-proxy-only filter:
+      # drop any group (alert or recording-rule) whose name is in the
+      # effective disabled-groups list, shared by both the alerts and rules
+      # VMRules below. The mixin has no config knob to disable its
+      # KubeProxyDown alert (it unconditionally warns on
+      # `absent(up{job="kube-proxy"})`) -- when kube-proxy isn't expected to
+      # run at all (Cilium's eBPF replacement), that target never exists and
+      # the alert fires forever, so `kube-proxy.enable = false` folds its
+      # group into this same filter rather than being a special case.
+      effectiveDisabledGroups =
+        cfg.disabledRuleGroups ++ lib.optional (!config.kube-proxy.enable) "kubernetes-system-kube-proxy";
+      dropNamedGroups = lib.filter (group: !(lib.elem group.name effectiveDisabledGroups));
 
       # This is a lab cluster that's always overcommitted by design, so
       # individual named alerts (e.g. KubeCPUOvercommit, KubeMemoryOvercommit
       # -- see cfg.disabledAlerts's callers) get filtered out of whichever
       # group they live in, rather than the whole group being dropped like
-      # dropKubeProxyAlerts does.
+      # dropNamedGroups does.
       dropNamedAlerts =
         groups:
         lib.pipe groups [
@@ -235,18 +277,17 @@ in
         VMRule.kubernetes-mixin-alerts = {
           metadata.labels.role = "metrics";
           spec = {
-            groups =
-              let
-                groups = (lib.importJSON "${package}/prometheus_alerts.json").groups;
-                withoutKubeProxy = if config.kube-proxy.enable then groups else dropKubeProxyAlerts groups;
-              in
-              normalizeGroups (dropNamedAlerts withoutKubeProxy);
+            groups = normalizeGroups (
+              dropNamedAlerts (dropNamedGroups (lib.importJSON "${package}/prometheus_alerts.json").groups)
+            );
           };
         };
         VMRule.kubernetes-mixin-rules = {
           metadata.labels.role = "metrics";
           spec = {
-            groups = normalizeGroups (lib.importJSON "${package}/prometheus_rules.json").groups;
+            groups = normalizeGroups (
+              dropNamedGroups (lib.importJSON "${package}/prometheus_rules.json").groups
+            );
           };
         };
         GrafanaDashboard = lib.pipe (lib.filesystem.listFilesRecursive "${package}/dashboards") [
@@ -263,6 +304,7 @@ in
               };
             };
           }))
+          (lib.filter (entry: !(lib.elem entry.name cfg.disabledDashboards)))
           lib.listToAttrs
         ];
       };

@@ -25,9 +25,6 @@ silently drift again; capi.version was deliberately pinned in a prior commit
 specifically to avoid silent drift, but that only covered the control-plane
 side.
 
-## P13 disable Windows dashboards
-We don't have any Windows in this cluster, disable Windows on kubernetes-mixin
-
 # COMPLETED
 
 ## P100 kubernetes-mixin and kube-proxy
@@ -128,3 +125,26 @@ list. Verified with `pynix ekn diff -f . -A kubenix`: only the
 kubernetes-mixin-alerts VMRule changed, and the diff is exactly the one
 KubeMemoryOvercommit rule removed -- the quota alerts and everything else in
 the group untouched.
+
+## P13 disable Windows dashboards
+We don't have any Windows in this cluster, disable Windows on kubernetes-mixin
+Resolution:
+Generalized group-level disabling per feedback while doing this one: added
+`kubernetes-mixins.disabledRuleGroups` (whole alert/recording-rule groups,
+shared by both the alerts and rules VMRules) and `disabledDashboards`
+(dashboard names), and refolded the existing kube-proxy-only group drop into
+the same `disabledRuleGroups` mechanism (`kube-proxy.enable = false` still
+adds `kubernetes-system-kube-proxy` to the effective list, just no longer a
+bespoke function). `disabledDashboards` defaults to the 5 Windows dashboards
+(`k8s-resources-windows-{cluster,namespace,pod}`,
+`k8s-windows-{cluster,node}-rsrc-use`) since this repo's default should have
+no Windows nodes -- generic default, not hetzkube-specific, unlike
+`disabledAlerts` (P15/P14). `disabledRuleGroups` defaults to `[ ]`: verified
+against the actual rendered `prometheus_alerts.json`/`prometheus_rules.json`
+that this mixin version's `rules/rules.libsonnet` never imports
+`rules/windows.libsonnet`, so no alert or recording-rule group has "windows"
+in its name at all -- only the dashboards carry Windows-only content.
+Verified with `pynix ekn diff -f . -A kubenix`: exactly the 5 Windows
+dashboard files deleted plus the matching `kustomization.yaml` update;
+VMRule alerts/rules unchanged (confirming the kube-proxy refactor didn't
+change its behavior).
