@@ -70,8 +70,8 @@
         };
       };
       kubernetes.objects = {
-        kube-system.ExternalSecret.${cfTokenName} = hlib.eso.mkToken "name:${cfTokenName}";
-        kube-system.ExternalSecret.${scKeyName} = hlib.eso.mkBasic "name:${scKeyName}";
+        kube-system.ExternalSecret.${cfTokenName} = hlib.eso.mkToken { identifier = "name:${cfTokenName}"; storeName = "infisical"; };
+        kube-system.ExternalSecret.${scKeyName} = hlib.eso.mkBasic { identifier = "name:${scKeyName}"; storeName = "infisical"; };
       };
     };
 }
