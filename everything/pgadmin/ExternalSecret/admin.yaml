@@ -6,17 +6,17 @@ metadata:
 spec:
   data:
   - remoteRef:
-      key: name:pgadmin-admin
+      key: pgadmin-admin
       property: username
     secretKey: username
   - remoteRef:
-      key: name:pgadmin-admin
+      key: pgadmin-admin
       property: password
     secretKey: password
   refreshInterval: 30m0s
   secretStoreRef:
     kind: ClusterSecretStore
-    name: scaleway
+    name: infisical
   target:
     template:
       type: kubernetes.io/basic-auth

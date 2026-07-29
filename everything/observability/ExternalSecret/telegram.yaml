@@ -6,12 +6,12 @@ metadata:
 spec:
   data:
   - remoteRef:
-      key: name:telegram-bot-token
+      key: telegram-bot-token
     secretKey: token
   refreshInterval: 30m0s
   secretStoreRef:
     kind: ClusterSecretStore
-    name: scaleway
+    name: infisical
   target:
     template:
       type: Opaque
