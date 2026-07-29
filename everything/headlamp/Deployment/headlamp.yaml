@@ -5,8 +5,8 @@ metadata:
     app.kubernetes.io/instance: headlamp
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: headlamp
-    app.kubernetes.io/version: 0.42.0
-    helm.sh/chart: headlamp-0.42.0
+    app.kubernetes.io/version: 0.43.0
+    helm.sh/chart: headlamp-0.43.0
   name: headlamp
   namespace: headlamp
 spec:
@@ -56,7 +56,7 @@ spec:
               name: oidc
         - name: OIDC_VALIDATOR_CLIENT_ID
           value: kubernetes
-        image: ghcr.io/headlamp-k8s/headlamp:v0.43.0
+        image: ghcr.io/headlamp-k8s/headlamp:v0.44.0
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
