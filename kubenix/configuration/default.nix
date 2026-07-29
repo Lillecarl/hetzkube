@@ -58,7 +58,7 @@
     pgadmin.hostname = "pgadmin.lillecarl.com";
     headlamp = {
       hostname = "headlamp.lillecarl.com";
-      version = "0.43.0";
+      version = "0.44.0";
     };
 
     metrics-server.helmValues.replicas = 2;

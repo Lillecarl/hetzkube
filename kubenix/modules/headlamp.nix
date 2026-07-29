@@ -65,7 +65,7 @@ in
           owner = "kubernetes-sigs";
           repo = "headlamp";
           rev = "v${cfg.version}";
-          hash = "sha256-6TGKBKR0WR4Xv7lGCgMFVG/nc19oMOP5cJcgT0bw6Ag=";
+          hash = "sha256-ajkiKoCYbwn5pvIzzz4IIxWIVQmnTbNvzdwWksj1kEU=";
         }
       }/charts/headlamp";
 
