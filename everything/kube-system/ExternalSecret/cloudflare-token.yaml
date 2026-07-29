@@ -6,12 +6,12 @@ metadata:
 spec:
   data:
   - remoteRef:
-      key: name:cloudflare-token
+      key: cloudflare-token
     secretKey: token
   refreshInterval: 30m0s
   secretStoreRef:
     kind: ClusterSecretStore
-    name: scaleway
+    name: infisical
   target:
     template:
       type: Opaque
