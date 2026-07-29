@@ -18,7 +18,7 @@
     lib.mkIf (config.stage == "full") {
       vertical-pod-autoscaler = {
         enable = true;
-        version = "1.12.0";
+        version = "1.12.1";
         helmValues = {
           admissionController.certManager.enabled = config.cert-manager.enable;
           updater.extraArgs = [
