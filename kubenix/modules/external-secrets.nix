@@ -48,11 +48,17 @@ in
         certManager.enabled = lib.mkDefault config.cert-manager.enable;
       } cfg.helmValues;
     };
-    hlib.eso = rec {
+    hlib.eso = let
+      resolveKey = identifier: storeName:
+        if storeName == "infisical" && lib.hasPrefix "name:" identifier
+        then lib.removePrefix "name:" identifier
+        else identifier;
+    in rec {
       mkBasic = arg:
         let
           identifier = if lib.isString arg then arg else arg.identifier;
           storeName = if lib.isString arg then "scaleway" else arg.storeName or "scaleway";
+          key = resolveKey identifier storeName;
         in {
           spec = {
             refreshInterval = cfg.refreshInterval;
@@ -65,14 +71,14 @@ in
               {
                 secretKey = "username";
                 remoteRef = {
-                  key = identifier;
+                  key = key;
                   property = "username";
                 };
               }
               {
                 secretKey = "password";
                 remoteRef = {
-                  key = identifier;
+                  key = key;
                   property = "password";
                 };
               }
@@ -91,6 +97,7 @@ in
           secretKey = arg.secretKey;
           identifier = arg.identifier;
           storeName = arg.storeName or "scaleway";
+          key = resolveKey identifier storeName;
         in {
           spec = {
             refreshInterval = cfg.refreshInterval;
@@ -102,7 +109,7 @@ in
             data = [
               {
                 inherit secretKey;
-                remoteRef.key = identifier;
+                remoteRef.key = key;
               }
             ];
           };

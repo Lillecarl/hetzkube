@@ -15,7 +15,7 @@ in
       version = "1.21.0";
     };
     kubernetes.resources.cert-manager = {
-      ExternalSecret.cloudflare = hlib.eso.mkToken "name:cloudflare-token";
+      ExternalSecret.cloudflare = hlib.eso.mkToken { identifier = "name:cloudflare-token"; storeName = "infisical"; };
     };
     kubernetes.resources.none.ClusterIssuer.le-staging.spec = {
       acme = {
