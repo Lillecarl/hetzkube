@@ -113,6 +113,9 @@ resources:
 - kube-system/ExternalSecret/cloudflare-token.yaml
 - kube-system/ExternalSecret/hcloud.yaml
 - kube-system/ExternalSecret/hcloud-cheapam.yaml
+- kube-system/ExternalSecret/infisical-verify-grafana-admin.yaml
+- kube-system/ExternalSecret/infisical-verify-hcloud-token.yaml
+- kube-system/ExternalSecret/infisical-verify-keycloak-grafana.yaml
 - kube-system/ExternalSecret/scaleway-dns-key.yaml
 - kube-system/Gateway/default.yaml
 - kube-system/GatewayClass/cilium.yaml

@@ -1,0 +1,22 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: infisical-verify-grafana-admin
+  namespace: kube-system
+spec:
+  data:
+  - remoteRef:
+      key: grafana-admin
+      property: username
+    secretKey: username
+  - remoteRef:
+      key: grafana-admin
+      property: password
+    secretKey: password
+  refreshInterval: 30m0s
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: infisical
+  target:
+    template:
+      type: kubernetes.io/basic-auth
