@@ -192,7 +192,7 @@
       };
       kube-system.ConfigMap.cheapam-config.data.IPv4 = "10.133.0.0/16";
 
-      kube-system.ExternalSecret.hcloud = hlib.eso.mkToken "name:hcloud-token";
+      kube-system.ExternalSecret.hcloud = hlib.eso.mkToken { identifier = "name:hcloud-token"; storeName = "infisical"; };
 
       # Don't allow VPA to scale limits below what's actually usable
       none.LimitRange = {
