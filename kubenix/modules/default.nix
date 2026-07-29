@@ -1,7 +1,6 @@
 { config, lib, ... }:
 {
   imports = [
-    ./alloy.nix
     ./argocd.nix
     ./bitwarden.nix
     ./capi.nix

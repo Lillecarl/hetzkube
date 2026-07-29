@@ -49,49 +49,64 @@ in
       } cfg.helmValues;
     };
     hlib.eso = rec {
-      mkBasic = swIdentifier: {
-        spec = {
-          refreshInterval = cfg.refreshInterval;
-          secretStoreRef = {
-            kind = "ClusterSecretStore";
-            name = "scaleway";
+      mkBasic = arg:
+        let
+          identifier = if lib.isString arg then arg else arg.identifier;
+          storeName = if lib.isString arg then "scaleway" else arg.storeName or "scaleway";
+        in {
+          spec = {
+            refreshInterval = cfg.refreshInterval;
+            secretStoreRef = {
+              kind = "ClusterSecretStore";
+              name = storeName;
+            };
+            target.template.type = "kubernetes.io/basic-auth";
+            data = [
+              {
+                secretKey = "username";
+                remoteRef = {
+                  key = identifier;
+                  property = "username";
+                };
+              }
+              {
+                secretKey = "password";
+                remoteRef = {
+                  key = identifier;
+                  property = "password";
+                };
+              }
+            ];
           };
-          target.template.type = "kubernetes.io/basic-auth";
-          data = [
-            {
-              secretKey = "username";
-              remoteRef = {
-                key = swIdentifier;
-                property = "username";
-              };
-            }
-            {
-              secretKey = "password";
-              remoteRef = {
-                key = swIdentifier;
-                property = "password";
-              };
-            }
-          ];
         };
-      };
-      mkToken = swIdentifier: mkOpaque swIdentifier "token";
-      mkOpaque = swIdentifier: secretKey: {
-        spec = {
-          refreshInterval = cfg.refreshInterval;
-          secretStoreRef = {
-            kind = "ClusterSecretStore";
-            name = "scaleway";
+      mkToken = arg:
+        let
+          identifier = if lib.isString arg then arg else arg.identifier;
+          storeName = if lib.isString arg then "scaleway" else arg.storeName or "scaleway";
+        in mkOpaque { identifier = identifier; secretKey = "token"; inherit storeName; };
+      mkOpaque = arg:
+        if lib.isString arg then
+          secretKey: mkOpaque { identifier = arg; inherit secretKey; }
+        else let
+          secretKey = arg.secretKey;
+          identifier = arg.identifier;
+          storeName = arg.storeName or "scaleway";
+        in {
+          spec = {
+            refreshInterval = cfg.refreshInterval;
+            secretStoreRef = {
+              kind = "ClusterSecretStore";
+              name = storeName;
+            };
+            target.template.type = "Opaque";
+            data = [
+              {
+                inherit secretKey;
+                remoteRef.key = identifier;
+              }
+            ];
           };
-          target.template.type = "Opaque";
-          data = [
-            {
-              inherit secretKey;
-              remoteRef.key = swIdentifier;
-            }
-          ];
         };
-      };
     };
     kubernetes.apiMappings = {
       ACRAccessToken = "generators.external-secrets.io/v1alpha1";

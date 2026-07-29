@@ -85,6 +85,7 @@ flake.impure
       yamlfmt
       fluxcd
       victorialogs
+      argocd
     ];
   };
 }

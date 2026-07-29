@@ -38,6 +38,10 @@
       # avoids any risk of it touching the sops metadata's own `age` list.
       convertLists = false;
     };
+    importyaml.infisical-secret = {
+      src = toString (builtins.path { path = ../../secrets/infisical-secret.enc.yaml; });
+      convertLists = false;
+    };
     kubernetes.resources.none.ClusterSecretStore.scaleway = {
       spec = {
         provider.scaleway = {
@@ -52,6 +56,29 @@
             namespace = "kube-system";
             name = "scaleway";
             key = "SCW_SECRET_KEY";
+          };
+        };
+      };
+    };
+    kubernetes.resources.none.ClusterSecretStore.infisical = {
+      spec = {
+        provider.infisical = {
+          hostAPI = "https://app.infisical.com";
+          auth.universalAuthCredentials = {
+            clientId = {
+              namespace = "kube-system";
+              name = "infisical";
+              key = "clientId";
+            };
+            clientSecret = {
+              namespace = "kube-system";
+              name = "infisical";
+              key = "clientSecret";
+            };
+          };
+          secretsScope = {
+            projectSlug = "hetzkube-p7-zf";
+            environmentSlug = "dev";
           };
         };
       };

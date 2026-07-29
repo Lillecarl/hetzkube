@@ -25,7 +25,7 @@ in
             owner = "cloudnative-pg";
             repo = "cloudnative-pg";
             rev = "release-${lib.versions.majorMinor cfg.version}";
-            hash = "sha256-xk2lQ6LZKt4BY52JhE5O7YlkOWYf5823OlSVeRxdj6Q=";
+            hash = "sha256-J6bFTDAH7DyQ3XvOzvKK29WEsw/6jthqc5QG0IIoH0I=";
           }
         }/releases/cnpg-${cfg.version}.yaml";
     };
