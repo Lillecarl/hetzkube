@@ -14,7 +14,7 @@ spec:
   template:
     metadata:
       annotations:
-        cilium.io/cilium-configmap-checksum: 864275305cc47be727bc60920333f2905fddcf1882c100643fe665d55bfecf7a
+        cilium.io/cilium-configmap-checksum: 2fdfaa8b4db1f7eaef9aa33b9a71bfc8bf3b6cf01922ac6cb0b94bc23d5b34fc
         kubectl.kubernetes.io/default-container: cilium-agent
       labels:
         app.kubernetes.io/name: cilium-agent
@@ -60,7 +60,7 @@ spec:
           value: '1'
         - name: KUBE_CLIENT_BACKOFF_DURATION
           value: '120'
-        image: quay.io/cilium/cilium:v1.18.7
+        image: quay.io/cilium/cilium:v1.18.12
         imagePullPolicy: IfNotPresent
         lifecycle:
           postStart:
@@ -198,7 +198,7 @@ spec:
           value: kubernetes.lillecarl.com
         - name: KUBERNETES_SERVICE_PORT
           value: '6443'
-        image: quay.io/cilium/cilium:v1.18.7
+        image: quay.io/cilium/cilium:v1.18.12
         imagePullPolicy: IfNotPresent
         name: config
         terminationMessagePolicy: FallbackToLogsOnError
@@ -221,7 +221,7 @@ spec:
           value: /opt/cni/bin
         - name: CGROUP_ROOT
           value: /run/cilium/cgroupv2
-        image: quay.io/cilium/cilium:v1.18.7
+        image: quay.io/cilium/cilium:v1.18.12
         imagePullPolicy: IfNotPresent
         name: mount-cgroup
         securityContext:
@@ -254,7 +254,7 @@ spec:
         env:
         - name: BIN_PATH
           value: /opt/cni/bin
-        image: quay.io/cilium/cilium:v1.18.7
+        image: quay.io/cilium/cilium:v1.18.12
         imagePullPolicy: IfNotPresent
         name: apply-sysctl-overwrites
         securityContext:
@@ -280,7 +280,7 @@ spec:
         - /bin/bash
         - -c
         - --
-        image: quay.io/cilium/cilium:v1.18.7
+        image: quay.io/cilium/cilium:v1.18.12
         imagePullPolicy: IfNotPresent
         name: mount-bpf-fs
         securityContext:
@@ -315,7 +315,7 @@ spec:
               key: write-cni-conf-when-ready
               name: cilium-config
               optional: true
-        image: quay.io/cilium/cilium:v1.18.7
+        image: quay.io/cilium/cilium:v1.18.12
         imagePullPolicy: IfNotPresent
         name: clean-cilium-state
         securityContext:
@@ -341,7 +341,7 @@ spec:
           name: cilium-run
       - command:
         - /install-plugin.sh
-        image: quay.io/cilium/cilium:v1.18.7
+        image: quay.io/cilium/cilium:v1.18.12
         imagePullPolicy: IfNotPresent
         name: install-cni-binaries
         resources:

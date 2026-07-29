@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       annotations:
-        cilium.io/cilium-envoy-configmap-checksum: cba525e6160e17d62b42303695bbc501dba4e202cb62664b976cba683af93c8c
+        cilium.io/cilium-envoy-configmap-checksum: 1914e8df4a8654110572399976baa067848315d8c623590714c169008b5029b5
       labels:
         app.kubernetes.io/name: cilium-envoy
         app.kubernetes.io/part-of: cilium
@@ -67,7 +67,7 @@ spec:
           value: kubernetes.lillecarl.com
         - name: KUBERNETES_SERVICE_PORT
           value: '6443'
-        image: quay.io/cilium/cilium-envoy:v1.35.9-1770554954-8ce3bb4eca04188f4a0a1bfbd0a06a40f90883de@sha256:da85124deeb42c8e56e55e9e6e155740f5df00e1064759a244bc246c3addb45d
+        image: quay.io/cilium/cilium-envoy:v1.36.9-1782267392-edeb3f2af56c37c407efa1f63f0b32f595399bbc@sha256:767101fb8a5e38f055778cb43b7aa8eed80450b37f8121effac3d9de9e06dc99
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 10

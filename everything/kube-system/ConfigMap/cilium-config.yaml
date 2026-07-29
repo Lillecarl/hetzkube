@@ -36,6 +36,8 @@ data:
   enable-auto-protect-node-port-range: 'true'
   enable-bpf-clock-probe: 'false'
   enable-bpf-masquerade: 'true'
+  enable-drift-checker: 'true'
+  enable-dynamic-config: 'true'
   enable-endpoint-health-checking: 'true'
   enable-endpoint-lockdown-on-policy-overflow: 'false'
   enable-envoy-config: 'true'
