@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: vertical-pod-autoscaler
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: vertical-pod-autoscaler
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: vertical-pod-autoscaler-1.12.0
+    app.kubernetes.io/version: 1.7.1
+    helm.sh/chart: vertical-pod-autoscaler-1.12.1
   name: vertical-pod-autoscaler-recommender
   namespace: kube-system
 spec:
@@ -31,7 +31,7 @@ spec:
         - --address=:8942
         - --pod-recommendation-min-memory-mb=20
         - --pod-recommendation-min-cpu-millicores=25
-        image: registry.k8s.io/autoscaling/vpa-recommender:1.7.0
+        image: registry.k8s.io/autoscaling/vpa-recommender:1.7.1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 10
