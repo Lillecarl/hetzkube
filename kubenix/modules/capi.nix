@@ -105,7 +105,7 @@ in
       caph-system = { };
     };
     kubernetes.resources.${clusterName} = {
-      ExternalSecret.hcloud = hlib.eso.mkToken "name:hcloud-token";
+      ExternalSecret.hcloud = hlib.eso.mkToken { identifier = "name:hcloud-token"; storeName = "infisical"; };
 
       # Contol plane
       KubeadmControlPlane."${clusterName}-control-plane".spec = {

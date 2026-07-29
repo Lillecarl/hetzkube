@@ -11,9 +11,9 @@ in
   config = lib.mkIf (config.stage == "full") {
     kubernetes.resources.observability = {
       # ExternalSecrets
-      ExternalSecret.pg0-grafana = hlib.eso.mkBasic "name:grafana-db";
-      ExternalSecret.grafana-admin = hlib.eso.mkBasic "name:grafana-admin";
-      ExternalSecret.grafana-oidc = hlib.eso.mkOpaque "name:keycloak-grafana" "client-secret";
+      ExternalSecret.pg0-grafana = hlib.eso.mkBasic { identifier = "name:grafana-db"; storeName = "infisical"; };
+      ExternalSecret.grafana-admin = hlib.eso.mkBasic { identifier = "name:grafana-admin"; storeName = "infisical"; };
+      ExternalSecret.grafana-oidc = hlib.eso.mkOpaque { identifier = "name:keycloak-grafana"; secretKey = "client-secret"; storeName = "infisical"; };
 
       # Grafana Instance using v1beta1 schema
       Grafana.grafana = {
@@ -211,7 +211,7 @@ in
 
     # Database provisioning
     kubernetes.resources.database = {
-      ExternalSecret.pg0-grafana = hlib.eso.mkBasic "name:grafana-db";
+      ExternalSecret.pg0-grafana = hlib.eso.mkBasic { identifier = "name:grafana-db"; storeName = "infisical"; };
       Cluster.pg0.spec.managed.roles.grafana = {
         login = true;
         passwordSecret.name = "pg0-grafana";

@@ -519,7 +519,7 @@ in
         ${cfg.metrics.namespace} = {
           # Bot token lives in Scaleway (ESO), never in git -- chat_id isn't
           # secret-shaped in the CRD (plain integer), so it's a Nix option.
-          ExternalSecret.telegram = hlib.eso.mkToken cfg.alertmanager.telegram.scalewaySecret;
+          ExternalSecret.telegram = hlib.eso.mkToken { identifier = cfg.alertmanager.telegram.scalewaySecret; storeName = "infisical"; };
           VMAlertmanager.alertmanager = {
             spec = {
               replicaCount = 1;

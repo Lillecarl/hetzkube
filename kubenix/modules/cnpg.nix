@@ -49,7 +49,7 @@ in
       };
 
       resources.database = {
-        ExternalSecret.pg0-lillecarl = hlib.eso.mkBasic "name:lillecarl-db";
+        ExternalSecret.pg0-lillecarl = hlib.eso.mkBasic { identifier = "name:lillecarl-db"; storeName = "infisical"; };
         # Configure podmonitoring from CNPG docs
         Cluster.pg0.spec = {
           # Required to manage roles properly

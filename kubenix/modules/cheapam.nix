@@ -75,7 +75,7 @@ in
         ];
       };
 
-      kube-system.ExternalSecret.hcloud-cheapam = hlib.eso.mkToken "name:hcloud-token";
+      kube-system.ExternalSecret.hcloud-cheapam = hlib.eso.mkToken { identifier = "name:hcloud-token"; storeName = "infisical"; };
       kube-system.Deployment.cheapam = {
         spec = {
           replicas = 1;
