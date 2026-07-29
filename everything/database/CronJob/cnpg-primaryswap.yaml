@@ -15,8 +15,8 @@ spec:
         spec:
           containers:
           - command:
-            - /nix/store/2dp500yzs3riv2mwnnx5s0xvbsi1nc2v-tini-0.19.0/bin/tini
-            - /nix/store/9szyn1dzxbqrfs918nzw8adz2ndaly35-swapPrimary/bin/swapPrimary
+            - /nix/store/7sgyr7q091pgx8whnmmh0rxhjq55s3zz-tini-0.19.0/bin/tini
+            - /nix/store/qqzdsddqr6gw13p02fzk6679m5dr77x1-swapPrimary/bin/swapPrimary
             image: gcr.io/distroless/static:latest
             name: cnpg-primaryswap
             volumeMounts:

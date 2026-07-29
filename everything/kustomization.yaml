@@ -324,6 +324,7 @@ resources:
 - none/ClusterRoleBinding/system:vpa-target-reader-binding.yaml
 - none/ClusterRoleBinding/system:vpa-updater-in-place-binding.yaml
 - none/ClusterRoleBinding/vm-operator.yaml
+- none/ClusterSecretStore/infisical.yaml
 - none/ClusterSecretStore/scaleway.yaml
 - none/CustomResourceDefinition/acraccesstokens.generators.external-secrets.io.yaml
 - none/CustomResourceDefinition/backups.postgresql.cnpg.io.yaml
@@ -600,4 +601,5 @@ resources:
 - pgadmin/VerticalPodAutoscaler/pgadmin.yaml
 - vm/VerticalPodAutoscaler/vm-operator.yaml
 generators:
+- kube-system/Secret/infisical.ksops-generator.yaml
 - kube-system/Secret/scaleway.ksops-generator.yaml

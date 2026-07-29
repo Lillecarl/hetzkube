@@ -15,9 +15,9 @@ spec:
         spec:
           containers:
           - command:
-            - /nix/store/2dp500yzs3riv2mwnnx5s0xvbsi1nc2v-tini-0.19.0/bin/tini
+            - /nix/store/7sgyr7q091pgx8whnmmh0rxhjq55s3zz-tini-0.19.0/bin/tini
             - --
-            - /nix/store/4rrwdszxj0wnj0gffww0b0jbv991cp3y-etcd-defrag/bin/etcd-defrag
+            - /nix/store/2a7zpf6mrn96yrjkkl3399fjh2568yqy-etcd-defrag/bin/etcd-defrag
             image: ghcr.io/lillecarl/nix-csi/scratch:1.0.1
             name: etcd-defrag
           restartPolicy: OnFailure

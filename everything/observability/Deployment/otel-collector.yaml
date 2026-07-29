@@ -24,9 +24,9 @@ spec:
       - args:
         - --config=file:/etc/otel-collector/config.yaml
         command:
-        - /nix/store/2dp500yzs3riv2mwnnx5s0xvbsi1nc2v-tini-0.19.0/bin/tini
+        - /nix/store/7sgyr7q091pgx8whnmmh0rxhjq55s3zz-tini-0.19.0/bin/tini
         - --
-        - /nix/store/59j84kgb2nwzaqf1wf0hxvwgidly7xzd-otelcol-k8s-0.155.0/bin/otelcol-k8s
+        - /nix/store/v8gw6mq7j3cas3i85pp4bd8g6264iy36-otelcol-k8s-0.155.0/bin/otelcol-k8s
         env:
         - name: PATH
           value: /nix/var/result/bin
@@ -74,5 +74,5 @@ spec:
           driver: nixkube
           readOnly: true
           volumeAttributes:
-            x86_64-linux: /nix/store/kpxp6h186xz8sx567prjk89gd2alfg09-otel-collector-env
+            x86_64-linux: /nix/store/hij85q8qqkrlas2mfk3pp3k01yspkrfn-otel-collector-env
         name: nix-store

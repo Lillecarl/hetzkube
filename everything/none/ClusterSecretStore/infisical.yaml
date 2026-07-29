@@ -1,0 +1,21 @@
+apiVersion: external-secrets.io/v1
+kind: ClusterSecretStore
+metadata:
+  name: infisical
+spec:
+  provider:
+    infisical:
+      auth:
+        universalAuthCredentials:
+          clientId:
+            key: clientId
+            name: infisical
+            namespace: kube-system
+          clientSecret:
+            key: clientSecret
+            name: infisical
+            namespace: kube-system
+      hostAPI: https://app.infisical.com
+      secretsScope:
+        environmentSlug: dev
+        projectSlug: hetzkube-p7-zf
