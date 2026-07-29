@@ -8,7 +8,7 @@
   config = lib.mkIf (config.stage == "full") {
     cilium = {
       enable = true;
-      version = "1.18.7";
+      version = "1.18.12";
       # Cilium replaces kube-proxy, so instead of iptables based service forwarding
       # Cilium uses it's own eBPF rules which scale better and can do more voodoo
       # at the expense of being harder to troubleshoot.

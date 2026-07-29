@@ -17,7 +17,7 @@ in
     };
     version = lib.mkOption {
       type = lib.types.str;
-      default = "7.0.0";
+      default = "7.1.0";
     };
     helmValues = lib.mkOption {
       type = lib.types.anything;
