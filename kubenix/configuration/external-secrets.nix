@@ -60,6 +60,50 @@
         };
       };
     };
+    kubernetes.resources.kube-system = let
+      infRefresh = config.external-secrets.refreshInterval;
+      infStoreRef = { kind = "ClusterSecretStore"; name = "infisical"; };
+      mkInfToken = target: secretName: {
+        ExternalSecret.${target} = {
+          spec = {
+            refreshInterval = infRefresh;
+            secretStoreRef = infStoreRef;
+            target.template.type = "Opaque";
+            data = [{ secretKey = "token"; remoteRef.key = secretName; }];
+          };
+        };
+      };
+      mkInfBasic = target: secretName: {
+        ExternalSecret.${target} = {
+          spec = {
+            refreshInterval = infRefresh;
+            secretStoreRef = infStoreRef;
+            target.template.type = "kubernetes.io/basic-auth";
+            data = [
+              { secretKey = "username"; remoteRef = { key = secretName; property = "username"; }; }
+              { secretKey = "password"; remoteRef = { key = secretName; property = "password"; }; }
+            ];
+          };
+        };
+      };
+      mkInfOpaque = target: secretName: secretKey: {
+        ExternalSecret.${target} = {
+          spec = {
+            refreshInterval = infRefresh;
+            secretStoreRef = infStoreRef;
+            target.template.type = "Opaque";
+            data = [{ inherit secretKey; remoteRef.key = secretName; }];
+          };
+        };
+      };
+    in
+    # Verification ExternalSecrets pulling from Infisical -- compare against
+    # the same-name Scaleway equivalents once deployed.
+    lib.mkMerge [
+      (mkInfToken "infisical-verify-hcloud-token" "hcloud-token")
+      (mkInfBasic "infisical-verify-grafana-admin" "grafana-admin")
+      (mkInfOpaque "infisical-verify-keycloak-grafana" "keycloak-grafana" "client-secret")
+    ];
     kubernetes.resources.none.ClusterSecretStore.infisical = {
       spec = {
         provider.infisical = {
